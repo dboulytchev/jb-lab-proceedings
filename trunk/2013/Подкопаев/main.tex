@@ -1,0 +1,80 @@
+\documentclass[a4paper,12pt]{article} %размер бумаги устанавливаем А4, шрифт 12пунктов
+% \usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}%кодировка
+\usepackage[english,russian]{babel}%используем русский и английский языки с переносами
+% \usepackage{amssymb,amsfonts,amsmath,cite,enumerate,float,indentfirst} %пакеты расширений
+\usepackage[pdftex]{graphicx} %вставка графики
+\graphicspath{{images/}}%путь к рисункам
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{subcaption}
+
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+% \floatname{algorithm}{Procedure}
+
+% \usepackage{algorithm2e}
+% \input{algorithmTranslate}
+
+% \makeatletter
+% \renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
+% \makeatother
+
+\usepackage{geometry} % Меняем поля страницы
+\geometry{left=2.5cm}% левое поле
+\geometry{right=1.5cm}% правое поле
+\geometry{top=2cm}% верхнее поле
+\geometry{bottom=2cm}% нижнее поле
+
+% \usepackage{hyperref}
+% \hypersetup{%
+%     pdfborder = {0 0 0}
+% }
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{wrapfig}
+
+% \renewcommand{\theenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
+% \renewcommand{\labelenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
+% \renewcommand{\theenumii}{.\arabic{enumii}}% Меняем везде перечисления на цифра.цифра
+% \renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}% Меняем везде перечисления на цифра.цифра
+% \renewcommand{\theenumiii}{.\arabic{enumiii}}% Меняем везде перечисления на цифра.цифра
+% \renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.}% Меняем везде перечисления на цифра.цифра
+
+% \newcommand{\imgh}[3]{\begin{figure}[h]\center{\includegraphics[width=#1]{#2}}\caption{#3}\label{ris:#2}\end{figure}}
+
+\lstdefinelanguage{llang}{
+	keywords={skip, do, while, read, write, if, then, else},
+	sensitive=true,
+	%%basicstyle=\small,
+	commentstyle=\scriptsize\rmfamily,
+	keywordstyle=\ttfamily\underbar,
+	identifierstyle=\ttfamily,
+	basewidth={0.5em,0.5em},
+	columns=fixed,
+	fontadjust=true,
+	literate={->}{{$\to$}}1
+}
+
+\lstset{
+	language=llang
+}
+
+\begin{document}
+\input{title}
+
+\newpage
+\tableofcontents % это оглавление, которое генерируется автоматически
+\newpage
+\input{introduction}
+\newpage
+\input{review}
+\newpage
+\input{realization}
+\newpage
+\input{ending}
+\newpage
+\input{links}
+\newpage
+\input{appendices}
+\end{document}
