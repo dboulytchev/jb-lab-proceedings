@@ -1,16 +1,16 @@
-\documentclass[a4paper,12pt]{article} %размер бумаги устанавливаем А4, шрифт 12пунктов
+%\documentclass[a4paper,12pt]{article} %размер бумаги устанавливаем А4, шрифт 12пунктов
 % \usepackage[T2A]{fontenc}
-\usepackage[utf8]{inputenc}%кодировка
-\usepackage[english,russian]{babel}%используем русский и английский языки с переносами
+%\usepackage[utf8]{inputenc}%кодировка
+%\usepackage[english,russian]{babel}%используем русский и английский языки с переносами
 % \usepackage{amssymb,amsfonts,amsmath,cite,enumerate,float,indentfirst} %пакеты расширений
-\usepackage[pdftex]{graphicx} %вставка графики
-\graphicspath{{images/}}%путь к рисункам
-\usepackage{minted}
-\usepackage{listings}
-\usepackage{subcaption}
+%\usepackage[pdftex]{graphicx} %вставка графики
+%\graphicspath{{images/}}%путь к рисункам
+%\usepackage{minted}
+%\usepackage{listings}
+%\usepackage{subcaption}
 
-\usepackage{algorithmicx}
-\usepackage{algpseudocode}
+%\usepackage{algorithmicx}
+%\usepackage{algpseudocode}
 % \floatname{algorithm}{Procedure}
 
 % \usepackage{algorithm2e}
@@ -20,19 +20,19 @@
 % \renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
 % \makeatother
 
-\usepackage{geometry} % Меняем поля страницы
-\geometry{left=2.5cm}% левое поле
-\geometry{right=1.5cm}% правое поле
-\geometry{top=2cm}% верхнее поле
-\geometry{bottom=2cm}% нижнее поле
+%\usepackage{geometry} % Меняем поля страницы
+%\geometry{left=2.5cm}% левое поле
+%\geometry{right=1.5cm}% правое поле
+%\geometry{top=2cm}% верхнее поле
+%\geometry{bottom=2cm}% нижнее поле
 
 % \usepackage{hyperref}
 % \hypersetup{%
 %     pdfborder = {0 0 0}
 % }
-\usepackage[hidelinks]{hyperref}
+%\usepackage[hidelinks]{hyperref}
 
-\usepackage{wrapfig}
+%\usepackage{wrapfig}
 
 % \renewcommand{\theenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
 % \renewcommand{\labelenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
@@ -60,21 +60,29 @@
 	language=llang
 }
 
-\begin{document}
-\input{title}
+\title{Форматирование текста программ на основе комбинаторов,\\
+сопоставления с образцом и синтаксических шаблонов}
+%
+\titlerunning{Форматирование текста программ}
+\author{Подкопаева Антона Викторовича}
+%
+\authorrunning{А.В.Подкопаев} % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{А.В.Подкопаев}
+%
+\institute{Санк-Петербургский государственный университет\\
+\email{podkoav239@gmail.com}}
 
-\newpage
-\tableofcontents % это оглавление, которое генерируется автоматически
-\newpage
+\maketitle              % typeset the title of the contribution
+
+\begin{abstract}
+\end{abstract}
+%
+
 \input{introduction}
-\newpage
 \input{review}
-\newpage
 \input{realization}
-\newpage
 \input{ending}
-\newpage
 \input{links}
-\newpage
 \input{appendices}
-\end{document}
