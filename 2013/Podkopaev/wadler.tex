@@ -5,8 +5,8 @@
 В \cite{wadler} Филипп Вадлер описал свою комбинаторную бибилиотеку для форматированного вывода на языке Haskell. Она является модификацией библиотеки Хьюза, описанной в предыдущем разделе. Код библиотеки сократился с $\approx$ 110 строк до $\approx$ 80 строк, и, по исследованию Вадлера, на 30\% увеличилась скорость вычисления раскладки документа.
 
 Рассмотрим основые комбинаторы этой библиотеки:
-% \inputminted{haskell}{codes/wadlerBasicOperations.hs}
-\lstinputlisting[language=Haskell]{codes/wadlerBasicOperations.hs}
+% \inputminted{haskell}{Podkopaev/codes/wadlerBasicOperations.hs}
+\lstinputlisting[language=Haskell]{Podkopaev/codes/wadlerBasicOperations.hs}
 
 Вадлер решил отказаться от двух разных способов соединения документов, оставив лишь горизонтальную склейку. Но для того, чтобы можно было выражать не только однострочные документы, в библиотеке Вадлера появилась функция “\lstinline[language=Haskell]{line}”. Она создает документ, который может быть переведен в символ новой строки или в пробел.
 Функция “\lstinline[language=Haskell]{group}” имеет то же назначение, что и оператор “\lstinline[language=Haskell]{sep}” в библиотеке Хьюза, но работает не со списком документов, а с одним документом, и по сути предоставляет альтернативы для алгоритма перевода документа в “\lstinline[language=Haskell]{String}”: в документе, на который подействовал “\lstinline[language=Haskell]{group}”, либо все вхождения “\lstinline[language=Haskell]{line}” заменяются на пробел, либо остаются переводами строки (если они не являются частью вложенных “\lstinline[language=Haskell]{group}”-документов).
@@ -17,8 +17,8 @@
 По-другому его написать нельзя --- мы хотим, чтобы последовательные операторы печатались на новых строках. Но если такая конструкция попадет внутрь “\lstinline[language=Haskell]{group}”-документа, то последовательные строчки могут склеиться пробелом, что сделает код некорректным, так как в Python несколько операторов на одной строке должны разделяться символом “;”.
 
 \begin{figure}[h!]
-	% \inputminted{haskell}{codes/pythonPrinter.hs}
-	\lstinputlisting[language=Haskell]{codes/pythonPrinter.hs}
+	% \inputminted{haskell}{Podkopaev/codes/pythonPrinter.hs}
+	\lstinputlisting[language=Haskell]{Podkopaev/codes/pythonPrinter.hs}
 	\caption{Принтер для последовательных операторов в Python}
 	\label{fig:pythonPrinter}
 \end{figure}
@@ -26,15 +26,15 @@
 Так корректный код (см. рисунок~\ref{fig:pythonCode}) может превратиться в некорректный (см. рисунок~\ref{fig:pythonCodeBad}).
 \begin{figure}[h!]
 	\begin{subfigure}[b]{0.45\linewidth}
-		% \inputminted{python}{codes/pythonCode.py}
-		\lstinputlisting[language=Python]{codes/pythonCode.py}
+		% \inputminted{python}{Podkopaev/codes/pythonCode.py}
+		\lstinputlisting[language=Python]{Podkopaev/codes/pythonCode.py}
 		\caption{}
 		\label{fig:pythonCode}
 	\end{subfigure}
 	\hspace{0.5cm}
 	\begin{subfigure}[b]{0.45\linewidth}
-		% \inputminted{python}{codes/pythonCodeBad.py}
-		\lstinputlisting[language=Python]{codes/pythonCodeBad.py}
+		% \inputminted{python}{Podkopaev/codes/pythonCodeBad.py}
+		\lstinputlisting[language=Python]{Podkopaev/codes/pythonCodeBad.py}
 		\caption{}
 		\label{fig:pythonCodeBad}
 	\end{subfigure}
