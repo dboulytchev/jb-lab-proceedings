@@ -1,29 +1,29 @@
-\documentclass[aps,12pt,final,oneside,onecolumn,musixtex,superscriptaddress,centertags]{article} 
-\usepackage[colorlinks=true,linkcolor=blue,unicode=true]{hyperref}
-\usepackage[english,russian]{babel}
-\usepackage[utf8x]{inputenc}
-\usepackage{supertabular}
-\usepackage{listings}
-\usepackage{epigraph}
-\usepackage{euscript}
-\usepackage{textcomp}
-\usepackage{graphicx}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{cite}
-\usepackage{ucs}
+%\documentclass[aps,12pt,final,oneside,onecolumn,musixtex,superscriptaddress,centertags]{article} 
+%\usepackage[colorlinks=true,linkcolor=blue,unicode=true]{hyperref}
+%\usepackage[english,russian]{babel}
+%\usepackage[utf8x]{inputenc}
+%\usepackage{supertabular}
+%\usepackage{listings}
+%\usepackage{epigraph}
+%\usepackage{euscript}
+%\usepackage{textcomp}
+%\usepackage{graphicx}
+%\usepackage{amsfonts}
+%\usepackage{amssymb}
+%\usepackage{amsmath}
+%\usepackage{amsthm}
+%\usepackage{cite}
+%\usepackage{ucs}
 
-\textheight=650pt
-\topmargin=-40pt
+%\textheight=650pt
+%\topmargin=-40pt
 \lstset{
    escapechar=`,
    basicstyle=\ttfamily\footnotesize,
    extendedchars=\true
 }
 
-\widowpenalties 1 10000
+%\widowpenalties 1 10000
 
 \newcommand{\ctab}[0]{\indent\indent}
 \newcommand{\ctabd}[0]{\ctab\ctab}
@@ -31,33 +31,47 @@
 
 \newcommand{\lcode}[1]{\lstinline[basicstyle=\ttfamily\normalsize]{#1}}
 
-\begin{document}
-\sloppy
+%\begin{document}
+%\sloppy
 
-  \begin{titlepage} 
-     \begin{center}
-        \textbf{\Large САНКТ-ПЕТЕРБУРГСКИЙ \\ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ} \\[1.0cm]
-        \textbf{\large Математико-Механический факультет} \\[0.2cm]
-        \textbf{\large Кафедра Cистемного Программирования}\\[3.5cm]
+%  \begin{titlepage} 
+%     \begin{center}
+%        \textbf{\Large САНКТ-ПЕТЕРБУРГСКИЙ \\ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ} \\[1.0cm]
+%        \textbf{\large Математико-Механический факультет} \\[0.2cm]
+%        \textbf{\large Кафедра Cистемного Программирования}\\[3.5cm]
 
-        \textbf{\LARGE Использование proof assistants для описания операционных семантик}\\[1.0cm]
-        \textbf{\Large Курсовая работа студента 445 группы} \\[0.2cm]
-        \textbf{\Large Тарана Кирилла Сергеевича} \\[3.5cm]
+%        \textbf{\LARGE Использование proof assistants для описания операционных семантик}\\[1.0cm]
+%        \textbf{\Large Курсовая работа студента 445 группы} \\[0.2cm]
+%        \textbf{\Large Тарана Кирилла Сергеевича} \\[3.5cm]
 
-        \begin{flushright} \large \emph{Научный руководитель:} \\ к.ф.-м.н. \textsc{Булычев Д. Ю.} \end{flushright}
-        \begin{flushright} \large \emph{Заведующий кафедрой:}  \\ д.ф.-м.н., профессор \textsc{Терехов А. Н.} \end{flushright}
-        \vfill 
+%        \begin{flushright} \large \emph{Научный руководитель:} \\ к.ф.-м.н. \textsc{Булычев Д. Ю.} \end{flushright}
+%        \begin{flushright} \large \emph{Заведующий кафедрой:}  \\ д.ф.-м.н., профессор \textsc{Терехов А. Н.} \end{flushright}
+%        \vfill 
 
-        {\large {Санкт-Петербург}} \par
-        {\large {2013 г.}}
-     \end{center} 
-  \end{titlepage}
+ %       {\large {Санкт-Петербург}} \par
+ %       {\large {2013 г.}}
+%     \end{center} 
+%  \end{titlepage}
 
-  \tableofcontents
-  \newpage
+%  \tableofcontents
+
+
+\title{Использование proof assistants для описания операционных семантик}
+%
+\titlerunning{Использование proof assistants}
+\author{Таран Кирилл Сергеевич}
+%
+\authorrunning{К.С.Таран} % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{К.С.Таран}
+%
+\institute{Санк-Петербургский государственный университет\\
+\email{kirill.t256@gmail.com}}
+
+\maketitle              % typeset the title of the contribution
 
   \section*{Введение}
-  \addcontentsline{toc}{section}{Введение}
 
      В данной работе будут рассмотрены возможности систем для интерактивного доказательство теорем (далее \emph{proof assistants}) применительно к описанию операционных семантик --- дедуктивных систем, описывающих поведение программ, написанных на языке программирования.
 
@@ -72,7 +86,6 @@
         \item доказательствa каких-либо свойств об интерпретации (по возможности автоматического);
      \end{itemize}
 
-  \newpage
   \section{Обзор proof assistants}
 
      В данной работе сделан упор на поколении proof assistants, в основе реализации которых лежит язык программирования с зависимыми типами.
@@ -160,7 +173,6 @@
         \end{tabular}
      \end{align*}
 
-  \newpage
   \subsection{Особенности конкретных систем}
 
      Прежде чем рассмотреть различные proof assistants, необходимо определить понятия \emph{интерактивного} и \emph{автоматического} построения доказательства. \emph{Интерактивным} способом мы будем обозначать взаимодействие пользователя с системой на протяжении всего процесса с целью управления доказательством, а \emph{автоматическим} способом --- взаимодействие, полностью исключающее вмешательство пользователя, кроме формулирования цели (утверждения, теоремы).
@@ -175,7 +187,6 @@
 
      Coq также позволяет разрабатывать и верифицировать программы на основе одного исходного кода, т.к. обладает механизмом извлечения кода на языках OCaml, Haskell и Scheme из исходных текстов Coq. При этом верификационная информация стирается для большей производительности.
 
-  \newpage
   \subsubsection{Agda}
 
      Система Agda\footnote{http://wiki.portal.chalmers.se/agda} более молодая и имеет меньше средств для автоматизации доказательств.
@@ -186,7 +197,6 @@
 
      Кроме того, автоматически можно разбивать аргументы функций на конструкторы, что также автоматизирует построение доказательства.
 
-  \newpage
   \section{Операционные семантики}
 
     \newcommand{\control}[2]{\langle #1, #2 \rangle}
@@ -231,8 +241,8 @@
         \end{tabular}
     \end{align*}
 
-  \newcommand{\While}[0]{{\large While}}
-  \subsection{Язык \While}
+  \newcommand{\KWhile}[0]{{\large While}}
+  \subsection{Язык \KWhile}
 
     \newcommand{\Num}[0]{{\bf Num}}
     \newcommand{\Var}[0]{{\bf Var}}
@@ -240,15 +250,15 @@
     \newcommand{\Bexp}[0]{{\bf Bexp}}
     \newcommand{\Stm}[0]{{\bf Stm}}
 
-    Примеры правил будут приведены для операционных семантик \emph{большого шага} и \emph{малого шага} для языка \While\cite{Nielson:1992:SAF:129085}. Вкратце опишем синтаксис этого языка.
+    Примеры правил будут приведены для операционных семантик \emph{большого шага} и \emph{малого шага} для языка \KWhile\cite{Nielson:1992:SAF:129085}. Вкратце опишем синтаксис этого языка.
 
-    Для языка \While \ccode{ }определены следующие синтаксические категории и мета-переменные:
+    Для языка \KWhile \ccode{ }определены следующие синтаксические категории и мета-переменные:
     \begin{itemize}
        \item категория \Num \ccode{ }из нумералов и мета-переменная $n$ для них;
        \item категория \Var \ccode{ }из переменных вместе с мета-переменной $x$;
        \item категория \Aexp, состоящая из арифметических выражений, и мета-переменная $a$;
        \item категория \Bexp, содержащая логические выражения, и мета-переменная $b$ для них;
-       \item категория \Stm \ccode{ }инструкций языка \While \ccode{ }и мета-переменная $S$.
+       \item категория \Stm \ccode{ }инструкций языка \KWhile \ccode{ }и мета-переменная $S$.
     \end{itemize}
     
     \vspace{4mm}
@@ -264,7 +274,6 @@
                  \hspace{8cm} $ \sep \ccode{while } b \ccode{ do } S $
     \end{itemize}
 
-  \newpage
   \subsection{Примеры правил}
 
     Приведём правила операционной семантики \emph{большого шага}:
@@ -308,14 +317,13 @@
 
     В семантике малого шага в каждой вершине семантического дерева скрыт список остаточных программ, а само дерево вырождено в список; новые узлы этого дерева появляются только благодаря правилам seq. В некотором смысле такое представление программы более структурировано, отсюда и второе название этой семантики.
 
-    От натуральной семантики можно перейти к структурной, проигнорировав во всех правилах остаточную программу. В обратную сторону это также верно. В книге\cite{Nielson:1992:SAF:129085} доказано, что операционные семантики большого и малого шагов для языка \While \ccode{ }эквивалентны.
+    От натуральной семантики можно перейти к структурной, проигнорировав во всех правилах остаточную программу. В обратную сторону это также верно. В книге\cite{Nielson:1992:SAF:129085} доказано, что операционные семантики большого и малого шагов для языка \KWhile \ccode{ }эквивалентны.
 
-  \newpage
   \section{Реализация интерпретатора операционной семантики}
 
-  Рассмотрим поэтапно описание языка \While \ccode{ }на Agda.
+  Рассмотрим поэтапно описание языка \KWhile \ccode{ }на Agda.
 
-  \subsection{Синтаксис языка \While}
+  \subsection{Синтаксис языка \KWhile}
      Абстрактный синтаксис языка определяется с помощью нескольких простых алгебраических типов данных без параметров. Исходный текст является фактически трансляцией записи Бэкуса --- Наура в Agda.
 
      В первую очередь, определим типы данных для алгебраических и логических выражений.
@@ -349,7 +357,7 @@
        branch : Bexp -> Stm  -> Stm -> Stm
      \end{lstlisting}
 
-  \subsection{Семантика языка \While}
+  \subsection{Семантика языка \KWhile}
 
   Для задания правил семантик нам понадобятся некоторые семантические операции вроде присвавивания значения переменной или вычисления арифметического выражения.
 
@@ -390,37 +398,37 @@
   Параметр $s_1$ фиксирован для всего типа в целом, что означает, что начальное состояние для программы задаётся извне и не зависит от самой программы. Остальные параметры не фиксированы: возможные программы и состояния, в которых они заканчиваются, зависят от меток дерева (конструкторов).
 
   Правила без посылок кодируются как следующие конструкторы:
-  \begin{lstlisting}
+  \begin{lstlisting}[mathescape]
   [skip]    : Transition `$s_1$` skip `$s_1$`
-  [assign]  : ∀ {k v}
+  [assign]  : $\forall$ {k v}
     -> Transition `$s_1$` (assign k v) ((k , `$s_1$` [[ v ]]) |> `$s_1$`)
   \end{lstlisting}
   Поскольку у элементарных правил нет посылок, то и аргументов у этих конструкторов нет.
 
   Остальные конструкторы:
-  \begin{lstlisting}
-  [comp]    : ∀ {`$s_2$` `$s_3$` `$p_1$` `$p_2$`}
+  \begin{lstlisting}[mathescape]
+  [comp]    :  $\forall$ {`$s_2$` `$s_3$` `$p_1$` `$p_2$`}
     -> Transition `$s_1$` `$p_1$` `$s_2$`
     -> Transition `$s_2$` `$p_2$` `$s_3$`
     -> Transition `$s_1$` (comp `$p_1$` `$p_2$`) `$s_3$`
-  [if-t]    : ∀ {`$s_2$` b `$p_1$` `$p_2$`} -> T (`$s_1$` << b >>)
+  [if-t]    :  $\forall$ {`$s_2$` b `$p_1$` `$p_2$`} -> T (`$s_1$` << b >>)
     -> Transition `$s_1$` `$p_1$` `$s_2$`
     -> Transition `$s_1$` (branch b `$p_1$` `$p_2$`) `$s_2$`
-  [if-f]    : ∀ {`$s_2$` b `$p_1$` `$p_2$`} -> T (not (`$s_1$` << b >>))
+  [if-f]    :  $\forall$ {`$s_2$` b `$p_1$` `$p_2$`} -> T (not (`$s_1$` << b >>))
     -> Transition `$s_1$` `$p_2$` `$s_2$`
     -> Transition `$s_1$` (branch b `$p_1$` `$p_2$`) `$s_2$`
-  [while-t] : ∀ {`$s_2$` `$s_3$` p} -> (b : B) -> T (`$s_1$` << b >>)
+  [while-t] :  $\forall$ {`$s_2$` `$s_3$` p} -> (b : B) -> T (`$s_1$` << b >>)
     -> Transition `$s_1$` p `$s_2$`
     -> Transition `$s_2$` (while b p) `$s_3$`
     -> Transition `$s_1$` (while b p) `$s_3$`
-  [while-f] : ∀ {p} -> (b : B) -> T (not (`$s_1$` << b >>))
+  [while-f] :  $\forall$ {p} -> (b : B) -> T (not (`$s_1$` << b >>))
     -> Transition `$s_1$` (while b p) `$s_1$`
   \end{lstlisting}
 
   При описании структурной семантики программа может завершиться с остаточной программой. Для выражения этого введём вспомогательный тип \lcode{Control} для состояний вместе с возможной остаточной программой и заменим второй параметр типа \lcode{State} в \lcode{Transition} на параметр типа \lcode{Control}.
 
   Код, необходимый для определения правил структурной семантики:
-  \begin{lstlisting}
+  \begin{lstlisting}[mathescape]
   record Control : Set where
     constructor [>_,_<]
     field
@@ -429,32 +437,32 @@
 
   data Transition (`$s_1$` : State) : S -> Control -> Set where
     [skip]    : Transition `$s_1$` skip [> `$s_1$` , nothing <]
-    [assign]  : ∀ {k v }
+    [assign]  :  $\forall$ {k v }
       -> Transition `$s_1$` (assign k v)
         [> (k , `$s_1$` [[ v ]]) |> `$s_1$` , nothing <]
-    [comp-j]  : ∀ {`$s_2$` `$p_1$` `$p_2$` `$p_3$`}
+    [comp-j]  :  $\forall$ {`$s_2$` `$p_1$` `$p_2$` `$p_3$`}
       -> Transition `$s_1$` `$p_1$` [> `$s_2$` , just `$p_3$` <]
       -> Transition `$s_1$` (comp `$p_1$` `$p_2$`) [> `$s_2$` , just (comp `$p_3$` `$p_2$`) <]
-    [comp-n]  : ∀ {`$s_2$` `$p_1$` `$p_2$`   }
+    [comp-n]  :  $\forall$ {`$s_2$` `$p_1$` `$p_2$`   }
       -> Transition `$s_1$` `$p_1$` [> `$s_2$` , nothing <]
       -> Transition `$s_1$` (comp `$p_1$` `$p_2$`) [> `$s_2$` , just `$p_2$` <]
-    [if-t]    : ∀ (b : B) (`$p_1$` `$p_2$` : S) -> T (`$s_1$` << b >> )
+    [if-t]    :  $\forall$ (b : B) (`$p_1$` `$p_2$` : S) -> T (`$s_1$` << b >> )
       -> Transition   `$s_1$` (branch b `$p_1$` `$p_2$`) [> `$s_1$` , just `$p_1$` <]
-    [if-f]    : ∀ (b : B) (`$p_1$` `$p_2$` : S) -> T (not (`$s_1$` << b >>))
+    [if-f]    :  $\forall$ (b : B) (`$p_1$` `$p_2$` : S) -> T (not (`$s_1$` << b >>))
       -> Transition   `$s_1$` (branch b `$p_1$` `$p_2$`) [> `$s_1$` , just `$p_2$` <]
-    [while-t] : ∀ (b : B) (p : S) -> T (`$s_1$` << b >> )
+    [while-t] :  $\forall$ (b : B) (p : S) -> T (`$s_1$` << b >> )
       -> Transition `$s_1$` (while b p) [> `$s_1$` , just p <]
-    [while-f] : ∀ (b : B) (p : S) -> T (not (`$s_1$` << b >>))
+    [while-f] :  $\forall$ (b : B) (p : S) -> T (not (`$s_1$` << b >>))
       -> Transition `$s_1$` (while b p) [> `$s_1$` , nothing <]
   \end{lstlisting}
 
   Однако, теперь тип \lcode{Transition} задаёт более ``подробное'' отношение, чем нужно: оно определено также на тех значениях \lcode{Control}, символизирующих ``незавершённые'' вычисления, которые содержат остаточную программу. Поэтому определим дополнительно транзитивное замыкание этого отношения \lcode{Transition*} для выражения ``завершённых'' вычислений:
-  \begin{lstlisting}
+  \begin{lstlisting}[mathescape]
   data Transition* (`$s_1$` : State) : S -> State -> Set where
-    cons : ∀ {`$s_2$` `$s_3$` `$p_1$` `$p_2$`}
+    cons :  $\forall$ {`$s_2$` `$s_3$` `$p_1$` `$p_2$`}
       -> Transition `$s_1$` `$p_1$` [> `$s_2$` , just `$p_2$` <]
       -> Transition* `$s_2$` `$p_2$` `$s_3$` -> Transition* `$s_1$` `$p_1$` `$s_3$`
-    base : ∀ {`$s_2$` p}
+    base :  $\forall$ {`$s_2$` p}
       -> Transition `$s_1$` p  [> `$s_2$` , nothing <]
       -> Transition* `$s_1$` p  `$s_2$`
   \end{lstlisting}
@@ -526,28 +534,28 @@
 
   \subsection{Доказательство свойств}
 
-  Как пример утверждений о семантике языка, которые можно формулировать и доказывать с помощью построенного описания, приведём доказанный в \cite{Nielson:1992:SAF:129085} факт об эквивалентности семантик большого и малого шагов \While.
+  Как пример утверждений о семантике языка, которые можно формулировать и доказывать с помощью построенного описания, приведём доказанный в \cite{Nielson:1992:SAF:129085} факт об эквивалентности семантик большого и малого шагов \KWhile.
 
   Для избежания конфликта имён, переименуем \lcode{Transition} в \lcode{Transition-NS} и \lcode{Transition-SS} для натуральной и структурной семантик соответственно. Транзитивное замыкание \lcode{Transition*} для структурной семантики переименуем в \lcode{Transition-SS*}.
 
   \noindent\begin{minipage}[c]{\linewidth}
   Запишем утверждение об эквивалентности в виде сигнатуры функции:
-  \begin{lstlisting}
-  ss=ns : (s : State) -> (p : S) -> ∀ {s-ss s-ns}
+  \begin{lstlisting}[mathescape]
+  ss=ns : (s : State) -> (p : S) ->  $\forall$ {s-ss s-ns}
       -> (tr-ss : Transition-SS* s p s-ss)
       -> (tr-ns : Transition-NS  s p s-ns)
-      -> s-ss ≡ s-ns
+      -> s-ss $\equiv$ s-ns
   \end{lstlisting}
   \end{minipage}
 
   Расшифровать тип этой функции можно следующим образом: для любых заданных состояний \lcode{s}, \lcode{s-ss}, \lcode{s-ns} и программе \lcode{p}, если есть семантические деревья \lcode{p} с начальным состоянием \lcode{s} и конечными состояниями \lcode{s-ns} и \lcode{s-ss} для натуральной и структурной семантик соответственно, то эти состояния \lcode{s-ns} и \lcode{s-ss} равны.
 
   Приведём доказательство этого утверждения для базового случая, когда после интерпретации в структурной семантике отсутствует остаточная программа:
-  \begin{lstlisting}
-  ss=ns-base : (s : State) -> (p : S) -> ∀ {s-ss s-ns}
+  \begin{lstlisting}[mathescape]
+  ss=ns-base : (s : State) -> (p : S) ->  $\forall$ {s-ss s-ns}
     -> (tr-ss : Transition-SS s p [> s-ss , nothing <])
     -> (tr-ns : Transition-NS s p    s-ns)
-    -> s-ss ≡ s-ns
+    -> s-ss $\equiv$ s-ns
 
   ss=ns-base  .s-ns .skip {.s-ns} {s-ns}
     [skip] [skip] = refl
@@ -561,17 +569,28 @@
 
   Разработка доказательства производилась с использованием тех же средств интерактивного доказательства, что и построение интерпретатора.
 
-  \newpage
   \section*{Заключение}
-  \addcontentsline{toc}{section}{Заключение}
 
   В ходе работы стало ясно, что proof assistants вполне применимы для описания операционных семантик. Удалось задать несколько семантик для тестового языка и построить для них интерпретаторы вместе с частичным доказательством их эквивалентности для данного языка.
 
   Получилось выполнить разработку интерактивно с использованием встроенных в Agda средств: разделения по случаям и автоматического поиска решений. Однако полностью автоматически провести построение не удалось. Планируется в дальнейшем опробовать другие средства, предоставляемые proof assistants, для достижения этой цели: тактики, рефлексию и прочее.
 
-  \newpage
-  \addcontentsline{toc}{section}{Список литературы}
-  \bibliographystyle{elsarticle-num}
-  \bibliography{literature}
+\begin{thebibliography}{99}
+\bibitem{DBLP:conf/tldi/Norell09}
+Ulf Norell. Dependently Typed Programming in Agda. TLDI-2009. pp. 1-2.
 
-\end{document}
+\bibitem{DBLP:conf/tldi/2009}
+Andrew Kennedy, Amal Ahmed. Proceedings of TLDI'09: 2009 ACM SIGPLAN International Workshop
+               on Types in Languages Design and Implementation, Savannah,
+               GA, USA, January 24, 2009.
+
+\bibitem{Pierce:2002:TPL:509043}
+Benjamin C.Pierce. Types and Programming Languages. MIT Press, 2002.
+
+\bibitem{Nielson:1992:SAF:129085}
+Hanne Riis Nielson, Flemming Nielson. Semantics with Applications: a Formal Introduction. John Wiley \& Sons, Inc., 1992.
+
+\bibitem{DBLP:journals/lisp/Strachey00}
+Christopher Strachey. Fundamental Concepts in Programming Languages.
+Higher-Order and Symbolic Computation, Vol. 13, No. 1/2, 2000. pp. 11--49.
+\end{thebibliography}
