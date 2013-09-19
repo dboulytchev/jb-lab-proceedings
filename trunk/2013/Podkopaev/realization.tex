@@ -20,16 +20,29 @@
 Эти шаблоны задают именно такое представление \lstinline{write}”, которого мы добивались в обзоре принтер-библиотек.
 
 \begin{figure}[h!]
-	\begin{subfigure}[h]{0.45\textwidth}
+	\null\hfill
+	\subfloat[]{
 		\lstinputlisting{Podkopaev/codes/writeTmplt1.l}
-		%\caption{\phantom{a}}
-		\label{fig:writeTmplt1}
-	\end{subfigure}
-	\begin{subfigure}[h]{0.45\textwidth}
+		\label{fig:writeTmplt1}	
+	}
+	\hfill
+	\subfloat[]{
 		\lstinputlisting{Podkopaev/codes/writeTmplt2.l}
-		%\caption{\phantom{a}}
 		\label{fig:writeTmplt2}
-	\end{subfigure}
+	}
+	\hfill
+	\null
+
+	% \begin{subfigure}[h]{0.45\textwidth}
+	% 	\lstinputlisting{Podkopaev/codes/writeTmplt1.l}
+	% 	\caption{}
+	% 	\label{fig:writeTmplt1}
+	% \end{subfigure}
+	% \begin{subfigure}[h]{0.45\textwidth}
+	% 	\lstinputlisting{Podkopaev/codes/writeTmplt2.l}
+	% 	\caption{}
+	% 	\label{fig:writeTmplt2}
+	% \end{subfigure}
 	\caption{Шаблоны для конструкции “\lstinline{write}”}
 \end{figure}
 
@@ -37,17 +50,27 @@
 С помощью них можно напечатать дерево, изображенное на рисунке~\ref{fig:nestedIf} (см. рис. \ref{fig:nestedIfCode}).
 
 \begin{figure}[h!]
-	\begin{subfigure}[h]{0.45\textwidth}
+	\subfloat[Однострочный вариант]{
 		\lstinputlisting{Podkopaev/codes/flatGoodIfTmplt.l}
-		\caption{Однострочный вариант}
 		\label{fig:flatGoodIfTmplt}
-	\end{subfigure}
-	
-	\begin{subfigure}[h]{0.45\textwidth}
+	}
+	\hfill
+	\subfloat[Многострочный вариант]{
 		\lstinputlisting{Podkopaev/codes/multBadIfTmplt.l}
-		\caption{Многострочный вариант}
 		\label{fig:multBadIfTmplt}
-	\end{subfigure}
+	}
+	
+	% \begin{subfigure}[h]{0.45\textwidth}
+	% 	\lstinputlisting{Podkopaev/codes/flatGoodIfTmplt.l}
+	% 	\caption{Однострочный вариант}
+	% 	\label{fig:flatGoodIfTmplt}
+	% \end{subfigure}
+	
+	% \begin{subfigure}[h]{0.45\textwidth}
+	% 	\lstinputlisting{Podkopaev/codes/multBadIfTmplt.l}
+	% 	\caption{Многострочный вариант}
+	% 	\label{fig:multBadIfTmplt}
+	% \end{subfigure}
 	\caption{Шаблоны для конструкции “\lstinline{if-then-else}”}
 	\label{fig:ifTmplt}
 \end{figure}

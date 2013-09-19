@@ -1,4 +1,7 @@
 \section*{Введение}
+\addcontentsline{toc}{section}{Введение}
+
+% На данный момент в программных системах самым распространенным представлением информации, которая создается пользователем или демонстрируется ему, является текстовое представление. Оно удобно по многим причинам, но у него есть существенный недостаток - часто без дополнительного стилизирования текстовая информация слишком тяжело воспринимается. При отображении данных для пользователя необходимо явственным образом сохранять изначальную структуру информации. В большинстве случаев такое стилизирование сводится к форматированию текста, то есть добавлению или удалению не несущих информацию символов, другому преобразованию текста без изменения его семантики. Данное преобразование называется \textbf{pretty printing}.
 
 С появлением первых языков программирования особую важность приобрели языковые процессоры. \textbf{Языковой процессор} (\textbf{ЯП}) --- это программное средство, принимающее на вход программу в виде текста на некотором языке (программирования, разметки и т. д.) и решающее определенную задачу над этой программой. К языковым процессорам можно отнести: компиляторы, суперкомпиляторы, интерпретаторы, средства статического анализа кода, декомпиляторы, средства рефакторинга, средства реинжиниринга, интегрированные среды разработки (IDE) и др.
 
@@ -12,7 +15,7 @@
 
 \begin{figure}[h!]
 	\centering
-	% \inputminted{c}{Podkopaev/codes/wikiExUnfor.c}
+	% \inputminted{c}{codes/wikiExUnfor.c}
 	\lstinputlisting[language=C]{Podkopaev/codes/wikiExUnfor.c}
 	\caption{Неформатированный код}
 	\label{fig:wikiExUnfor}
@@ -20,7 +23,7 @@
 
 \begin{figure}[h!]
 	\centering
-	% \inputminted{c}{Podkopaev/codes/wikiExBSD.c}
+	% \inputminted{c}{codes/wikiExBSD.c}
 	\lstinputlisting[language=C]{Podkopaev/codes/wikiExBSD.c}
 	\caption{Форматированный код}
 	\label{fig:wikiExBSD}
@@ -43,7 +46,7 @@
 
 \begin{figure}[h!]
 	\centering
-	% \inputminted{c}{Podkopaev/codes/seqCode1.java}
+	% \inputminted{c}{codes/seqCode1.java}
 	\lstinputlisting[language=Java]{Podkopaev/codes/seqCode1.java}
 	\caption{Последовательные операторы в строчку}
 	\label{fig:seqCode1}
@@ -51,7 +54,7 @@
 
 \begin{figure}[h!]
 	\centering
-	% \inputminted{c}{Podkopaev/codes/seqCode2.java}
+	% \inputminted{c}{codes/seqCode2.java}
 	\lstinputlisting[language=Java]{Podkopaev/codes/seqCode2.java}
 	\caption{Последовательные операторы в несколько строк}
 	\label{fig:seqCode2}
@@ -63,19 +66,15 @@
 Рассмотрим другой пример. Пусть нам нужно текстовое представление синтаксического дерева конструкции “\lstinline{if}”, и заданы шаблоны c рисунков~\ref{fig:ifTemplate2} и \ref{fig:ifTemplate1}, причем вариант, изображенный на рисунке~\ref{fig:ifTemplate2} выбирается в случае, если условие и ветки могут быть напечатаны в одну строчку.
 
 \begin{figure}[h!]
-	\begin{subfigure}[b]{0.45\textwidth}
-		% \inputminted{haskell}{Podkopaev/codes/ifTemplate2.hs}
+	\subfloat[]{
 		\lstinputlisting[language=Haskell]{Podkopaev/codes/ifTemplate2.hs}
-		%\caption{\phantom{a}}
-		\label{fig:ifTemplate2}
-	\end{subfigure}
-	\hspace{1cm}
-	\begin{subfigure}[b]{0.45\textwidth}
-		% \inputminted{haskell}{Podkopaev/codes/ifTemplate1.hs}
+		\label{fig:ifTemplate2}	
+	}
+	\quad
+	\subfloat[]{
 		\lstinputlisting[language=Haskell]{Podkopaev/codes/ifTemplate1.hs}
-		%\caption{\phantom{a}}
-		\label{fig:ifTemplate1}
-	\end{subfigure}
+		\label{fig:ifTemplate1}	
+	}
 	\caption{Представления для конструкции “\lstinline{if}”}
 \end{figure}
 
@@ -83,42 +82,40 @@
 Тогда для деревьев, представленных на рисунках \ref{fig:ifImage1} и \ref{fig:ifImage2}, будут напечатаны коды с рисунков \ref{fig:ifCode1} и \ref{fig:ifCode2} соответственно.
 
 \begin{figure}[h!]
-	\begin{subfigure}[b]{0.60\linewidth}
+	\subfloat[]{
 		\centering
-		\includegraphics[width=\textwidth]{if1}
-		%\caption{\phantom{a}}
+		\includegraphics[width=0.6\textwidth]{if1}
 		\label{fig:ifImage1}
-	\end{subfigure}
-	\hspace{0.5cm}
-	\begin{subfigure}[b]{0.30\linewidth}
+	}
+	\quad
+	\subfloat[]{
 		\centering
-		% \inputminted{haskell}{Podkopaev/codes/ifCode1.hs}
+		% \inputminted{haskell}{codes/ifCode1.hs}
 		\lstinputlisting[language=Haskell]{Podkopaev/codes/ifCode1.hs}
-		%\caption{\phantom{a}}
-		\label{fig:ifCode1}
-	\end{subfigure}
+		\label{fig:ifCode1}	
+	}
 
 	\caption{Использование представления с рис.~\ref{fig:ifTemplate2}}
 \end{figure}
 
-\begin{figure}[h!]
-	\begin{subfigure}[b]{0.60\linewidth}
-		\centering
-		\includegraphics[width=\textwidth]{if2}
-		%\caption{\phantom{a}}
-		\label{fig:ifImage2}
-	\end{subfigure}
-	\hspace{0.5cm}
-	\begin{subfigure}[b]{0.30\linewidth}
-		\centering
-		% \inputminted{haskell}{Podkopaev/codes/ifCode2.hs}
-		\lstinputlisting[language=Haskell]{Podkopaev/codes/ifCode2.hs}
-		%\caption{\phantom{a}}
-		\label{fig:ifCode2}
-	\end{subfigure}
+% \begin{figure}[h!]
+% 	\begin{subfigure}[b]{0.60\linewidth}
+% 		\centering
+% 		\includegraphics[width=\textwidth]{if2}
+% 		\caption{}
+% 		\label{fig:ifImage2}
+% 	\end{subfigure}
+% 	\hspace{0.5cm}
+% 	\begin{subfigure}[b]{0.30\linewidth}
+% 		\centering
+% 		% \inputminted{haskell}{codes/ifCode2.hs}
+% 		\lstinputlisting[language=Haskell]{codes/ifCode2.hs}
+% 		\caption{}
+% 		\label{fig:ifCode2}
+% 	\end{subfigure}
 
-	\caption{Использование представления с рис.~\ref{fig:ifTemplate1}}
-\end{figure}
+% 	\caption{Использование представления с рис.~\ref{fig:ifTemplate1}}
+% \end{figure}
 
 % Постановка задачи
 То, что не существует четких критериев красоты кода, а также отсутствие библиотек, предоставляющих возможность описать принтер в виде, подобном
