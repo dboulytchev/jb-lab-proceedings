@@ -170,10 +170,10 @@ assistants) для описания операционной семантики 
     \newcommand{\whilemacro}[0]{\mbox{while b do p}}
 
     \newcommand{\seqns}[0]{\tree{\rulens{p_1}{s_0}{s_1}}{\rulens{p_2}{s_1}{s_2}}{\rulens{p_1 ; p_2}{s_0}{s_2}}}
-    \newcommand{\ifmacrons}[1]{s_0[b] = true\Rightarrow\tree{\rulens{p_#1}{s_0}{s_#1}}{}
+    \newcommand{\ifmacrons}[1]{\Rightarrow\tree{\rulens{p_#1}{s_0}{s_#1}}{}
                                                             {\rulens{\mbox{if b then $p_1$ else $p_2$}}{s_0}{s_#1}}}
-    \newcommand{\iftruens}[0]{\ifmacrons{1}}
-    \newcommand{\iffalsens}[0]{\ifmacrons{2}}
+    \newcommand{\iftruens}[0]{s_0[b] = true \ifmacrons{1}}
+    \newcommand{\iffalsens}[0]{s_0[b] = false \ifmacrons{2}}
     \newcommand{\whiletruens}[0]{s_0[b] = true\Rightarrow\newline\indent\tree{\rulens{p}{s_0}{s_1}}{\rulens{\whilemacro}{s_1}{s_2}}
                                                             {\rulens{\whilemacro}{s_0}{s_2}}}
     \newcommand{\whilefalsens}[0]{s_0[b] = false\Rightarrow\rulens{\whilemacro}{s_0}{s_0}}
@@ -253,7 +253,7 @@ assistants) для описания операционной семантики 
        \end{tabular}
     \end{align*}
 
-    Здесь \emph{ass}, \emph{skip}, \emph{while-ff} --- элементарные правила, не требующие предпосылок, остальные --- составные.
+    Здесь \emph{ass}, \emph{skip}, \emph{while-2} --- элементарные правила, не требующие предпосылок, остальные --- составные.
 
     Таким образом, каждой программе соответствует \emph{семантическое дерево}, листья которого --- применения элементарных правил, а ветви --- посылки к составным.
 
