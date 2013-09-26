@@ -1,60 +1,14 @@
-%\documentclass[aps,12pt,final,oneside,onecolumn,musixtex,superscriptaddress,centertags]{article} 
-%\usepackage[colorlinks=true,linkcolor=blue,unicode=true]{hyperref}
-%\usepackage[english,russian]{babel}
-%\usepackage[utf8x]{inputenc}
-%\usepackage{supertabular}
-%\usepackage{listings}
-%\usepackage{epigraph}
-%\usepackage{euscript}
-%\usepackage{textcomp}
-%\usepackage{graphicx}
-%\usepackage{amsfonts}
-%\usepackage{amssymb}
-%\usepackage{amsmath}
-%\usepackage{amsthm}
-%\usepackage{cite}
-%\usepackage{ucs}
-
-%\textheight=650pt
-%\topmargin=-40pt
 \lstset{
    escapechar=`,
    basicstyle=\ttfamily\footnotesize,
    extendedchars=\true
 }
 
-%\widowpenalties 1 10000
-
 \newcommand{\ctab}[0]{\indent\indent}
 \newcommand{\ctabd}[0]{\ctab\ctab}
 \newcommand{\ccode}[1]{\mbox{\texttt{#1}}}
 
 \newcommand{\lcode}[1]{\lstinline[basicstyle=\ttfamily\normalsize]{#1}}
-
-%\begin{document}
-%\sloppy
-
-%  \begin{titlepage} 
-%     \begin{center}
-%        \textbf{\Large САНКТ-ПЕТЕРБУРГСКИЙ \\ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ} \\[1.0cm]
-%        \textbf{\large Математико-Механический факультет} \\[0.2cm]
-%        \textbf{\large Кафедра Cистемного Программирования}\\[3.5cm]
-
-%        \textbf{\LARGE Использование proof assistants для описания операционных семантик}\\[1.0cm]
-%        \textbf{\Large Курсовая работа студента 445 группы} \\[0.2cm]
-%        \textbf{\Large Тарана Кирилла Сергеевича} \\[3.5cm]
-
-%        \begin{flushright} \large \emph{Научный руководитель:} \\ к.ф.-м.н. \textsc{Булычев Д. Ю.} \end{flushright}
-%        \begin{flushright} \large \emph{Заведующий кафедрой:}  \\ д.ф.-м.н., профессор \textsc{Терехов А. Н.} \end{flushright}
-%        \vfill 
-
- %       {\large {Санкт-Петербург}} \par
- %       {\large {2013 г.}}
-%     \end{center} 
-%  \end{titlepage}
-
-%  \tableofcontents
-
 
 \title{Использование proof assistants для описания операционных семантик}
 %
@@ -71,7 +25,13 @@
 
 \maketitle              % typeset the title of the contribution
 
-  \section*{Введение}
+\begin{abstract}
+В работе описывается применение средств автоматизации построения доказательств (proof
+assistants) для описания операционной семантики языков программирования и доказательства
+некоторых её свойств.
+\end{abstract}
+
+\section*{Введение}
 
      В данной работе будут рассмотрены возможности систем для интерактивного доказательство теорем (далее \emph{proof assistants}) применительно к описанию операционных семантик --- дедуктивных систем, описывающих поведение программ, написанных на языке программирования.
 
@@ -79,11 +39,11 @@
 
      В то же время, \emph{сертификационное программирование} --- направление, в котором при разработке программы используются формальные описания и доказательства её полезных или других интересных свойств. Появилось это направление в связи с развитием средств для интерактивного доказательства и автоматической проверки теорем. Относительно новое поколение таких средств основано на \emph{зависимых типах} и позволяет совместить программу и доказательство её корректности в одном тексте.
 
-     Цель курсовой работы --- оценить применимость proof assistants в области разработки языков программирования, в частности для:
+     Цель данной работы --- оценить применимость proof assistants в области разработки языков программирования, в частности для:
      \begin{itemize}
         \item описания операционной семантики;
         \item автоматизированной генерации интерпретатора по операционной семантике (встроенными средствами выбранного инструмента);
-        \item доказательствa каких-либо свойств об интерпретации (по возможности автоматического);
+        \item доказательствa каких-либо свойств об интерпретации (по возможности автоматического).
      \end{itemize}
 
   \section{Обзор proof assistants}
@@ -177,7 +137,7 @@
 
      Прежде чем рассмотреть различные proof assistants, необходимо определить понятия \emph{интерактивного} и \emph{автоматического} построения доказательства. \emph{Интерактивным} способом мы будем обозначать взаимодействие пользователя с системой на протяжении всего процесса с целью управления доказательством, а \emph{автоматическим} способом --- взаимодействие, полностью исключающее вмешательство пользователя, кроме формулирования цели (утверждения, теоремы).
 
-  \subsubsection{Coq}
+  \subsubsection{Coq.}
 
      Одна из самых известных и зрелых систем для интерактивного доказательства теорем --- Coq\footnote{http://coq.inria.fr}. Как и все инструменты, рассмотренные в данной работе, Coq использует функциональный язык программирования с зависимыми типами --- Gallina --- для описания структур данных, определения функций и типов.
 
@@ -187,7 +147,7 @@
 
      Coq также позволяет разрабатывать и верифицировать программы на основе одного исходного кода, т.к. обладает механизмом извлечения кода на языках OCaml, Haskell и Scheme из исходных текстов Coq. При этом верификационная информация стирается для большей производительности.
 
-  \subsubsection{Agda}
+  \subsubsection{Agda.}
 
      Система Agda\footnote{http://wiki.portal.chalmers.se/agda} более молодая и имеет меньше средств для автоматизации доказательств.
 
@@ -491,7 +451,7 @@
 
   В то же время Agda по умолчанию производит проверку завершаемости (\emph{termination checking}) для всех своих программ. Следует выключить эту проверку для нашего интерпретатора.
 
-  При этом, \lcode{interpret} для структурной семантики всегда завершается, т.к. вычисляет только один ``шаг'' программы, а остальную часть выдаёт в качестве остаточной программы. Необходимо, реализовать также \lcode{interpret*} для вычисления замыкания \lcode{Transition*}. Для этой функции уже не гарантирована завершаемость, однако в отличие от семантики большого шага мы теперь разделили интерпретатор на две части по признаку завершаемости.
+  При этом, \lcode{interpret} для структурной семантики всегда завершается, т.к. вычисляет только один ``шаг'' программы, а остальную часть выдаёт в качестве остаточной программы. Необходимо реализовать также \lcode{interpret*} для вычисления замыкания \lcode{Transition*}. Для этой функции уже не гарантирована завершаемость, однако в отличие от семантики большого шага мы теперь разделили интерпретатор на две части по признаку завершаемости.
 
   Что касается реализации \lcode{interpret}, то существует возможность выполнить её интерактивно, используя механизмы разделения по случаям (\emph{case split}) и поиска значений типа.
 
@@ -577,12 +537,12 @@
 
 \begin{thebibliography}{99}
 \bibitem{DBLP:conf/tldi/Norell09}
-Ulf Norell. Dependently Typed Programming in Agda. TLDI-2009. pp. 1-2.
+Ulf Norell. Dependently Typed Programming in Agda. International Workshop on Types in Language Design and Implementation, 2009.
 
-\bibitem{DBLP:conf/tldi/2009}
-Andrew Kennedy, Amal Ahmed. Proceedings of TLDI'09: 2009 ACM SIGPLAN International Workshop
-               on Types in Languages Design and Implementation, Savannah,
-               GA, USA, January 24, 2009.
+%\bibitem{DBLP:conf/tldi/2009}
+%Andrew Kennedy, Amal Ahmed. Proceedings of TLDI'09: 2009 ACM SIGPLAN International Workshop
+%               on Types in Languages Design and Implementation, Savannah,
+%               GA, USA, January 24, 2009.
 
 \bibitem{Pierce:2002:TPL:509043}
 Benjamin C.Pierce. Types and Programming Languages. MIT Press, 2002.
@@ -592,5 +552,5 @@ Hanne Riis Nielson, Flemming Nielson. Semantics with Applications: a Formal Intr
 
 \bibitem{DBLP:journals/lisp/Strachey00}
 Christopher Strachey. Fundamental Concepts in Programming Languages.
-Higher-Order and Symbolic Computation, Vol. 13, No. 1/2, 2000. pp. 11--49.
+Higher-Order and Symbolic Computation, Vol. 13, No. 1/2, 2000. 
 \end{thebibliography}
