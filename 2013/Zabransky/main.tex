@@ -32,7 +32,10 @@ language=llang
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-
+В работе описано применение функционализации при анализе потока управления для целей декомпиляции байт-кода JVM.
+Дан обзор основных задач декомпиляции и их особенностей применительно к байт-коду JVM, описано преобразование
+функционализации и его роль в решении задачи анализа потока управления. Описана архитектура реализации и результаты
+применения функционализации для некоторых примеров.
 \end{abstract}
 %
 
@@ -281,7 +284,7 @@ private int f7(i7, j7, k7) {
 
 Разбор байт--кода был реализован с помощью библиотеки ASM\footnote{http://asm.ow2.org}. Данная библиотека позволяет проводить генерацию, преобразование и анализ классов, представленных в виде массива байтов. Для этого ASM предоставляет инструменты для чтения, записи и преобразования таких массивов байтов, используя концептуально более высокий уровень, чем байты, такой как числовые константы, строки, идентификаторы, типы, структурные элементы классов, и т.д. 	
 
-При создании декомпилятора использовалась модель, основанная на событиях (Core API). Класс представляется в виде последовательности событий, каждое событие представляет элемент класса, такой как заголовок, поле, объявление метода, инструкцию и т.п. Данная модель определяет множество возможных событий и порядок, в котором они могут происходить, и представляет собой десериализатор и парсер, который генерирует одно событие на разобранный элемент класса~\cite{asm}.
+При создании декомпилятора использовалась модель, основанная на событиях (Core API). Класс представляется в виде последовательности событий, каждое событие представляет элемент класса, такой как заголовок, поле, объявление метода, инструкцию и т.п. Данная модель определяет множество возможных событий и порядок, в котором они могут происходить, и представляет собой десериализатор и парсер, который генерирует одно событие на разобранный элемент класса.
 
 Таким образом, был реализован синтаксический анализатор байт--кода, были разобраны условные и безусловные переходы, метки инструкций и оператор множественного ветвления switch, что позволяет построить граф потока управления программы. 
 
@@ -476,62 +479,43 @@ DJ Java Decompiler\footnote{http://www.neshkov.com} реализован на о
 
 \bibitem{reengineering}
 К.Н. Долгова, А.В. Чернов. 
-О некоторых задачах обратной инженерии. \\
-URL: \url{http://citforum.ru/security/software/decompilation/}
+О некоторых задачах обратной инженерии. Труды Института системного программирования РАН, том 15, 2008.
 
 \bibitem{controlflow}
-Steven Muchnick. 
-Advanced Compiler Design Implementation.
-Morgan Kaufmann, 1997.
+Steven Muchnick. Advanced Compiler Design Implementation. Morgan Kaufmann, 1997.
 
 \bibitem{decompilation}
-Cristina Cifuentes.
-Reverse Compilation Techniques.
-Queensland University of Technology, Brisbane, 1994.
+Cristina Cifuentes. Reverse Compilation Techniques. PhD Thesis. Queensland University of Technology, Brisbane, 1994.
 
 \bibitem{problems}
 James Hamilton.
-Decompiling Java. \\
-URL: \url{http://jameshamilton.eu/sites/default/files/doc.pdf}
+Decompiling Java. MPhil Transfer Report, Goldsmiths, University of London, 2009.
 
 \bibitem{sheglov}
-К.Е. Щеглов.  
-Обзор алгоритмов декомпиляции. // Электронный журнал <<Исследовано в России>>, 4, 1243-1258 , 2001. 
+К.Е. Щеглов. Обзор алгоритмов декомпиляции. Электронный журнал ``Исследовано в России'', №4, 2001. 
 
 \bibitem{hecht}
 Matthew S. Hecht. Flow Analysis of Computer Programs. Programming Languages Series. Elsevier North-Holland,
 1977.
 
 \bibitem{kasyanov}
-В.П. Касьянов. 
-Оптимизирующие преобразования программ. М., <<Наука>>, 1988.
+В.П. Касьянов. Оптимизирующие преобразования программ. М., ``Наука'', 1988.
 
 \bibitem{pliss}
 О.А. Плисс, К.Д. Волошин.
-Устранение локальных GOTO. \\
-Автоматизированный реинжиниринг программ.
-Изд-во С.-Петербургского университета, 2000 С. 103-109.
+Устранение локальных GOTO. Автоматизированный реинжиниринг программ.
+Изд-во С.-Петербургского университета, 2000.
 
 \bibitem{jvm}
 Tim Lindholm, Frank Yellin, Gilad Bracha, Alex Buckley.
 The Java Virtual Machine Specification.
-Java SE 7 Edition, 2013. \\
-URL: \url{docs.oracle.com/javase/specs/jvms/se7/jvms7.pdf}
+Java SE 7 Edition, 2013.
 
 \bibitem{bytecode}
 Jerome Miecznikowski and Laurie Hendren. 
 Decompiling Java Bytecode: Problems, Traps and Pitfalls. 
-McGill University, 2002.
+11th International Conference on Compiler Construction, 2002.
 
 \bibitem{ssa}
-Andrew W. Appel.
-SSA is Functional Programming.
-ACM SIGPLAN Notices v. 33, no. 4, pp. 17-20, April 1998. \\
-URL: \url{http://www.cs.princeton.edu/~appel/papers/ssafun.pdf}
-
-\bibitem{asm}
-Eric Bruneton.
-ASM 4.0 A Java Bytecode Engineering Library. \\
-URL: \url{http://download.forge.objectweb.org/asm/asm4-guide.pdf}
-
+Andrew W. Appel. SSA is Functional Programming. ACM SIGPLAN Notices, Vol. 33, No. 4, 1998.
 \end{thebibliography}
