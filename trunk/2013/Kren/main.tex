@@ -264,7 +264,7 @@ OCaml\footnote{http://caml.inria.fr} --- современный объектно
 \item Model\_2 --- объект без указателей, хранит массив ``unboxed''--значений.
 Тег у данной модели равен 010.
 
-\item Model\_1 --- объект, расположение и тип указателей в котором представлены массивом смещений(Рис.~\ref{srcond}):
+\item Model\_1 --- объект, расположение и тип указателей в котором представлены массивом смещений(Рис.~\ref{second}):
 \begin{enumerate}
 \item Поле \lstinline{TAG} --- такой же, как и в предыдущих трех моделях. Значение тега равно 001.
 \item Поле \lstinline{SIZE} --- такой же, как и в предыдущих трех моделях.
@@ -592,14 +592,12 @@ return 1;
 языков. Для этого прототипа был приведен пример использования некоторых его функций.
 
 \begin{thebibliography}{99}
-\bibitem{java,}
+\bibitem{java}
 Kris Venstermans, Lieven Eeckhout, Koen de Bosschere.
-Java Object Header Elimination for Reduced Memory Consumption in 64-bit Virtual Machines.
-\end{thebibliography}
+Java Object Header Elimination for Reduced Memory Consumption in 64-bit Virtual Machines. ACM Transactions on Architecture and Code Optimization,
+Vol. 4, Issue 3, 2007.
 
-\begin{thebibliography}{89}
-\bibitem{pHc,}
-Alejandro Caro
-A Novel 64 Bit Data Representation for 
-Garbage Collection and Synchronizing Memory
+\bibitem{pHc}
+Alejandro Caro. A Novel 64-bit Data Representation for Garbage Collection and Synchronizing Memory. Computer Science and Artificial Intelligence Laboratory, 
+Massachusetts Institute of Technology, 1997.
 \end{thebibliography}
