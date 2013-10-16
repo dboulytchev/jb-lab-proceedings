@@ -52,6 +52,10 @@
 \RequirePackage{multicol} % needed for the list of participants, index
 \RequirePackage{aliascnt}
 
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+
 \setlength{\textwidth}{12.2cm}
 \setlength{\textheight}{19.3cm}
 \renewcommand\@pnumwidth{2em}
@@ -954,12 +958,12 @@ to0pt{\kern0.55\wd0\vrule height0.45\ht0\hss}\box0}}}}
     \addtocontents{toc}{\noexpand\protect\noexpand\authcount{\the\c@auco}}%
     \addcontentsline{toc}{author}{\toc@uthor}%
     \if@runhead
-       \if!\the\authorrunning!
-         \value{@inst}=\value{@auth}%
-         \setcounter{@auth}{1}%
-       \else
-         \edef\@author{\the\authorrunning}%
-       \fi
+       %\if!\the\authorrunning!
+       %  \value{@inst}=\value{@auth}%
+       %  \setcounter{@auth}{1}%
+       %\else
+       %  \edef\@author{\the\authorrunning}%
+       %\fi
        \global\setbox\authrun=\hbox{\small\unboldmath\@author\unskip}%
        \ifdim\wd\authrun>\instindent
           \typeout{Names of authors too long for running head. Please supply}%
@@ -969,7 +973,7 @@ to0pt{\kern0.55\wd0\vrule height0.45\ht0\hss}\box0}}}}
           Authors Suppressed Due to Excessive Length}%
        \fi
        \xdef\@author{\copy\authrun}%
-       \markboth{\@author}{\@title}%
+       \markboth{Труды лаборатории JetBrains, выпуск \issue}{\the\titlerunning}%
      \fi
   \endgroup
   \setcounter{footnote}{\fnnstart}%
@@ -1179,10 +1183,10 @@ to0pt{\kern0.55\wd0\vrule height0.45\ht0\hss}\box0}}}}
 
 \def\ps@headings{\let\@mkboth\@gobbletwo
    \let\@oddfoot\@empty\let\@evenfoot\@empty
-   \def\@evenhead{\normalfont\small\rlap{\thepage}\hspace{\headlineindent}%
-                  \leftmark\hfil}
-   \def\@oddhead{\normalfont\small\hfil\rightmark\hspace{\headlineindent}%
-                 \llap{\thepage}}
+   \def\@evenhead{\vbox{\hbox to \textwidth{\normalfont\small\rlap{\thepage}\hspace{\headlineindent}%
+                  \textit{\leftmark}\hfil}\hrule}}
+   \def\@oddhead{\vbox{\hbox to \textwidth{\normalfont\small\hfil\textit{\rightmark}\hspace{\headlineindent}%
+                 \llap{\thepage}}\hrule}}
    \def\chaptermark##1{}%
    \def\sectionmark##1{}%
    \def\subsectionmark##1{}}

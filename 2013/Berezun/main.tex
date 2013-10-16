@@ -100,7 +100,7 @@ language=llang
 \section{Обзор существующих реализаций}
 
 В этом разделе рассматривается реализация процесса построения корневого множества в языке OCaml\footnote{https://www.ocaml.org} и в 
-консервативном сбощике мусора BoehmGC\footnote{http://www.hpl.hp.com/personal/Hans\_Boehm/gc/}.
+консервативном сбощике мусора BoehmGC\footnote{http://www.hpl.hp.com/personal/Hans\_Boehm/gc}.
 
 BoehmGC является одним из самых популярных сбощиков мусора для C/C++. Разумеется, поскольку в языке C не выполнены все требования для 
 реализации сборщика мусора, BoehmGC использует консервативный подход и накладывает дополнительные ограничения на программный код. 
@@ -127,7 +127,8 @@ OCaml является языком программирования, подде
 время от количества элементов в списке. Каждая запись активации в OCaml содержит свой дескриптор, имеющий строго определенную структуру. 
 Сканирование стека происходит следующим образом: с помощью встроенных функций получаются адреса возврата, начиная с последней вызванной функции, 
 по которому получается дескриптор соответствующей записи активации, затем в корневое множество последовательно добавляются все указатели в 
-кучу\footnote{https://github.com/avsm/mirage/blob/master/lib/os/runtime\_xen/ocaml}.
+кучу\footnote{https://github.com/avsm/mirage/blob/master/lib/os/runtime\_xen/\\
+ocaml}.
 
 
 \section{Проделанная работа}
@@ -222,7 +223,8 @@ struct call {
 	const char *function; // $\mbox{имя функции}$
 };
 
-// $\mbox{Структура, представляющая метаинформацию для некоторой функции.}$
+// $\mbox{Структура, представляющая метаинформацию для некоторой }$
+// $\mbox{функции.}$
 typedef struct mm {
 	int len; // $\mbox{количество указателей}$
 // $\mbox{смещение указателей в записи активации относительно указателя}$
@@ -235,8 +237,8 @@ meta_table *f_meta_glob, *f2_meta_glob, *collect_meta_glob;
 // $\mbox{регистр, в котором хранится текущий указатель рамки}$
 // $\mbox{может меняться в зависимости от платформы}$
 register void *rbp_reg asm ("rbp");
-// $\mbox{функция вычисления смещения переменной x относительно указателя}$
-// $\mbox{на текущую рамку}$
+// $\mbox{функция вычисления смещения переменной x относительно}$
+// $\mbox{указателя на текущую рамку}$
 #define OFFS(x) (rbp_reg - (void*)&(x))
 
 // $\mbox{структура, реализующая список;}$
@@ -244,10 +246,10 @@ register void *rbp_reg asm ("rbp");
 typedef struct tag_list List;
 struct tag_list
 {
-	meta_table meta; // $\mbox{метаинформация}$
-	char *function_name; // $\mbox{имя соответствующей функции}$
-	List *next; // $\mbox{указатель на следующий элемент списка}$
-	List *prev; // $\mbox{указатель на предыдущий элемент списка}$
+ meta_table meta; // $\mbox{метаинформация}$
+ char *function_name; // $\mbox{имя соответствующей функции}$
+ List *next; // $\mbox{указатель на следующий элемент списка}$
+ List *prev; // $\mbox{указатель на предыдущий элемент списка}$
 };
 // $\mbox{указатель на начало списка и конец списка}$
 List *list_begin, *list_end;
@@ -256,112 +258,121 @@ int list_size;
 
 // $\mbox{функция добавления элемента в список метаинформации}$
 void add_element_to_the_end(meta_table mt, char *func_name) {
-	List *new_element = (List*)malloc(sizeof(List));
-	new_element->meta = mt;
-	new_element->function_name = func_name;
-	new_element->next = NULL;
-	new_element->prev = list_end;
+ List *new_element = (List*)malloc(sizeof(List));
+ new_element->meta = mt;
+ new_element->function_name = func_name;
+ new_element->next = NULL;
+ new_element->prev = list_end;
 	
-	if (!list_size)	{
-		list_begin = new_element;
-	} else {
-		new_element->prev->next = new_element;
-	}
-	list_size++;
-	list_end = new_element;
+ if (!list_size)
+  list_begin = new_element;
+ else 
+  new_element->prev->next = new_element;
+
+ list_size++;
+ list_end = new_element;
 }
 
 // $\mbox{функция трассировки}$
 int backtrace(struct call trace[], int maxlen) {
-	Dl_info dlinfo;
-	unsigned int i;
+ Dl_info dlinfo;
+ unsigned int i;
 
-	for (i = 0; i < maxlen; ++i) {
-		switch (i) {
-			case 0:
-				if(!__builtin_frame_address(0)) {
-					return i;
-				}
-				trace[i].address = __builtin_return_address(0);
-				break;
-			case 1:
-				if(!__builtin_frame_address(1)) {
-					return i;
-				}
-				trace[i].address = __builtin_return_address(1);
-				break;
-			case 2:
-				if(!__builtin_frame_address(2))
-					return i;
-				trace[i].address = __builtin_return_address(2);
-				break;
-			case 3:
-				if(!__builtin_frame_address(3))
-					return i;
-				trace[i].address = __builtin_return_address(3);
-				break;
-			case 4:
-				if(!__builtin_frame_address(4))
-					return i;
-				trace[i].address = __builtin_return_address(4);
-				break;
-			case 5:
-				if(!__builtin_frame_address(5))
-					return i;
-				trace[i].address = __builtin_return_address(5);
-				break;
-			case 6:
-				if(!__builtin_frame_address(6))
-					return i;
-				trace[i].address = __builtin_return_address(6);
-				break;
-			case 7:
-				if(!__builtin_frame_address(7))
-					return i;
-				trace[i].address = __builtin_return_address(7);
-				break;
-			case 8:
-				if(!__builtin_frame_address(8))
-					return i;
-				trace[i].address = __builtin_return_address(8);
-				break;
-			/* etc */
-			default:
-				return i;
-				break;
-		}
-		if (dladdr(trace[i].address, &dlinfo) != 0) {
-			trace[i].function = dlinfo.dli_sname;
-			trace[i].object = dlinfo.dli_fname;
-		}
-	}
+ for (i = 0; i < maxlen; ++i) {
+  switch (i) {
+   case 0:
+    if(!__builtin_frame_address(0)) 
+     return i;
+    trace[i].address = __builtin_return_address(0);
+    break;
 
-	return i;
+   case 1:
+    if(!__builtin_frame_address(1)) 
+     return i;
+    trace[i].address = __builtin_return_address(1);
+    break;
+
+   case 2:
+    if(!__builtin_frame_address(2))
+     return i;
+    trace[i].address = __builtin_return_address(2);
+    break;
+
+   case 3:
+    if(!__builtin_frame_address(3))
+     return i;
+    trace[i].address = __builtin_return_address(3);
+    break;
+
+   case 4:
+    if(!__builtin_frame_address(4))
+     return i;
+    trace[i].address = __builtin_return_address(4);
+    break;
+
+   case 5:
+    if(!__builtin_frame_address(5))
+     return i;
+    trace[i].address = __builtin_return_address(5);
+    break;
+
+   case 6:
+    if(!__builtin_frame_address(6))
+     return i;
+    trace[i].address = __builtin_return_address(6);
+    break;
+
+   case 7:
+    if(!__builtin_frame_address(7))
+     return i;
+    trace[i].address = __builtin_return_address(7);
+    break;
+
+   case 8:
+    if(!__builtin_frame_address(8))
+     return i;
+    trace[i].address = __builtin_return_address(8);
+    break;
+     
+   /* etc */
+
+   default:
+    return i;
+  }
+
+  if (dladdr(trace[i].address, &dlinfo) != 0) {
+   trace[i].function = dlinfo.dli_sname;
+   trace[i].object = dlinfo.dli_fname;
+  }
+ }
+
+ return i;
 }
 
 void* built_frame_address(unsigned int X) {
-	switch (X){
-		case 0:
-			return __builtin_frame_address(0);
-			break;
-		case 1:
-			return __builtin_frame_address(1);
-			break;
-		case 2:
-			return __builtin_frame_address(2);
-			break;
-		case 3:
-			return __builtin_frame_address(3);
-			break;
-		case 4:
-			return __builtin_frame_address(4);
-			break;
-		case 5:
-			return __builtin_frame_address(5);
-			break;
-		// ect //
-	}
-	return NULL;
+ switch (X){
+  case 0:
+   return __builtin_frame_address(0);
+
+  case 1:
+   return __builtin_frame_address(1);
+
+  case 2:
+   return __builtin_frame_address(2);
+
+  case 3:
+   return __builtin_frame_address(3);
+
+  case 4:
+   return __builtin_frame_address(4);
+
+  case 5:
+   return __builtin_frame_address(5);
+
+  /* etc */
+ }
+
+ return NULL;
 }
 
 // $\mbox{функция, возвращающая метаинформацию по имени функции;}$
@@ -369,169 +380,166 @@ void* built_frame_address(unsigned int X) {
 // $\mbox{возвращается специальный объект meta\_table, }$
 // $\mbox{у которого поле len равно -1}$
 meta_table get_meta(char *func_name) {
-	List *list_iterator = list_begin;
-	meta_table mt;
-	mt.len = -1;
+ List *list_iterator = list_begin;
+ meta_table mt;
+ mt.len = -1;
 
-	// $\mbox{обход списка метаинформаций}$
-	while (list_iterator != NULL) {
-		if (strcmp(list_iterator->function_name, func_name) == 0) {
-			return list_iterator->meta;
-		}
-		list_iterator = list_iterator->next;
-	}
+ // $\mbox{обход списка метаинформаций}$
+ while (list_iterator != NULL) {
+  if (strcmp(list_iterator->function_name, func_name) == 0) 
+   return list_iterator->meta;		
+  list_iterator = list_iterator->next;
+ }
 	
-	return mt;
+ return mt;
 }
 
 // $\mbox{печать метаинформации по имени функции}$
 void print_meta(char *name) {
-	int i = 0;
-	meta_table meta = get_meta(name);
+ int i = 0;
+ meta_table meta = get_meta(name);
 	
-	if (meta.len != -1) {
-		for (i = 0; i < meta.len; i++) {
-			printf(" offset[%i] = %li,", i, meta.offsets[i]);
-		}
-	} else {
-		printf("No meta data defined for this function");
-	}
-	
+ if (meta.len != -1) {
+  for (i = 0; i < meta.len; i++) 
+   printf(" offset[%i] = %li,", i, meta.offsets[i]);
+ else 
+  printf("No meta data defined for this function");	
 }
 
 // $\mbox{функция построения корневого множества}$
 void collect() {
-	printf("\ncollect starts\n");
-	meta_table** meta = (meta_table**)alloca(sizeof(meta_table*));
-	*meta = &collect_meta_glob;
+ printf("\ncollect starts\n");
+ meta_table** meta = (meta_table**)alloca(sizeof(meta_table*));
+ *meta = &collect_meta_glob;
 
-	// $\mbox{выполняем трассировку}$
-	struct call trace[CALLSTACK_MAXLEN];
-	unsigned int i = 0;
-	int depth = backtrace(trace, CALLSTACK_MAXLEN);
+ // $\mbox{выполняем трассировку}$
+ struct call trace[CALLSTACK_MAXLEN];
+ unsigned int i = 0;
+ int depth = backtrace(trace, CALLSTACK_MAXLEN);
 	
-	printf("functions in stack:\n");
-	// $\mbox{выводим информацию, полученную в результате трассировки}$
-	for (i = 0; i < depth; ++i) {
-		printf("%s: ", trace[i].function);
-		printf(" fp = %p, ", built_frame_address(i + 1));
-		print_meta(trace[i].function);
-		printf("\n");
-	}	
-	
-	printf("\ncollect end\n\n");
+ printf("functions in stack:\n");
+ // $\mbox{выводим информацию, полученную в результате трассировки}$
+ for (i = 0; i < depth; ++i) {
+  printf("%s: ", trace[i].function);
+  printf(" fp = %p, ", built_frame_address(i + 1));
+  print_meta(trace[i].function);
+  printf("\n");
+ }	
+
+ printf("\ncollect end\n\n");
 }
 
 // $\mbox{функция вычисления метаинформации для функции f;}$
 // $\mbox{последний параметр функции - вычисляемые метаданные}$
 int f_meta_calc (int *a, int b, int *c, meta_table* meta) {
-// $\mbox{инициализация всех переменных, которые заводятся в функции f;}$
-// $\mbox{порядок следования аргументов и переменных у функции f и f\_meta\_calc}$
-// $\mbox{должен быть одинаковый}$
-	int z = 0;
-	int z1 = 0;
-	int z2 = 0;
-	int *p;
-	int *q; 
+// $\mbox{инициализация всех переменных, которые заводятся}$
+// $\mbox{в функции f; порядок следования аргументов и}$
+// $\mbox{переменных у функции f и f\_meta\_calc}$
+// $\mbox{должен быть одинаковый.}$
+ int z = 0;
+ int z1 = 0;
+ int z2 = 0;
+ int *p;
+ int *q; 
 
-	// $\mbox{ручное заполнение метаинформации}$
-	meta->len = 4;
-	meta->offsets = (long*)malloc(sizeof(long) * meta->len);
-	meta->offsets[0] = OFFS(a);
-	meta->offsets[1] = OFFS(c);
-	meta->offsets[2] = OFFS(p);
-	meta->offsets[3] = OFFS(q);
+ // $\mbox{ручное заполнение метаинформации}$
+ meta->len = 4;
+ meta->offsets = (long*)malloc(sizeof(long) * meta->len);
+ meta->offsets[0] = OFFS(a);
+ meta->offsets[1] = OFFS(c);
+ meta->offsets[2] = OFFS(p);
+ meta->offsets[3] = OFFS(q);
 
-	// $\mbox{печать построенной метаинформации}$
-	printf("\nf_meta_calc starts:\n");
-	printf ("  a %li \n", OFFS(a));
-	printf ("  c %li \n", OFFS(c));
-	printf ("  p %li \n", OFFS(p));
-	printf ("  q %li \n\n", OFFS(q));
-	printf("\nf_meta_calc end\n");
-	return 0;
+ // $\mbox{печать построенной метаинформации}$
+ printf("\nf_meta_calc starts:\n");
+ printf ("  a %li \n", OFFS(a));
+ printf ("  c %li \n", OFFS(c));
+ printf ("  p %li \n", OFFS(p));
+ printf ("  q %li \n\n", OFFS(q));
+ printf("\nf_meta_calc end\n");
+ return 0;
 }
 
 // $\mbox{вычисление метаинформации для функции f2;}$
 // $\mbox{аналогична предыдущей функции}$
 int f2_meta_calc (int *a, meta_table *meta) {
-	int y = 0;
-	int w = 0;
-	int e = 2;
+ int y = 0;
+ int w = 0;
+ int e = 2;
 
-	meta->len = 1;
-	meta->offsets = (long*)malloc(sizeof(long) * meta->len);
-	meta->offsets[0] = OFFS(a);
-	meta2 = (long)meta;
-
-	printf ("\nf2 meta calc starts: \n");
-	printf ("  a %li\n", OFFS(a));
-	printf ("\nf2 meta calc end. \n");
-	return 0;
+ meta->len = 1;
+ meta->offsets = (long*)malloc(sizeof(long) * meta->len);
+ meta->offsets[0] = OFFS(a);
+ meta2 = (long)meta;
+ 
+ printf ("\nf2 meta calc starts: \n");
+ printf ("  a %li\n", OFFS(a));
+ printf ("\nf2 meta calc end. \n");
+ return 0;
 }
 
 // $\mbox{функция инициализации;}$
 // $\mbox{вычисляет метаинформацию для всех функций}$
 void init () {
-	list_begin = list_end = NULL;
-	list_size = 0;
-	meta_table f_meta, f2_meta;
+ list_begin = list_end = NULL;
+ list_size = 0;
+ meta_table f_meta, f2_meta;
 	
-	// $\mbox{вычисление метаинформации функций f и f2}$
-	f_meta_calc(0, 0, 0, &f_meta);
-	f2_meta_calc (0, &f2_meta);
+ // $\mbox{вычисление метаинформации функций f и f2}$
+ f_meta_calc(0, 0, 0, &f_meta);
+ f2_meta_calc (0, &f2_meta);
 	
-	// $\mbox{добавление метаинформации в список}$
-	add_element_to_the_end(f_meta, "f");
-	add_element_to_the_end(f2_meta, "f2");
+ // $\mbox{добавление метаинформации в список}$
+ add_element_to_the_end(f_meta, "f");
+ add_element_to_the_end(f2_meta, "f2");
 } 
  
 // $\mbox{пользовательская функция}$
 int f (int *a, int b, int *c) {
-	printf("\nf starts:\n");
-	int z = 0;
-	int z1 = 0;
-	int z2 = 0;
-	int *p;
-	int *q;
+ printf("\nf starts:\n");
+ int z = 0;
+ int z1 = 0;
+ int z2 = 0;
+ int *p;
+ int *q;
 
-	// $\mbox{некоторый код}$
+ // $\mbox{некоторый код}$
      
-	// $\mbox{вывод смещений указателей относительно указателя рамки;}$
-	printf("rbp %p %p\n", rbp_reg, __builtin_frame_address(0));
-	printf ("a %li \n", rbp_reg - (void*) &a);
-	printf ("c %li \n", rbp_reg - (void*) &c);
-	printf ("p %li \n", rbp_reg - (void*) &p);
-	printf ("q %li \n", rbp_reg - (void*) &q);
-
-	printf("\n f end \n");
-	f2(a);
+ // $\mbox{вывод смещений указателей относительно указателя рамки;}$
+ printf("rbp %p %p\n", rbp_reg, __builtin_frame_address(0));
+ printf ("a %li \n", rbp_reg - (void*) &a);
+ printf ("c %li \n", rbp_reg - (void*) &c);
+ printf ("p %li \n", rbp_reg - (void*) &p);
+ printf ("q %li \n", rbp_reg - (void*) &q);
+ 
+ printf("\n f end \n");
+ f2(a);
 }
 
 // $\mbox{пользовательская функция}$
 int f2 (int*q) {
-	int y = 0;
-	int w = q[1];
-	int e = 2;
+ int y = 0;
+ int w = q[1];
+ int e = 2;
 	
-	printf("\nf2 starts\n");
-	printf("rbp %p %p\n", rbp_reg, __builtin_frame_address(0));
-	printf ("q %li \n", OFFS(q));
-	printf("\nf2 finish\n");
+ printf("\nf2 starts\n");
+ printf("rbp %p %p\n", rbp_reg, __builtin_frame_address(0));
+ printf ("q %li \n", OFFS(q));
+ printf("\nf2 finish\n");
 
-	collect();
+ collect();
 }
 
 int main (int argc, char **argv) {
-	printf("main rbp %p\n", rbp_reg);
-	int n;
-	int * mas = (int*)malloc(sizeof(int) * 4);
+ printf("main rbp %p\n", rbp_reg);
+ int n;
+ int * mas = (int*)malloc(sizeof(int) * 4);
 
-	init ();
+ init ();
 
-	f(mas, mas, mas);
+ f(mas, mas, mas);
   
-	return 0;
+ return 0;
 }
 \end{lstlisting}
 

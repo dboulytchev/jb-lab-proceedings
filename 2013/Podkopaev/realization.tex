@@ -113,52 +113,41 @@
 На этапе, когда уже имеются необходимые образцы, происходит их сопоставление с синтаксическим деревом, переданным на печать.
 Псевдокод алгоритма приведен ниже (см. рис. \ref{fig:comparePseudoCode}).
 
-\begin{figure}[h!]
+\begin{figure}
+        \small
 	\begin{algorithmic}
 		\State{H --- ассоциативный массив, связывает деревья с их текстовым представлением}
 		\State{M --- набор образцов для языковых конструкций}
-
-		\State{ }
-		\State{Комментарий: По дереву строит его текстовое представление}
+		\State{По дереву строит его текстовое представление}
 		\Function{print}{$tree$}
-			\If{$tree \in H$}
-				\State\Return{$H[tree]$}
-			\Else
-				\State{Вызов print для поддеревьев $tree$}
-				\State\Return{\Call{templateIter}{$tree$}}
+			\If{$tree \in H$}{ }\Return{$H[tree]$}
+			\Else { Вызов print для поддеревьев $tree$}
+			      {    }\State\Return{\Call{templateIter}{$tree$}}
 			\EndIf
 		\EndFunction
-
-		\State{ }
-		\State{Комментарий: Перебирает все образцы и пытается их применить к дереву}
+		\State{Перебирает все образцы и пытается их применить к дереву}
 		\Function{templateIter}{$tree$}
 			\ForAll{$(templateTree, text) \in M$}
-				\State{Комментарий: В случае исключения, переходит к новому элементу $M$}
+				\State{В случае исключения, переходит к новому элементу $M$}
 				\State{$list$ := \Call{templateCompare}{$tree, templateTree$}}
 				\State{$H[tree]$ := построенное представление для $tree$ по $list$ и $text$}
 				\State\Return{$H[tree]$}
 			\EndFor
 		\EndFunction
-
-		\State{ }
-		\State{Комментарий: Возвращает список координат метки в тексте шаблона и соответствующее текстовое представление поддерева}
+		\State{Возвращает список координат метки в тексте шаблона и соответствующее текстовое представление поддерева}
 		\Function{templateCompare}{$tree, templateTree$}
 			\If{$tree$ и $templateTree$ одного типа}
 				\State{Вызвать $templateCompare$ для соответствующих поддеревьев}
 				\State\Return{соединенный список результатов вызова для поддеревьев}
 			\EndIf
-
 			\If{$templateTree$ является меткой}
 				\If{$H[tree]$ соответствует ограничениям метки}
 					\State\Return{$[($координаты метки$, H[tree])]$}
-				\Else
-					\State{создать исключение}
+				\Else{ создать исключение}
 				\EndIf
 			\EndIf
-
 			\State{Создать исключение, т.к. переданные деревья разной структуры}
-		\EndFunction
-		
+		\EndFunction		
 	\end{algorithmic}
 	\caption{Псевдокод сопоставления дерева с набором образцов}
 	\label{fig:comparePseudoCode}

@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass[runningheads]{jblab}
 
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
@@ -22,11 +22,21 @@
 \usepackage{ucs}
 \usepackage[caption=false]{subfig}
 
-\paperwidth=14.8cm
-\paperheight=21cm
+\pdfpagewidth=14.8cm
+\pdfpageheight=21cm
+
+\textwidth=10cm
+\textheight=15cm
+
+\oddsidemargin=0pt
+\evensidemargin=0pt
+
+\topmargin=0pt
+
 
 \begin{document}
 
+\newcommand{\issue}[0]{1}
 \sloppy
 
 \begin{titlepage}
@@ -34,19 +44,16 @@
 \centering
 
 \includegraphics[width=4cm]{JBLogoWhite.png}
-
-\vskip 4cm
-
-\mbox{\LARGE{\textsc{Труды лаборатории языковых инструментов}}}
+\vskip 2cm
+\mbox{\Large{\textsc{Труды лаборатории}}}
 \vskip 0.5cm
-
-\mbox{\LARGE{\textsc{компании JetBrains}}}
-\vskip 3cm
-
-\Large{Выпуск 1}
-\vskip 7cm
-
-\Large{Санкт-Петербург, 2013}
+\mbox{\Large{\textsc{языковых инструментов}}}
+\vskip 0.5cm
+\mbox{\Large{\textsc{компании JetBrains}}}
+\vskip 2cm
+\large{Выпуск \issue}
+\vskip 6cm
+\large{Санкт-Петербург, 2013}
 \end{titlepage}
 
 \chapter*{Предисловие}

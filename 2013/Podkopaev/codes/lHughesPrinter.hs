@@ -4,7 +4,8 @@ docFromOperation (varName `Assignment` exp) =
 	sep[(text varName) <+> (text "="), docFromExpression exp]
 
 docFromOperation (leftOp `Sequence` rightOp) =
-	sep[(docFromOperation leftOp) <> (text ";"), docFromOperation rightOp]
+	sep[(docFromOperation leftOp) <> (text ";"), 
+            docFromOperation rightOp]
 
 docFromOperation (IfThenElse exp trueOp falseOp) =
 	(text "if") <+> sep[(docFromExpression exp),
