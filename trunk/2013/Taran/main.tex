@@ -1,22 +1,30 @@
 \lstset{
    escapechar=`,
-   basicstyle=\ttfamily\footnotesize,
    extendedchars=\true,
-   keywords={}
+   keywords={},
+   sensitive=true,
+   basicstyle=\small,
+   commentstyle=\scriptsize\rmfamily,
+   keywordstyle=\ttfamily\underbar,
+   identifierstyle=\ttfamily,
+   basewidth={0.5em,0.5em},
+   columns=fixed,
+   fontadjust=true,
+   literate={->}{{$\to$}}1 {>>}{{$\gg$}}1 {<<}{{$\ll$}}1
 }
 
 \newcommand{\ctab}[0]{\indent\indent}
 \newcommand{\ctabd}[0]{\ctab\ctab}
 \newcommand{\ccode}[1]{\mbox{\texttt{#1}}}
 
-\newcommand{\lcode}[1]{\lstinline[basicstyle=\ttfamily\normalsize]{#1}}
+\newcommand{\lcode}[1]{\lstinline{#1}}
 
 \title{Использование proof assistants для описания операционных семантик}
 %
 \titlerunning{Использование proof assistants}
 \author{Таран Кирилл Сергеевич}
 %
-\authorrunning{К.С.Таран} % abbreviated author list (for running head)
+%\authorrunning{К.С.Таран} % abbreviated author list (for running head)
 %
 %%%% list of authors for the TOC (use if author list has to be modified)
 \tocauthor{К.С.Таран}
@@ -31,6 +39,8 @@
 assistants) для описания операционной семантики языков программирования и доказательства
 некоторых её свойств.
 \end{abstract}
+
+\vskip 5mm
 
 \section*{Введение}
 
@@ -120,6 +130,7 @@ assistants) для описания операционной семантики 
 
      В рамках соответствия Карри-Говарда следующие структурные элементы рассматриваются как аналогичные:
      \begin{align*}
+        \small
         \begin{tabular}{l || r}
            высказывание $P$                & тип \ccode{P}         \\
            доказательство высказывания $P$ & терм типа \ccode{P}   \\
@@ -188,11 +199,10 @@ assistants) для описания операционной семантики 
 
     \emph{Операционная семантика}\cite{Nielson:1992:SAF:129085} программы задаёт отношение на множестве состояний и определяется набором правил вывода.
 
-    \vspace{4mm}
     Обозначения следующие:
     \begin{align*}
-       \begin{tabular}{ p{3cm} || p{10cm} }
-          $<S; s> \to  s'$ & программа $S$ переводит состояние $s$ в $s'$ \\
+       \begin{tabular}{ p{3cm} || p{6cm} }
+          $<S; s> \to  s'$ & программа $S$ переводит состояние $s$ в состояние $s'$ \\
           \hline
           $s[k \mapsto v]$ & модификация состояния $s$                    \\
                            & присвоение значения $v$ переменной $k$       \\
@@ -202,7 +212,7 @@ assistants) для описания операционной семантики 
         \end{tabular}
     \end{align*}
 
-  \newcommand{\KWhile}[0]{{\large While}}
+  \newcommand{\KWhile}[0]{{\bf While}}
   \subsection{Язык \KWhile}
 
     \newcommand{\Num}[0]{{\bf Num}}
@@ -222,24 +232,22 @@ assistants) для описания операционной семантики 
        \item категория \Stm \ccode{ }инструкций языка \KWhile \ccode{ }и мета-переменная $S$.
     \end{itemize}
     
-    \vspace{4mm}
     Далее приведём синтаксис в форме Бэкуса --- Наура:
 
-    \newcommand{\sep}[0]{\hspace{4mm} | \hspace{4mm}}
-    \begin{itemize}
-    \item[] $a ::= n            \sep x             \sep a_1 + a_2 \sep a_1 * a_2    \sep a_1 - a_2                     $
-    \item[] $b ::= \ccode{true} \sep \ccode{false} \sep a_1 = a_2 \sep a_1 \leq a_2 \sep \neg b    \sep b_1 \wedge b_2 $
-    \item[] $S ::= x := a       \sep \ccode{skip}  \sep S_1 \ccode{ ; } S_2
-                                \sep \ccode{if } b_1 \ccode{ then } S_1 \ccode{ else } S_2$
-    
-                 \hspace{8cm} $ \sep \ccode{while } b \ccode{ do } S $
-    \end{itemize}
+    $$
+    \begin{array}{rcl}
+      a&::=&n\mid x \mid a_1 + a_2 \mid a_1 * a_2 \mid a_1 - a_2\\
+      b&::=&\ccode{true} \mid \ccode{false} \mid a_1 = a_2 \mid a_1 \leq a_2 \mid \neg b \mid b_1 \wedge b_2\\
+      S&::=&x := a \mid \ccode{skip}  \mid S_1 \ccode{ ; } S_2\mid\\
+       && \ccode{if } b_1 \ccode{ then } S_1 \ccode{ else } S_2 \mid \ccode{while } b \ccode{ do } S 
+    \end{array}
+    $$
 
   \subsection{Примеры правил}
 
     Приведём правила операционной семантики \emph{большого шага}:
     \begin{align*}
-       \begin{tabular}{ p{3cm} || p{10cm} }
+       \begin{tabular}{ p{1.5cm} || p{7.5cm} }
           ass (``:='') & $\assign$ \\
           \hline
           seq (``;'')  & $\seqns$ \\
@@ -258,10 +266,9 @@ assistants) для описания операционной семантики 
 
     Таким образом, каждой программе соответствует \emph{семантическое дерево}, листья которого --- применения элементарных правил, а ветви --- посылки к составным.
 
-    \vspace{4mm}
     Кроме операционной семантики большого шага (она же \emph{натуральная} семантика) существует понятие операционной семантики \emph{малого шага}, или \emph{структурной}. В этой семантике переходам между состояниями разрешено иметь остаточную программу, за счёт чего упрощаются правила и исчезают правила с двумя посылками.
     \begin{align*}
-       \begin{tabular}{ p{3cm} || p{10cm} }
+       \begin{tabular}{ p{1.5cm} || p{7.5cm} }
           ass (``:='')  & $\assign$  \\
           \hline
           seq (``;'')   & 1. $\seqssn$ \\
@@ -324,14 +331,15 @@ assistants) для описания операционной семантики 
 
   Не будем приводить их определения, но укажем типы:
      \begin{align*}
+        \small
         \begin{tabular}{l || r}
-           \lstinline{_|>_   : Binding -> State -> State} &
+           \lstinline{_ |> _   : Binding -> State -> State} &
               установка значения переменной \\
-           \lstinline{_<|_   : State -> V -> N}           &
+           \lstinline{_ <| _   : State -> V -> N}           &
               получение значения переменной \\
-           \lstinline{_[[_]] : State -> Aexp -> N}        &
+           \lstinline{_ [[ _ ]] : State -> Aexp -> N}        &
               вычисление выражения \\
-           \lstinline{_<<_>> : State -> Bexp -> Bool}     & 
+           \lstinline{_ << _ >> : State -> Bexp -> Bool}     & 
               вычисление выражения \\
         \end{tabular}
      \end{align*}

@@ -126,9 +126,9 @@
 \item Наихудший подходящий: выбирается блок, который имеет наибольший размер.
 \end{itemize}  
 
-Далее приведен алгоритм работы такого выделения памяти.
+На следующей странице приведен алгоритм работы такого выделения памяти.
 
-\begin{algorithm}[H]
+\begin{algorithm}
 \begin{algorithmic}[1]
 \State $curr\gets heapBegin$
 \State $result\gets null$
@@ -160,7 +160,7 @@
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[H]
+\begin{algorithm}
 \begin{algorithmic}[1]
 \State $block\gets (ptr - headerSize)$
 \State $block.isFree\gets \textbf{true}$
@@ -258,9 +258,13 @@
 получить адрес данных, и относительно него с помощью смещения посчитать адрес объекта. 
 
 Для того чтобы было удобно осуществлять саму компактификацию, соединим дескрипторы в связный список, отсортированыый по возрастанию адреса в памяти
-соответсвующего блока с данными. Алгоритм компактификации будет следующим:
+соответсвующего блока с данными. Алгоритм компактификации приведен в начале следующей страницы. Здесь $handlesBegin$ --- начало списка дескрипторов, $copy(dest, source, size)$ копирует
+$size$ байт из $source$ в $dest$, $addBack(data, size)$ добавляет в конец списка
+новый дескриптор для блока с данными в $data$ и размером $size$, а $remove$ удаляет
+дескриптор из списка.
 
-\begin{algorithm}[H]
+
+\begin{algorithm}
 \begin{algorithmic}[1]
 \State $threshold\gets null$
 \State $curr\gets handlesBegin$
@@ -281,11 +285,6 @@
 \end{algorithmic}
 \caption{Compact}
 \end{algorithm}
-
-Здесь $handlesBegin$ --- начало списка дескрипторов, $copy(dest, source, size)$ копирует
-$size$ байт из $source$ в $dest$, $addBack(data, size)$ добавляет в конец списка
-новый дескриптор для блока с данными в $data$ и размером $size$, а $remove$ удаляет
-дескриптор из списка.
 
 
 \section{Результаты}
