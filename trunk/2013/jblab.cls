@@ -973,7 +973,7 @@ to0pt{\kern0.55\wd0\vrule height0.45\ht0\hss}\box0}}}}
           Authors Suppressed Due to Excessive Length}%
        \fi
        \xdef\@author{\copy\authrun}%
-       \markboth{Труды лаборатории JetBrains, выпуск \issue}{\the\titlerunning}%
+       \markboth{Труды лаборатории JetBrains, выпуск \Issue}{\the\titlerunning}%
      \fi
   \endgroup
   \setcounter{footnote}{\fnnstart}%
