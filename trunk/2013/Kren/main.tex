@@ -314,9 +314,10 @@ OCaml\footnote{http://caml.inria.fr} --- современный объектно
 # include <stdio.h>
 # include <prototype.h>
 
-// $\mbox{функция с переменным числом аргументов, записывающая рабочих в структуру;}$
-// $\mbox{имя рабочего записывается в паре с его идентификационным номером}$
-// $\mbox{параметры функции: структура, хранящая рабочих и идекс рабочего,}$
+// $\mbox{функция с переменным числом аргументов, записывающая}$
+// $\mbox{рабочих в структуру; имя рабочего записывается в паре}$
+// $\mbox{с его идентификационным номером. Параметры функции:}$
+// $\mbox{структура, хранящая рабочих и идекс рабочего,}$
 // $\mbox{количество добавляемых рабочих, имена}$
 
 void  add_workers(void * list,int count, ...) { 
@@ -335,8 +336,8 @@ void  add_workers(void * list,int count, ...) {
       if ( get_word(list, j) == 0)  
       break;
     }
-    if( j == len) {  // $\mbox{случай, когда возвращается индекс последнего слова}$
-      return;        // $\mbox{без записи}$
+    if( j == len) {  // $\mbox{случай, когда возвращается индекс}$
+      return;        // $\mbox{ последнего слова без записи}$
     }
     else {  // $\mbox{случай, когда есть свободные ячейки}$
         // $\mbox{запись индекса и имени работника \texttt{count} раз}$
@@ -350,14 +351,16 @@ void  add_workers(void * list,int count, ...) {
           set_word(list, j, (j+1)/2 );
           // $\mbox{запись указателя на объект с именем рабочего}$
           set_ptr(list, j+1, name);  
-          j+=2;  // $\mbox{индекс увеличивается на 2 из-за попарного заполнения слов}$
+          j+=2;  // $\mbox{индекс увеличивается на 2 из-за попарного}$
+                 // $\mbox{заполнения слов}$
          }
         }
   }
   return;
 }
 // $\mbox{функция записи имени в объект}$
-void  create_name(char * name, void * res) {  // $\mbox{параметры: имя, объект}$
+// $\mbox{параметры: имя, объект}$
+void  create_name(char * name, void * res){
   size_t len = strlen(name); // $\mbox{вычисляется длина имени}$
   size_t i = 1;  // $\mbox{создается итератор по имени}$
   for (; i < len + 1; i++) {
@@ -367,9 +370,10 @@ void  create_name(char * name, void * res) {  // $\mbox{параметры: им
   return;
 }
 
-// $\mbox{функция с переменным числом аргументов, записывающая клиентов в ``boxed''--массив;}$
-// $\mbox{параметры функции: массив, хранящий указатели на объекты с именами клиентов,}$
-// $\mbox{количество добавляемых клиентов, их имена}$
+// $\mbox{функция с переменным числом аргументов, записывающая}$
+// $\mbox{клиентов в ``boxed''--массив; параметры функции:}$
+// $\mbox{массив, хранящий указатели на объекты с именами}$
+// $\mbox{клиентов, количество добавляемых клиентов, их имена}$
 void  add_client(void * list, size_t count, ...) {
     va_list args;
     va_start (args, count);
@@ -386,8 +390,8 @@ void  add_client(void * list, size_t count, ...) {
             if (get_word(list, j) == 0)
                break;
         }
-        if( j == len) {  // $\mbox{случай, когда возвращается индекс последнего слова}$
-          return;        // $\mbox{без записи}$
+        if( j == len) {// $\mbox{случай, когда возвращается индекс}$
+          return;      // $\mbox{последнего слова без записи}$
         }
         else {  // $\mbox{случай, когда есть свободные ячейки}$
                 // $\mbox{запись имени работника count раз}$
@@ -395,8 +399,9 @@ void  add_client(void * list, size_t count, ...) {
               // $\mbox{берется следующее имя из параметров функции}$
               char * namels = va_arg(args, char *);
               // $\mbox{выделение памяти под объект с именем}$
-              void * name = create_generic_object(strlen(namels), 0);  
-              create_name(namels,name);  // $\mbox{запись имени в объект}$
+              void * name = create_generic_object(strlen(namels), 
+                                                  0);  
+              create_name(namels,name);// $\mbox{запись имени в объект}$
               // $\mbox{запись указателя на объект с именем клиента}$
               set_ptr(list, j, name);
               j++;
@@ -406,8 +411,9 @@ void  add_client(void * list, size_t count, ...) {
     return;
 }
 
-// $\mbox{функция с переменным числом аргументов, выполняющая выборку клинтов;}$
-// $\mbox{выборка производится из массива ``boxed''--указателей на списки клиентов}$
+// $\mbox{функция с переменным числом аргументов, выполняющая}$
+// $\mbox{выборку клинтов; выборка производится из массива}$
+// $\mbox{``boxed''--указателей на списки клиентов}$
 // $\mbox{первых \texttt{count}--рабочих, по букве \texttt{ch}}$
 void * select_client(void * list_client_allworkers,
                      char ch, size_t count, ...)  {  
@@ -419,20 +425,24 @@ void * select_client(void * list_client_allworkers,
   size_t i = 1;  // $\mbox{итератор по всем спискам клиентов}$
   size_t past = 1;  // $\mbox{счетчик записей имен}$
   for ( ; i < count + 1; i++) {
-    // $\mbox{возвращает количество имен на букву \texttt{ch} из списка клиентов рабочего с таким \texttt{id}}$
+    // $\mbox{возвращает количество имен на букву \texttt{ch} из списка клиентов}$
+    // $\mbox{рабочего с таким \texttt{id}}$
     all_num += get_num_name(list_client_allworkers, i, ch);   
   }
   list_cl = create_boxed_array(all_num);  // $\mbox{выделяется память под массив}$
   i = 1;
   for ( ; i < count + 1; i++) {
     // $\mbox{запись указателей на объекты с нужными именами}$
-    past = paste_name(list_cl, list_client_allworkers, i, past, ch);
+    past = paste_name(list_cl, list_client_allworkers, i, 
+                      past, ch);
   }
   return list_cl;
 }
 
-// $\mbox{возвращает количество имен на букву \texttt{let} из списка клиентов рабочего с таким \texttt{id}}$
-size_t get_num_name(void * list_client_allworkers, size_t id, char let) {
+// $\mbox{возвращает количество имен на букву \texttt{let} из списка клиентов}$
+// $\mbox{рабочего с таким \texttt{id}}$
+size_t get_num_name(void * list_client_allworkers, 
+                   size_t id, char let) {
 void * ls_i = ((void *)get_word(list_client_allworkers, id));
 size_t count = get_size(ls_i);
 size_t i = 1;
@@ -455,7 +465,8 @@ size_t start_letter(void * obj, char  let) {
 }
 // $\mbox{функция записывает в \texttt{list\_cl} клиентов на заданную букву \texttt{let} и}$
 // $\mbox{возвращает количество сделаных записей;}$
-// $\mbox{аргументы: результирующий массив, массив клиентов, индекс клиента, буква}$
+// $\mbox{аргументы: результирующий массив, массив клиентов,}$
+// $\mbox{индекс клиента, буква}$
 size_t paste_name(void * list_cl, void * list, size_t n,
 size_t j, char let) {
 void * ls_i = (void *)get_word(list,n);
