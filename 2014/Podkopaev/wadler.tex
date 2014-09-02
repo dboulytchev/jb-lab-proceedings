@@ -1,0 +1,44 @@
+\newpage
+
+\subsection{Принтер-комбинаторная библиотека Вадлера}
+
+В \cite{wadler} Филипп Вадлер описал свою комбинаторную бибилиотеку для форматированного вывода на языке Haskell. Она является модификацией библиотеки Хьюза, описанной в предыдущем разделе. Код библиотеки сократился с $\approx$ 110 строк до $\approx$ 80 строк, и, по исследованию Вадлера, на 30\% увеличилась скорость вычисления раскладки документа.
+
+Рассмотрим основые комбинаторы этой библиотеки:
+% \inputminted{haskell}{codes/wadlerBasicOperations.hs}
+\lstinputlisting[language=Haskell]{codes/wadlerBasicOperations.hs}
+
+Вадлер решил отказаться от двух разных способов соединения документов, оставив лишь горизонтальную склейку. Но для того, чтобы можно было выражать не только однострочные документы, в библиотеке Вадлера появилась функция “\lstinline[language=Haskell]{line}”. Она создает документ, который может быть переведен в символ новой строки или в пробел.
+Функция “\lstinline[language=Haskell]{group}” имеет то же назначение, что и оператор “\lstinline[language=Haskell]{sep}” в библиотеке Хьюза, но работает не со списком документов, а с одним документом, и по сути предоставляет альтернативы для алгоритма перевода документа в “\lstinline[language=Haskell]{String}”: в документе, на который подействовал “\lstinline[language=Haskell]{group}”, либо все вхождения “\lstinline[language=Haskell]{line}” заменяются на пробел, либо остаются переводами строки (если они не являются частью вложенных “\lstinline[language=Haskell]{group}”-документов).
+
+В таком виде библиотека потеряла в выразительности, что признается в статье Вадлера. Но кроме потери выразительности, есть еще один серьезный недостаток, возникающий из-за оператора “\lstinline[language=Haskell]{group}”. То, что любой документ им может быть преобразован в однострочный, делает библиотеку неприменимой в некоторых ситуациях. 
+
+Рассмотрим следующий пример. Пусть нам надо написать принтер для языка Python\footnote{http://python.org}. Для конструкции последовательных операторов принтер изображен на рисунке~\ref{fig:pythonPrinter}.
+По-другому его написать нельзя --- мы хотим, чтобы последовательные операторы печатались на новых строках. Но если такая конструкция попадет внутрь “\lstinline[language=Haskell]{group}”-документа, то последовательные строчки могут склеиться пробелом, что сделает код некорректным, так как в Python несколько операторов на одной строке должны разделяться символом “;”.
+
+\begin{figure}[h!]
+	% \inputminted{haskell}{codes/pythonPrinter.hs}
+	\lstinputlisting[language=Haskell]{codes/pythonPrinter.hs}
+	\caption{Принтер для последовательных операторов в Python}
+	\label{fig:pythonPrinter}
+\end{figure}
+
+Так корректный код (см. рисунок~\ref{fig:pythonCode}) может превратиться в некорректный (см. рисунок~\ref{fig:pythonCodeBad}).
+\begin{figure}[h!]
+	\centering
+	\null\hfill
+	\subfloat[]{
+		\centering
+		\lstinputlisting[language=Python]{codes/pythonCode.py}
+		\label{fig:pythonCode}	
+	}
+	\null\hfill
+	\subfloat[]{
+		\centering
+		\lstinputlisting[language=Python]{codes/pythonCodeBad.py}
+		\label{fig:pythonCodeBad}
+	}
+	\hfill
+	\null
+	\caption{Пример работы принтера для языка Python}
+\end{figure}
