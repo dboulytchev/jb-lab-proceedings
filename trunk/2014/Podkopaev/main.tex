@@ -1,0 +1,86 @@
+\documentclass{matmex-diploma-custom}
+\usepackage{listings}
+\usepackage{cite}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+\newcommand{\cd}[1]{\texttt{#1}}
+\usepackage[caption=false]{subfig}
+\graphicspath{{images/}}%путь к рисункам
+
+\newfontfamily{\cyrillicfonttt}{Courier New}
+
+\lstdefinelanguage{haskell}{
+keywords={data, type, case, of, where, otherwise, in, let, deriving},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+literate={->}{{$\to$}}1
+}
+
+\lstset{
+basicstyle=\small,
+identifierstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+escapechar=~,
+language=haskell
+}
+
+\begin{document}
+\filltitle{ru}{
+    chair              = {Кафедра Системного Программирования},
+    title              = {Полиномиальной сложности оптимальные принтер-комбинаторы с выбором},
+    type               = {diploma},
+    position           = {студента},
+    group              = 545,
+    author             = {Подкопаев Антон Викторович},
+    supervisorPosition = {к.\,ф.-м.\,н.},
+    supervisor         = {Булычев Д.\,Ю.},
+    reviewerPosition   = {},
+    reviewer           = {Бреслав А.\,А.},
+    chairHeadPosition  = {д.\,ф.-м.\,н., профессор},
+    chairHead          = {Терехов А.\,Н.},
+}
+\filltitle{en}{
+    chair              = {Department of Software Engineering},
+    title              = {Polynomial-Time Optimal Pretty-Printing Combinators with Choice},
+    author             = {Anton Podkopaev},
+    supervisorPosition = {},
+    supervisor         = {Dmitri Boulytchev},
+    reviewerPosition   = {},
+    reviewer           = {Andrey Breslav},
+    chairHeadPosition  = {professor},
+    chairHead          = {Andrey Terekhov},
+    university         = {SAINT PETERSBURG STATE UNIVERSITY},
+    city               = {Saint Petersburg},
+}
+
+\sloppy
+
+\maketitle
+\tableofcontents
+
+\include{introduction}
+\newpage
+\include{review}
+\newpage
+\include{implementation}
+\newpage
+\include{ending}
+\newpage
+\include{links}
+\newpage
+\include{appendix}
+
+% \bibliographystyle{ugost2008ls}
+% \bibliography{diploma.bib}
+\end{document}
