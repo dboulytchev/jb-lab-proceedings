@@ -1,0 +1,100 @@
+\documentclass{matmex-diploma-custom}
+\usepackage{listings}
+\usepackage{cite}
+\renewcommand{\lstlistingname}{Листинг}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+\newcommand{\cd}[1]{\texttt{#1}}
+\usepackage[caption=false]{subfig}
+\graphicspath{{images/}}%путь к рисункам
+
+\newfontfamily{\cyrillicfonttt}{Liberation Mono}
+
+\usepackage{xcolor}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dred}{rgb}{0.545,0,0}
+\definecolor{dblue}{rgb}{0,0,0.545}
+\definecolor{lgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\lstdefinelanguage{cpp}{
+    backgroundcolor=\color{lgrey},  
+    basicstyle=\footnotesize \ttfamily \color{black} \bfseries,   
+    breakatwhitespace=false,       
+    breaklines=true,               
+    captionpos=b,
+    commentstyle=\color{dkgreen},   
+    deletekeywords={...},          
+    escapeinside={\%*}{*)},                  
+    frame=single,                  
+    language=C++,                
+    keywordstyle=\color{purple},  
+    morekeywords={size_t,string,void,int,gc_ptr,gc_new}, 
+    identifierstyle=\color{black},
+    stringstyle=\color{blue},
+    numbers=right,                 
+    numbersep=5pt,                  
+    numberstyle=\tiny\color{black}, 
+    rulecolor=\color{black},        
+    showspaces=false,               
+    showstringspaces=false,        
+    showtabs=false,                
+    stepnumber=1,                   
+    tabsize=5,                     
+    title=\lstname,                 
+}
+
+\begin{document}
+\filltitle{ru}{
+    chair              = {Кафедра информатики},
+    title              = {Реализация основных примитивов библиотеки неконсервативной сборки мусора для C++},
+    type               = {diploma},
+    position           = {студента},
+    group              = 542,
+    author             = {Березун Даниил Андреевич},
+    supervisorPosition = {к.\,ф.-м.\,н., доцент},
+    supervisor         = {Булычев Д.\,Ю.},
+    reviewerPosition   = {к.\,ф.-м.\,н., доцент},
+    reviewer           = {Кознов Д.\,В.},
+    chairHeadPosition  = {д.\,ф.-м.\,н., профессор},
+    chairHead          = {Косовский Н.\,К.},
+}
+\filltitle{en}{
+    chair              = {Department of Computer Science},
+    title              = {Basic library primitives implementation of non-conservative garbage collection for C++},
+    author             = {Daniil Berezun},
+    supervisorPosition = {docent},
+    supervisor         = {Dmitri Boulytchev},
+    reviewerPosition   = {docent},
+    reviewer           = {Dmitrij Koznov},
+    chairHeadPosition  = {professor},
+    chairHead          = {Nikolai Kosovsky},
+    university         = {SAINT PETERSBURG STATE UNIVERSITY},
+    city               = {Saint Petersburg},
+}
+\maketitle
+\tableofcontents
+
+\include{tex/introduction}
+\newpage
+\include{tex/dictionary}
+\newpage
+\include{tex/review}
+\newpage
+\include{tex/implementation}
+\newpage
+\include{tex/restrictions}
+\newpage
+\include{tex/results}
+\newpage
+\include{tex/ending}
+\newpage
+\include{tex/links}
+\newpage
+\include{tex/appendix}
+
+\bibliographystyle{ugost2008ls}
+\bibliography{diploma.bib}
+\end{document}
