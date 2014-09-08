@@ -1,0 +1,108 @@
+% Тут используется класс, установленный на сервере Papeeria. На случай, если
+% текст понадобится редактировать где-то в другом месте, рядом лежит файл matmex-diploma-custom.cls
+% который в момент своего создания был идентичен классу, установленному на сервере.
+% Для того, чтобы им воспользоваться, замените matmex-diploma на matmex-diploma-custom
+% Если вы работаете исключительно в Papeeria то мы настоятельно рекомендуем пользоваться
+% классом matmex-diploma, поскольку он будет автоматически обновляться по мере внесения корректив
+%
+\documentclass{matmex-diploma-custom}
+\begin{document}
+% Год, город, название университета и факультета предопределены,
+% но можно и поменять.
+% Если англоязычная титульная страница не нужна, то ее можно просто удалить.
+\filltitle{ru}{
+    chair              = {Кафедра системного программирования},
+    title              = {Поддержка встроенных языков \\ в интегрированных средах разработки},
+    % Здесь указывается тип работы. Возможные значения:
+    %   coursework - Курсовая работа
+    %   diploma - Диплом специалиста
+    %   master - Диплом магистра
+    %   bachelor - Диплом бакалавра
+    type               = {bachelor},
+    position           = {студента},
+    group              = 461,
+    author             = {Иванов Андрей Васильевич},
+    supervisorPosition = {ст. преп.},
+    supervisor         = {Григорьев С.\,В.},
+    reviewerPosition   = {Руководитель группы в ООО “ИнтеллиДжей Лабс”},
+    reviewer           = {Шкредов C.\,Д.},
+    chairHeadPosition  = {д.\,ф.-м.\,н., профессор},
+    chairHead          = {Терехов А.\,Н.},
+%   university         = {Санкт-Петербургский Государственный Университет},
+%   faculty            = {Математико-механический факультет},
+%   city               = {Санкт-Петербург},
+%   year               = {2014}
+}
+\filltitle{en}{
+    chair              = {Chair of Software Engineering},
+    title              = {Support of string-embedded languages \\ in IDE},
+    author             = {Ivanov Andrei},
+    supervisorPosition = {sen. lect.},
+    supervisor         = {Grigoriev S.\,V.},
+    reviewerPosition   = {Team lead at ”IntelliJ Labs Co.Ltd”},
+    reviewer           = {Shkredov S.\,D.},
+    chairHeadPosition  = {professor},
+    chairHead          = {Terekhov A.\,N.},
+}
+\maketitle
+\tableofcontents
+% У введения нет номера главы
+\section*{Введение}
+\input{00_Introduction}
+
+\section{Постановка задачи}
+Целью данной работы является реализация механизма поддержки произвольных встроенных языков в Microsoft Visual Studio, которые описаны грамматикой. Для ее достижения были поставлены следующие задачи.
+
+\begin{itemize}
+\item Изучить инструмент YaccConstructor.
+\item Изучить платформу ReSharper SDK.
+\item Создать алгоритм подсветки встроенных языков.
+\item Реализовать и апробировать полученный алгоритм. 
+\end{itemize}
+
+\section{Обзор}
+\input{02_Overview}
+
+\section{Алгоритм}
+\input{03_1_SPPF}
+
+\subsection{Генерация деревьев из SPPF}
+\input{03_2_StaticTreeGeneration}
+\input{03_3_DynamicTreeGeneration}
+
+\section{Особенности реализации}
+\input{04_1_Generator}
+\input{04_2_Architecture}
+
+% У заключения нет номера главы
+\section*{Заключение}
+
+В рамках данной работы были достигнуты следующие результаты:
+\begin{itemize}
+\item изучены инструмент YaccConstructor и платформа ReSharper SDK.
+\item создан алгоритм подсветки произвольных встроенных языков, описанных грамматикой;
+\item реализован и апробирован полученный алгоритм;
+\item результаты группы, в которую входит автор, приняты на семинар “Наукоёмкое программное обеспечение”.
+\end{itemize}
+
+Весь проект можно найти на сайте https://code.google.com/p/recursive-ascent/, автор
+принимал участие под учетной записью ivanovandrew2004.
+
+\section*{Дальнейшее направление работы}
+
+В дальнейшем планируется реализация так называемой семантической подсветки - подсветки, которая основывается на некоторых дополнительных свойствах программы. 
+
+На рисунке ~\ref{dead_code} продемонстрирован один из примеров такой подсветки - подсветка “мёртвого кода”. Как можно заметить, те фрагменты кода, которые не имеют смысла, окрашены серым цветом, вне зависимости от типа языковых конструкций.
+
+\begin{figure}[h]
+\centering
+\includegraphics{Pictures/dead_code.PNG}
+\caption{Семантическая подсветка в ReSharper.}
+\label{dead_code}
+\end{figure}
+
+Другим направлением является реализация других возможностей современных IDE по отношению ко встроенным языкам. Например, средства навигации по коду (find usage, goto definition), автодополнение, анализ корректности типов. 
+
+\bibliographystyle{ugost2008ls}
+\bibliography{diploma.bib}
+\end{document}
