@@ -46,7 +46,7 @@ literate={->}{{$\to$}}1
 \thispagestyle{empty}
 \def\baselinestretch{1.0}
 \begin{center}
-	{САНКТ-ПЕТЕРБУРГСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ \\ \vskip 0.3em {\large Математико-механический факультет \\ \vskip 0.7em{\large Кафедра системного программирования \\}}}
+    {САНКТ-ПЕТЕРБУРГСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ \\ \vskip 0.3em {\large Математико-механический факультет \\ \vskip 0.7em{\large Кафедра системного программирования \\}}}
     \vspace*{0.15\textheight}
     {\large Поздин Дмитрий Евгеньевич}
     
@@ -218,7 +218,7 @@ public abstract class Procedure {
                 executionCount++;
                 topProcedure.execNext();
                 if (executionCount % executionsBeforeGarbageCleaning == 0) {
-                   	localVM.clearGarbage(getRootSet());
+                    localVM.clearGarbage(getRootSet());
                 }
             } else {
                 topProcedure.procTerminate();
@@ -355,10 +355,10 @@ showpage
   -100 1 100 { /y exch def
     /z0 0.0 0.0 complex def
     0 1 maxiter { /iter exch def
-	x 100 div y 100 div complex
-	z0 z0 cmul
-	cadd dup /z0 exch def
-	cabs2 4 gt {exit} if
+    x 100 div y 100 div complex
+    z0 z0 cmul
+    cadd dup /z0 exch def
+    cabs2 4 gt {exit} if
     } for
     iter maxiter div g
     x y m dot
