@@ -1,0 +1,130 @@
+\documentclass[14pt]{extarticle}
+\usepackage[
+left=30mm,
+top=20mm,
+right=15mm,
+bottom=20mm,
+]{geometry}
+
+\usepackage{graphicx}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage[linesnumbered,boxed]{algorithm2e}
+\sloppy
+
+\graphicspath{{Figures//}}%путь к рисункам
+
+
+\lstset{inputencoding=utf8x, extendedchars=false, keepspaces = true,
+language=C++,
+keywords={include, const, virtual, template, typename, class, private, public, operator, if, while, else, return, new, delete, int, float, bool, char},
+sensitive=true,
+%basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+breaklines=true,
+literate={->}{{$\to$}}1
+}
+
+\makeatletter
+\renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
+\makeatother
+\gappto\captionsrussian{\renewcommand{\contentsname}{Оглавление}}
+\renewcommand\baselinestretch{1.5}
+\renewcommand{\lstlistingname}{Результат}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\def\baselinestretch{1.0}
+\begin{center}
+	{САНКТ-ПЕТЕРБУРГСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ \\ \vskip 0.3em {\large Математико-механический факультет \\ \vskip 0.7em{\large Кафедра информатики \\}}}
+    \vspace*{0.15\textheight}
+    {\large Крень Мария}
+    
+    \vskip 2em
+    {\huge Пользовательский уровень библиотеки неконсервативной сборки мусора для C++}
+    
+    \vskip 1em
+    {\large Дипломная работа} \\
+    \vskip 2em
+    {\normalsize \raggedleft 
+    Допущена к защите.\\
+    Зав. кафедрой:\\
+    д.ф.-м.н., Н.К.Косовский 
+    \\[3em]
+    Научный руководитель:\\
+    к.ф.-м.н. Д.Ю.Булычев
+    \\[3em]
+    Рецензент:\\
+    к.ф.-м.н. Д.В.Кознов\\
+    \vspace*{0.08\textheight}
+    {\centering Санкт-Петербург \\ 2014}
+    }
+\end{center}
+\end{titlepage}
+\begin{titlepage}
+\thispagestyle{empty}
+\def\baselinestretch{1.0}
+\begin{center}
+	{\large SAINT-PETERSBURG STATE UNIVERSITY \\ \vskip 0.3em {\large Mathematics and Mechanics Faculty \\ \vskip 0.7em{\large Informatics Chair \\}}}
+    \vspace*{0.15\textheight}
+    {\large Mariya Kren}
+    
+    \vskip 2em
+    {\huge User Level of a Non-Conservative Garbage Collection Library for C++}
+    
+    \vskip 1em
+    {\large Graduation Thesis} \\
+    \vskip 2em
+    {\normalsize \raggedleft 
+    Admitted for defence.\\
+    Head of the chair:\\
+    professor N.K. Kosovsky
+    \\[3em]
+    Scientific supervisor:\\
+    Dr. D.Yu. Boulytchev
+    \\[3em]
+    Reviewer:\\
+    Dr. D.V.Koznov\\
+    \vspace*{0.08\textheight}
+    {\centering Saint-Petersburg \\ 2014}
+    }
+\end{center}
+\end{titlepage}
+\tableofcontents
+\thispagestyle{empty} 
+\include{introduction}
+\newpage
+\include{purposes}
+\newpage
+\include{review}
+\newpage
+\include{c_instruments}
+\newpage
+\include{user_level}
+\newpage
+\include{jbgc}
+\newpage
+\include{conclusions}
+%\newpage
+\include{bibl}
+%\newpage
+%\include{appendix}
+
+% \bibliographystyle{ugost2008ls}
+% \bibliography{diploma.bib}
+
+\end{document}
