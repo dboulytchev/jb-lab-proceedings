@@ -1,0 +1,137 @@
+\section {Пользовательский уровень библиотеки\\
+сборки мусора}
+
+С точки зрения пользователя библиотека сборки мусора представлена одним шаблонным классом
+``умного указателя'' 
+
+\begin{lstlisting}
+    template <class T> class gc_ptr {
+       ...
+    }
+\end{lstlisting}
+
+и одной шаблонной функцией выделения памяти
+
+\begin{lstlisting}
+    template <class T, typename ... Types> T* gc_new (
+    Types ... types, size_t count = 1
+    ) {
+       ...
+    }
+\end{lstlisting}
+
+которые становятся доступными после подключения одного заголовочного файла:
+
+\begin{lstlisting}
+    # include <libgc/libgc.h>
+\end{lstlisting}
+
+Исполняемый код библиотеки содержится в модулях, которые могут быть как собраны статически вместе
+с приложением, так и подгружены динамически.
+
+Любая программа, которая в качестве примитива выделения памяти использует \lstinline{gc_new}, в качестве
+указателей --- \lstinline{gc_ptr}, и не содержит явного освобождения памяти с помощью \lstinline{delete}, будет
+работать с использованием сборки мусора.
+
+Семантика описанных примитивов с точки зрения сборки мусора будет описана в следующем разделе; пока же
+мы обсудим их интерфейс с точки зрения пользователя.
+
+\subsection{Интерфейс \lstinline{gc_ptr}}
+
+Класс \lstinline{gc_ptr} инкапсулирует всю функциональность указателя, которая безопасна с точки зрения
+сборки мусора. Данный класс реализует следующие операторы:
+
+\begin{enumerate}
+\item \lstinline{T& operator*() const}~--- разыменование;
+\item \lstinline{T* operator->() const, operator T* () const}~--- доступ к указателю;
+\item \lstinline{T& operator[](size_t index)}~--- доступ к элементам массива;
+\item \lstinline{bool operator== (const gc_ptr <T> &a), bool operator== (const T* a)}~--- проверки на равенство;
+\item \lstinline{bool operator!= (const gc_ptr <T> &a), bool operator!= (const T* a)}~--- проверки на неравенство;
+\item \lstinline{gc_ptr& operator = (const gc_ptr <T> &a), gc_ptr& operator = (T* a)}~--- присваивание.
+\end{enumerate}
+
+Кроме того, у данного класса два конструктора: \lstinline{gc_ptr (T* p)} и \lstinline{gc_ptr (const gc_ptr <T> &p)}. 
+
+\subsection{Функция выделения памяти \lstinline{gc_new}}
+
+В языке С++ существует пять различных вариантов выделения памяти с помощью оператора \lstinline{new}. 
+Этот оператор пытается выделить достаточно памяти в куче для размещения новых данных и, в случае успеха, возвращает 
+адрес выделенного участка. После выделения памяти вызывается конструктор создаваемого объекта. Однако, если оператор
+\lstinline{new} не может выделить память в куче, то возбуждается исключение типа \lstinline{std::bad_alloc}. 
+
+Функция \lstinline{gc_new} позволяет выразить все ситуации, в которых может быть употреблён оператор \lstinline{new}.
+Ниже мы приведем примеры использования \lstinline{gc_new} в каждой из них.
+
+\begin {enumerate}
+\item \lstinline{gc_new<type> ()}~--- выделение памяти под значение атомарного типа (\lstinline{int}, \lstinline{float} и т.д.); 
+\item \lstinline{gc_new<C> ()}~--- выделение памяти под одиночный экземпляр объект класса \lstinline{C} с вызовом конструктора по
+умолчанию;
+\item \lstinline{gc_new <type> (len)}~--- выделение памяти под массив длины \lstinline{len} из элементов атомарного типа \lstinline{type};
+\item \lstinline{gc_new <C> (len)}~--- выделение памяти под массив длины \lstinline{len} из экземпляров класса \lstinline{C}, для каждого из
+которых вызывается конструктор по умолчанию;
+\item \lstinline{gc_new <C, T1, T2, ..> (a1, a2, ..)}~--- выделение памяти под экземпляр объекта класса \lstinline{C} с вызовом
+конструктора с парамерами \lstinline{a1, a2, ..}, имеющими типы \lstinline{T1, T2, ..} соответственно.
+\end {enumerate}
+
+Таким образом примитив выделения памяти в языке С++ для объектов различных типов можно заменить вызовом функции \lstinline{gc_new} 
+соответствующего вида.
+
+\subsection{Пример использования пользовательских\\
+примитивов}
+
+В качестве примера использования пользовательских примитивов библиотеки сборки мусора приведем 
+реализацию класса строк:
+
+\begin{lstlisting}
+    class GCString {
+      private:
+        gc_ptr<char> pData; 	
+        int length;	 
+        GCString (gc_ptr<char> p, int l) : pData (p), length (l) {};     
+      public:
+        GCString () : length (0), pData (NULL) {};
+        GCString (const char *cString);
+        virtual ~GCString () {};
+        GCString (const GCString &s);
+        GCString operator= (const GCString &s);
+        GCString operator= (const char *cString);
+        char operator[] (int i) {return pData [i];};
+        GCString operator+  (const GCString &s);
+        GCString operator+  (const char *cString);
+        GCString operator+= (GCString& s);
+      };
+
+      GCString::GCString (const char *cString) {
+        length = strlen (cString);
+        pData  = gc_new<char> (length+1);
+        strcpy ((char *) pData, cString);
+      }
+
+      GCString::GCString (const GCString &s) : 
+        length (s.length), pData (s.pData) {}
+
+      GCString GCString::operator= (const GCString &s) {
+        length = s.length;
+        pData  = s.pData;
+        return *this;
+      }
+
+      GCString GCString::operator= (const char *cString) {
+        return *this = GCString (cString);
+      }
+
+      GCString GCString::operator+ (const GCString &s) {
+        gc_ptr<char> p = gc_new<char> (length + s.length + 1);
+        strcpy (p, (char*) this->pData);
+        strcat (p, (char*) s.pData);
+        return GCString (p, length + s.length);
+      }
+
+      GCString GCString::operator+ (const char *cString) {
+        return *this + GCString (cString);
+      }
+
+      GCString GCString::operator+= (GCString &s) {
+        return *this = *this + s;
+      }
+\end{lstlisting}
