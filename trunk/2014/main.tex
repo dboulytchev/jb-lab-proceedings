@@ -1,0 +1,103 @@
+\documentclass[runningheads]{jblab}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{caption}
+\usepackage{algorithmicx}
+\usepackage{wrapfig}
+\usepackage{supertabular}
+\usepackage{epigraph}
+\usepackage{euscript}
+\usepackage{textcomp}
+\usepackage{cite}
+\usepackage{ucs}
+\usepackage[caption=false]{subfig}
+
+\pdfpagewidth=14.8cm
+\pdfpageheight=21cm
+
+\textwidth=10cm
+\textheight=15cm
+
+\oddsidemargin=0pt
+\evensidemargin=0pt
+
+\topmargin=0pt
+
+
+\begin{document}
+
+\newcommand{\Issue}[0]{1}
+\newcommand{\Year}[0]{2013}
+\sloppy
+
+\begin{titlepage}
+
+\centering
+
+\includegraphics[width=4cm]{JBLogoWhite.png}
+\vskip 2cm
+\mbox{\Large{\textsc{Труды лаборатории}}}
+\vskip 0.5cm
+\mbox{\Large{\textsc{языковых инструментов}}}
+%\vskip 0.5cm
+%<\mbox{\Large{\textsc{компании JetBrains}}}
+\vskip 2.5cm
+\large{Выпуск \Issue}
+\vskip 6cm
+\large{Санкт-Петербург, \Year}
+\end{titlepage}
+
+\thispagestyle{empty}
+\phantom{xx}
+\pagebreak
+
+\chapter*{Предисловие}
+
+В октябре 2012 года компания JetBrains --- один из мировых лидеров в области 
+производства средств поддержки разработки ПО --- анонсировала создание на
+математико-механическом факультете Санкт-Петербургского государственного университета
+лаборатории языковых инструментов. Задачей этой лаборатории является реализация
+силами студентов и аспирантов факультета научно-исследовательских и образовательных 
+проектов в областях компетенции компании.
+
+Настоящий сборник представляет работы, выполненные студентами лаборатории в 2012-2013 учебном году.
+Среди тем этих работ можно найти как классические, такие как управление памятью и сборка 
+мусора, декомпиляция, форматирование исходных текстов, так и сравнительно 
+новые направления, связанные с сертификационным программированием и анализом 
+встроенных языков.
+
+Следует отметить, что все представленные работы были не только проведены в лаборатории 
+под руководством специалистов JetBrains, но и засчитаны их авторам 
+в качестве курсовых или дипломных работ. 
+\vskip 2cm
+\begin{flushright}
+\textit{куратор лаборатории Д.Булычев}
+\end{flushright}
+
+\tableofcontents
+
+\include{Taran/main}
+\include{Verbitskaya/main}
+
+\include{Bakradze/main}
+\include{Samofalov/main}
+\include{Shashkova/main}
+
+\include{Berezun/main}
+\include{Kren/main}
+
+\include{Zabransky/main}
+\include{Pozdin/main}
+\include{Podkopaev/main}
+
+\end{document}
