@@ -1,4 +1,5 @@
-\lstset{inputencoding=utf8x, extendedchars=false, keepspaces = true,
+\lstset{
+%       inputencoding=utf8x, extendedchars=false, keepspaces = true,
 language=C++,
 keywords={include, const, virtual, template, typename, class, private, public, operator, if, while, else, return, new, delete, int, float, bool, char},
 sensitive=true,
@@ -111,7 +112,7 @@ Python, Ruby, Perl и многих других.
         // $\mbox{Конструктор получает исходный указатель}$
         smart_pointer (T *obj) : m_obj(obj) {}
         // $\mbox{Деструктор удаляет адресуемые данные}$
-        ~smart_pointer () { delete m_obj; }
+        $\mbox{~}$smart_pointer () { delete m_obj; }
         // $\mbox{Перегруженные операторы для обращения к данным}$
         T* operator-> () { return m_obj; }
         T& operator*  () { return *m_obj; }
@@ -276,7 +277,7 @@ Python, Ruby, Perl и многих других.
 В качестве примера использования пользовательских примитивов библиотеки сборки мусора приведем 
 реализацию класса строк:
 
-\begin{lstlisting}
+\begin{lstlisting}[mathescape=true,language=C++]
     class GCString {
       private:
         gc_ptr<char> pData; 	
@@ -285,7 +286,7 @@ Python, Ruby, Perl и многих других.
       public:
         GCString () : length (0), pData (NULL) {};
         GCString (const char *cString);
-        virtual ~GCString () {};
+        virtual $\mbox{~}$GCString () {};
         GCString (const GCString &s);
         GCString operator= (const GCString &s);
         GCString operator= (const char *cString);
