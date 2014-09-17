@@ -140,7 +140,14 @@ LLVM улучшает переносимость кода между разли�
                     \EndIf
                     \For {$i < size$}
                         \State $child \leftarrow Field(object, i)$
-                        \If {$is\_object(child)$ and $tag(child) < No\_scan\_tag$}
+                        \If {   $is\_object(child)$ and\\
+                                \hskip\algorithmicindent
+                                \hskip\algorithmicindent
+                                \hskip\algorithmicindent
+                                \hskip\algorithmicindent
+                                \hskip\algorithmicindent
+                                \hskip\algorithmicindent $tag(child) < No\_scan\_tag$                           
+                             }
                             \If {$child$ in heap and not $marked(child)$}
                                 \State {$mark(child)$}
                                 \State {$push(child)$}
