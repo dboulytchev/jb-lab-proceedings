@@ -1,7 +1,7 @@
 \graphicspath{{Podkopaev/images/}}%путь к рисункам
 
 \lstdefinelanguage{haskell}{
-keywords={data, type, case, of, where, otherwise, in, let, deriving},
+keywords={import, qualified, as, data, type, case, of, where, otherwise, in, let, deriving},
 sensitive=true,
 basicstyle=\small,
 commentstyle=\scriptsize\rmfamily,
@@ -44,7 +44,7 @@ escapechar=~
 \section*{Введение}
 
 В жизненном цикле программного обеспечения важную роль занимает этап
-поддержки\cite{maintance}. На этом этапе особую роль приобретает
+поддержки~\cite{maintance}. На этом этапе особую роль приобретает
 понимание программного текста поддерживаемой системы, что часто бывает
 достаточно сложной задачей. В данном контексте существенным достоинством
 программного текста становится его аккуратное оформление.
@@ -260,7 +260,7 @@ GNU\footnote{\cd{http://www.gnu.org/prep/standards/standards.pdf}}.
 swierstra04, hughes, peytonJones, kiselyov, chitil, swiComb}.
 Кроме того, существует работа, посвященная совместной разработке
 принтера и синтаксического анализатора~\cite{rendelInvert}.
-В \cite{jongeEveryOccasion, jongeReengine, brandBox} описаны методы
+В~\cite{jongeEveryOccasion, jongeReengine, brandBox} описаны методы
 создания принтеров с помощью специализированных грамматик.
 
 К сожалению, принтеры, создаваемые с помощью упомянутых подходов,
@@ -301,9 +301,9 @@ swierstra04, hughes, peytonJones, kiselyov, chitil, swiComb}.
 \subsection{Принтер-комбинаторы}
 
 Базовыми принтер-комбинаторными библиотеками являются библиотеки
-Джона Хьюза\cite{hughes} и Филиппа Вадлера\cite{wadler}, которые
+Джона Хьюза~\cite{hughes} и Филиппа Вадлера~\cite{wadler}, которые
 представляют собой функциональную переработку алгоритма
-Оппена\cite{oppen}.
+Оппена~\cite{oppen}.
 Ограничимся рассмотрением библиотеки Вадлера, так как
 библиотека Хьюза обладает теми же свойствами, которые принципиальны в контексте
 данной работы.
@@ -358,9 +358,9 @@ Python\footnote{\cd{http://python.org}}.
   \label{fig:seqEx}	
 \end{figure}
 
-Более подробный обзор библиотек Хьюза и Вадлера представлен в \cite{CoursePaper}.
+Более подробный обзор библиотек Хьюза и Вадлера представлен в~\cite{CoursePaper}.
 
-Большинство принтер-комбинаторных библиотек\cite{
+Большинство принтер-комбинаторных библиотек~\cite{
 swierstraChitil, swierstra04, peytonJones, kiselyov, chitil}
 являются развитиями работ Хьюза и Вадлера. Так, в отличие от базовых, среди
 них есть реализации с линейной сложностью обработки документа от его размера и
@@ -390,11 +390,12 @@ Library\footnote{\cd{http://www.cs.uu.nl/wiki/HUT/WebHome}}
 строчкой (см. рис. \ref{fig:basicFormat}). В реализации на Haskell блоки представляются
 структурой \lstinline[language = Haskell]{Format}:
 \begin{lstlisting}[language=haskell]
-    data Format = Elem { height        :: Int
-                       , lastLineWidth :: Int
-                       , width         :: Int
-                       , txtstr        :: Int -> String -> String
-                       }
+    data Format = Elem { 
+      height        :: Int
+    , lastLineWidth :: Int
+    , width         :: Int
+    , txtstr        :: Int -> String -> String
+    }
 \end{lstlisting}
 
 Первые три поля структуры определяют геометрические размеры блока, а последнее --- функция,
@@ -408,7 +409,7 @@ Library\footnote{\cd{http://www.cs.uu.nl/wiki/HUT/WebHome}}
     \raisebox{5mm}{
       \centering
       \vspace{0pt}
-      \tikz[scale = 2.0]{
+      \tikz{
         \draw (0,0) -- (1,0) -- (1,0.2) -- (2,0.2) -- (2,1) -- (0, 1) -- cycle;
       }
     }
@@ -417,7 +418,7 @@ Library\footnote{\cd{http://www.cs.uu.nl/wiki/HUT/WebHome}}
   ~
   \subfloat[Горизонтальная композиция]{
     \centering
-    \tikz[scale = 2.0]{
+    \tikz{
        \draw (0,0) -- (1,0) -- (1,0.2) -- (2,0.2) -- (2,1) -- (0, 1) -- cycle;
        \draw (1.1,-0.9) -- (2.1,-0.9) -- (2.1,-0.7) -- (3.1,-0.7) -- (3.1,0.1) -- (1.1,0.1) -- cycle;
      }
@@ -428,7 +429,7 @@ Library\footnote{\cd{http://www.cs.uu.nl/wiki/HUT/WebHome}}
   \subfloat[Вертикальная композиция]{
     \makebox[.28\textwidth] {
     \centering
-    \tikz[scale = 2.0]{
+    \tikz{
        \draw (0,0) -- (1,0) -- (1,0.2) -- (2,0.2) -- (2,1) -- (0, 1) -- cycle;
        \draw (0,-1.1) -- (1,-1.1) -- (1,-0.9) -- (2,-0.9) -- (2,-0.1) -- (0,-0.1) -- cycle;
     }
@@ -479,7 +480,7 @@ Library\footnote{\cd{http://www.cs.uu.nl/wiki/HUT/WebHome}}
 аргументы комбинатора. Заметим, что только этот комбинатор может произвести
 документ с несколькими раскладками из одновариантных аргументов.
 
-Оригинальная реализация существенно опирается на ленивые вычисления. В \cite{swierstra}
+Оригинальная реализация существенно опирается на ленивые вычисления. В~\cite{swierstra}
 множество вариантов, соответствующее экземпляру \lstinline[language = Haskell]{Doc},
 представляется ленивым списком всех возможных раскладок, удовлетворяющих ограничению
 на максимальную ширину. Этот список отсортирован в порядке ``ухудшения''
@@ -504,18 +505,17 @@ Library\footnote{\cd{http://www.cs.uu.nl/wiki/HUT/WebHome}}
 порядка, построенного по критерию оптимальности, в рамках данной модели списков
 принципиально нельзя построить ленивую обработку комбинатора
 \lstinline[language = Haskell]{beside}.
-Так, выбор оптимальной раскладки документа в
-\cite{swierstra} имеет в худшем случае экспоненциальную сложность от числа
-комбинаторов, использованных при его построении.
-В \cite{swiComb} приведены оптимизации для данной модели, но они
+Так, выбор оптимальной раскладки документа в~\cite{swierstra} имеет в худшем случае экспоненциальную 
+сложность от числа комбинаторов, использованных при его построении.
+В~\cite{swiComb} приведены оптимизации для данной модели, но они
 не улучшают асимптотику решения для деревьев в общем случае.
 
 \subsection{BURS}
 
-Bottom-Up Rewrite System (BURS)\cite{burs} --- это метод динамического
+Bottom-Up Rewrite System (BURS)~\cite{burs} --- это метод динамического
 программирования на деревьях, изначально появившийся в контексте задачи выбора
 инструкций для генерации машинного кода. Основой BURS является
-регулярная грамматика с древовидными правилами\cite{tata}, для которых задана
+регулярная грамматика с древовидными правилами~\cite{tata}, для которых задана
 стоимость применения подстановки,
 то есть грамматика со следующим набором правил: 
 
@@ -626,11 +626,11 @@ Eclipse\footnote{\cd{http://eclipse.org}}.
 внешние фоматтеры\footnote{\cd{http://plugins.jetbrains.com/plugin/6546}}.
 Кроме того, есть средства, позволяющие экспортировать настройки форматтера в
 XML-файл для их использования в другой
-IDE\footnote{\cd{http://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importing-code-formatter-settings-from-eclipse/}}.
+IDE\footnote{\cd{http://blog.jetbrains.com/idea/2014/01/ intellij-idea-13-importing-code-formatter-settings\-from-eclipse/}}.
 
 Важным достоинством описанных форматтеров является малое время работы.
 Это достигается в том числе и за счет того, что часто форматируется не весь
-файл, а только его часть (см. \cite{eclipse}),
+файл, а только его часть (см.~\cite{eclipse}),
 и из-за детерминированности представлений узлов синтаксического дерева,
 которая следует из специфики настроек форматтера.
 Однако форматирование целого большого проекта занимает существенное время.
@@ -659,7 +659,7 @@ IDE\footnote{\cd{http://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importi
 для синтаксического дерева, переданного на печать. На нижнем уровне в принтере 
 используются оптимальные принтер-комбинаторы с выбором. Здесь комбинатор выбора нужен
 для возможности задания вариантов представления, соответствующих разным шаблонам.
-Недостатком существующих оптимальных принтер-комбинаторов с выбором \cite{swierstra}
+Недостатком существующих оптимальных принтер-комбинаторов с выбором~\cite{swierstra}
 является их экспоненциальная сложность. Поэтому для возможности использования того же
 комбинаторного интерфейса в рамках данной работы с помощью BURS была разработана
 полиномиальная версия этих комбинаторов~\cite{podkopaevBoulytchev}.
@@ -690,7 +690,7 @@ Kotlin был выбран для реализации принтер-плаги
 \subsection{Оптимальное форматирование как задача BURS}
 
 Для снижения алгоритмической сложности задачи поиска
-оптимального представления документа, заданного комбинаторами из \cite{swierstra},
+оптимального представления документа, заданного комбинаторами из~\cite{swierstra},
 можно произвести сведение к BURS.
 Сведение основано на следующих наблюдениях.
 Пусть $w$ есть максимальная допустимая
@@ -920,7 +920,7 @@ Haskell\footnote{\cd{http://github.com/anlun/polynomialPPCombinators}}
 дополнительные техники, которые важны при практическом применении библиотеки в
 контексте принтеров, задаваемых шаблонами.
 
-\subsubsection{Мемоизация вычислений для поддеревьев}
+\subsubsection{Мемоизация вычислений для поддеревьев.}
 
 В реальных принтерах документы, состоящие из комбинаторов
 \lstinline[language=Haskell]{text},
@@ -937,7 +937,7 @@ Haskell\footnote{\cd{http://github.com/anlun/polynomialPPCombinators}}
 так как вычисление хэша, используемого ассоциативным массивом, для дерева занимает
 линейное время. Чтобы преодолеть и эту сложность, в дереве хранится вычисленный хэш.
 
-\subsubsection{Комбинатор \lstinline{fill}}
+\subsubsection{Комбинатор \lstinline{fill}.}
 
 Для реализации принтера, использующего шаблоны, в библиотеку необходимо добавить
 дополнительный принтер-комбинатор --- комбинатор \lstinline{fill}.
@@ -997,7 +997,7 @@ Haskell\footnote{\cd{http://github.com/anlun/polynomialPPCombinators}}
 увеличивается с $w^2$ до $w^3$. Аналогично, количество правил перехода возрастает
 с $O(w^4)$ до $O(w^6)$.
 
-\subsubsection{Дополнительная фильтрация вариантов}
+\subsubsection{Дополнительная фильтрация вариантов.}
 
 Для того, чтобы избежать экспоненциальной сложности вычисления оптимальной
 раскладки документа, мы ввели факторизацию по размерам (ширинам) текстового
@@ -1017,7 +1017,7 @@ Haskell\footnote{\cd{http://github.com/anlun/polynomialPPCombinators}}
 
 Таким образом мы ввели отношение частичного порядка на раскладках, а
 описанная фильтрация --- поиск минимумов на частично упорядоченном
-множестве представлений\cite{poset}.
+множестве представлений~\cite{poset}.
 Очевидная реализация поиска имеет квадратичную сложность от размера множества,
 таким образом асимптотика алгоритма не ухудшается из-за данной фильтрации.
 К сожалению, эта оптимизация и не улучшает поведение
@@ -1026,7 +1026,44 @@ Haskell\footnote{\cd{http://github.com/anlun/polynomialPPCombinators}}
 будет состоять из несравнимых элементов, но на практике количество вариантов
 существенно сокращается, что делает весь подход применимым на реальных данных.
 
-\subsubsection{Вставка в шаблон}
+\begin{figure}[t]
+   \centering
+    \makebox[0.15\textwidth]{
+      \lstinputlisting[language = Java]{Podkopaev/codes/ifTemplate.java}
+    }
+  \caption{Шаблон конструкции \lstinline{if}}
+  \label{fig:ifTemplate}
+\end{figure}
+
+\begin{figure}[t]
+  \subfloat[Условие]{
+    \makebox[0.15\textwidth]{
+      \centering
+      \lstinputlisting[language = Java]{Podkopaev/codes/ifCond.java}
+    }
+    \label{fig:ifCond}
+  }
+  \quad\quad
+  \subfloat[Первая ветка]{
+    \makebox[0.3\textwidth]{
+      \centering
+      \lstinputlisting[language = Java]{Podkopaev/codes/ifThen.java}
+    }
+    \label{fig:ifThen}
+  }
+  \quad\quad\quad
+  \subfloat[Вторая ветка]{
+    \makebox[0.3\textwidth]{
+      \centering
+      \lstinputlisting[language = Java]{Podkopaev/codes/ifElse.java}
+    }
+    \label{fig:ifElse}
+  }
+  \caption{Пример входных данных для построения представления конструкции \lstinline{if}}
+  \label{fig:ifEx}
+\end{figure}
+
+\subsubsection{Вставка в шаблон.}
 \label{txt:templateInsert}
 
 В шаблонном подходе результат печати для узла синтаксического дерева строится
@@ -1035,43 +1072,8 @@ Haskell\footnote{\cd{http://github.com/anlun/polynomialPPCombinators}}
 \lstinline{if}. У этой конструкции в общем случае три поддерева: условие,
 ветка, соответствующая выполнению условия, и ветка, соответствующая
 невыполнению условия.
-На рис.~\ref{fig:ifEx} представлен пример шаблона и представлений поддеревьев для
+На рис.~\ref{fig:ifEx} и \ref{fig:ifTemplate} представлен пример шаблона и представлений поддеревьев для
 конструкции \lstinline{if}.
-
-\begin{figure}[h!]
-  \subfloat[Шаблон]{
-    \makebox[0.15\textwidth]{
-      \centering
-      \lstinputlisting[language = Java]{Podkopaev/codes/ifTemplate.java}
-    }
-    \label{fig:ifTemplate}
-  }
-  \quad
-  \subfloat[Условие]{
-    \makebox[0.15\textwidth]{
-      \centering
-      \lstinputlisting[language = Java]{Podkopaev/codes/ifCond.java}
-    }
-    \label{fig:ifCond}
-  }
-  \subfloat[Первая ветка]{
-    \makebox[0.3\textwidth]{
-      \centering
-      \lstinputlisting[language = Java]{Podkopaev/codes/ifThen.java}
-    }
-    \label{fig:ifThen}
-  }
-  \subfloat[Вторая ветка]{
-    \makebox[0.3\textwidth]{
-      \centering
-      \lstinputlisting[language = Java]{Podkopaev/codes/ifElse.java}
-    }
-    \label{fig:ifElse}
-  }
-
-  \caption{Пример входных данных для построения представления конструкции \lstinline{if}}
-  \label{fig:ifEx}
-\end{figure}
 
 В шаблоне места для поддеревьев выделены блоками. Свойства этих блоков задают
 ограничения на использование представлений соответствующих поддеревьев.
@@ -1164,12 +1166,12 @@ $w$ --- ширина вывода, а $n$ --- число дочерних под
 Стоит заметить, что с инженерной точки зрения для решения отдельно стоящей задачи
 форматирования по образцу кода на Java в IntelliJ IDEA лучше подходит
 получение настроек для существующего форматтера с помощью известных техник обучения.
-Подобный подход используется в работе \cite{learning}.
+Подобный подход используется в работе~\cite{learning}.
 Но описанный в данной работе метод позволяет выразить представления, которые не
 предусмотрены встроенным форматтером, кроме того потенциально предоставляет
 возможность проще создавать принтеры для новых языков. 
 
-\subsubsection{Практические особенности получения и использования шаблонов}
+\subsubsection{Практические особенности получения и использования шаблонов.}
 
 Поскольку каждый узел дерева разбора из эталонного репозитория порождает
 шаблон, то частой ситуацией является присутствие шаблонов, которые функционально
@@ -1203,7 +1205,7 @@ $w$ --- ширина вывода, а $n$ --- число дочерних под
 наибольшим \emph{весом}, где под весом понимается встречаемость шаблона в
 эталонном тексте.
 
-\subsubsection{Обработка списочных структур}
+\subsubsection{Обработка списочных структур.}
 
 Особую сложность для представленного метода имеет
 печать синтаксических структур с переменным, неограниченным числом
@@ -1233,14 +1235,18 @@ $w$ --- ширина вывода, а $n$ --- число дочерних под
 Достоинством подхода является простота его реализации.
 
 \begin{figure}[h!]
-  \subfloat[Заполняющее форматирование списков]{
-    \lstinputlisting[language = Java]{Podkopaev/codes/listEx1.java}
-    \label{fig:listFill}
-  }
-  \subfloat[Форматирование списка с переводом строки на каждый элемент]{
-    \lstinputlisting[language = Java]{Podkopaev/codes/listEx2.java}
-    \label{fig:listEveryLine}
-  }
+  \begin{tabular}{p{\linewidth}}
+    \centering
+    \subfloat[Заполняющее форматирование списков]{
+      \lstinputlisting[language = Java]{Podkopaev/codes/listEx1.java}
+      \label{fig:listFill}
+    }\\
+    \centering
+    \subfloat[Форматирование списка с переводом строки на каждый элемент]{
+      \lstinputlisting[language = Java]{Podkopaev/codes/listEx2.java}
+      \label{fig:listEveryLine}
+    }
+  \end{tabular}
   \caption{Пример форматирования списков в IDE}
 \end{figure}
 
@@ -1306,7 +1312,7 @@ $w$ --- ширина вывода, а $n$ --- число дочерних под
 %   \label{fig:listClassicEx}
 % \end{figure}
 
-\subsubsection{Обработка комментариев}
+\subsubsection{Обработка комментариев.}
 
 Отдельно стоит отменить задачу обработки комментариев. В целом, комментарии
 существенно выбиваются из общей картины. Первой их особенностью является то,
@@ -1349,7 +1355,7 @@ JavaDoc\footnote{\cd{http://java.sun.com/j2se/javadoc/}}
 может серьезно менять форматирование в эталонном коде, поэтому от большинства
 шаблонов, содержащих комментарии, приходится отказываться.
 
-\subsubsection{Анализ производительности}
+\subsubsection{Анализ производительности.}
 
 Для оценки производительности были рассмотрены средние и большие исходные файлы
 проекта IntelliJ IDEA Community
@@ -1363,8 +1369,8 @@ Edition\footnote{\cd{http://github.com/jetbrains/intellij-community/}}.
 
   % \subfloat[Ширина 200] {
     % \centering
-    \begin{tabular}{c c c c}
-    Имя файла & Кол-во строк & Время (шир. 200) & Время (шир. 250) \\
+    \begin{tabular}{c|c|c| c}
+    Имя файла & Число строк & Шир. 200 & Шир. 250 \\
     \hline
     SearchRequestCollector.java & 169 & 0.04 & 0.05\\
     XDebugProcess.java & 236 & 0.02 & 0.02\\
@@ -1379,9 +1385,9 @@ Edition\footnote{\cd{http://github.com/jetbrains/intellij-community/}}.
     ConcurrentHashMap.java & 7191 & 1.38 & 1.39
     \end{tabular}
   % }
-
+  \vskip 2mm
   \caption{Время форматирования файлов (в секундах)}
-	\label{tbl:pluginPerformanceTbl}
+  \label{tbl:pluginPerformanceTbl}
 \end{table}
 
 Эти данные показывают, что принтер может быть использован для
@@ -1389,7 +1395,7 @@ Edition\footnote{\cd{http://github.com/jetbrains/intellij-community/}}.
 работы слишком велико для практического применения. Проблему производительности
 можно будет считать решенной, если время работы снизится до 0.5 секунд.
 
-\subsubsection{Открытые проблемы}
+\subsubsection{Открытые проблемы.}
 
 Проблемой, которую не получилось решить в рамках данной работы,
 является задание порядка поддеревьев для конструкций, которые
@@ -1415,7 +1421,7 @@ Java-полей может привести к изменению семанти
 В рамках данной работы достигнуты следующие результаты:
 \begin{enumerate}
 \item Для задачи поиска оптимальной раскладки документа,
-определенного с помощью комбинаторов из \cite{swierstra}, на заданную ширину
+определенного с помощью комбинаторов из~\cite{swierstra}, на заданную ширину
 конструктивно доказана ее линейность относительно размеров дерева комбинаторов;
 \item Разработан подход к заданию принтеров с помощью образцов для языков программирования;
 \item Реализован плагин форматирования программных текстов на языке Java для IntelliJ IDEA
@@ -1488,7 +1494,8 @@ Software Engineering Tools, 2000.
 
 \bibitem{oppen} D.C.Oppen. Pretty-printing // ACM Transactions on Programming Languages and Systems, 2(4), 1980.
 
-\bibitem{peytonJones} Peyton Jones S. Haskell Pretty-printer Library // \cd{http://www.haskell.org/ghc/docs/latest/html/libraries/pretty-1.1.1.0/Text-PrettyPrint.html}, 1997.
+\bibitem{peytonJones} Peyton Jones S. Haskell Pretty-printer Library // \cd{http://www.haskell.org/ghc/docs/latest/html/libraries/
+pretty-1.1.1.0/Text-PrettyPrint.html}, 1997.
 
 \bibitem{podkopaevBoulytchev} A.Podkopaev, D.Boulytchev.
 Polynomial-Time Optimal Pretty-Printing Combinators with Choice // Принято на PSI-2014. 
@@ -1515,4 +1522,4 @@ Technical report, UU-CS-2004-025a. Institute of Information and Computing Scienc
 \section{Программный код полиномиальной сложности оптимальных принтер-комбинаторов на языке Haskell}
 \label{app:1}
 
-\lstinputlisting[language=Haskell]{Podkopaev/codes/PrettyLib.hs}
+\lstinputlisting[language=haskell]{Podkopaev/codes/PrettyLib.hs}
