@@ -1,142 +1,38 @@
-\documentclass[14pt]{extarticle}
-\usepackage[
-left=25mm,
-top=20mm,
-right=15mm,
-bottom=20mm,
-]{geometry}
+\title{Реализация графической части\\
+интерпретатора языка PostScript}
+%
+\titlerunning{Реализация графической части PostScript}
+\author{Гудиев Артур Владимирович}
+%
+\authorrunning{А.В.Гудиев} % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{А.В.Гудиев}
+%
+\institute{Санкт-Петербургский государственный университет\\
+\email{arturgudiev93@gmail.com}}
 
-%\usepackage{graphicx}
-\usepackage[pdftex]{graphicx}
-\usepackage[utf8x]{inputenc}
-\usepackage[russian]{babel}
-\usepackage[T1]{fontenc}
-\usepackage{float}
-\usepackage{listings}
-\usepackage{cite}
-\usepackage{hyperref}
-\usepackage{etoolbox}
-\usepackage{amsmath}
-\usepackage[linesnumbered,boxed]{algorithm2e}
-\sloppy
-
-\lstdefinelanguage{llang}{
-keywords={skip, do, while, read, write, if, then, else},
-sensitive=true,
-basicstyle=\small,
-commentstyle=\scriptsize\rmfamily,
-keywordstyle=\ttfamily\underbar,
-identifierstyle=\ttfamily,
-basewidth={0.5em,0.5em},
-columns=fixed,
-fontadjust=true,
-literate={->}{{$\to$}}1
-}
-
-\lstset{
-language=llang
-}
-\makeatletter
-%\renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
-\makeatother
-\gappto\captionsrussian{\renewcommand{\contentsname}{Оглавление}}
-\renewcommand\baselinestretch{1.5}
-\renewcommand{\lstlistingname}{Листинг}
-
-\begin{document}
-
-\begin{titlepage}
-\thispagestyle{empty}
-\def\baselinestretch{1.0}
-\begin{center}
-	{САНКТ-ПЕТЕРБУРГСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ \\ \vskip 0.3em {\large Математико-механический факультет \\ \vskip 0.7em{\large Кафедра системного программирования \\}}}
-    \vspace*{0.15\textheight}
-    {\large Гудиев Артур Владимирович}
-    
-    \vskip 2em
-    {\huge Реализация графической части интерпретатора языка PostScript}
-    
-    \vskip 1em
-    {\large Курсовая работа} \\
-    \vskip 2em
-    {\normalsize \raggedleft 
-    Зав. кафедрой:\\
-    д.ф.-м.н., проф. А.Н. Терехов
-    \\[3em]
-    Научный руководитель:\\
-    к.ф.-м.н. Д.Ю. Булычев
-    \\[3em]
-    %Рецензент:\\
-    %Неизвестно \\
-    \vspace*{0.08\textheight}
-    {\centering Санкт-Петербург \\ 2014}
-    }
-\end{center}
-\end{titlepage}
-
-\tableofcontents
-\thispagestyle{empty} 
-\pagebreak
-
-\iffalse
-\documentclass[a4paper, 12pt]{article}
-\usepackage[
-left=25mm,
-top=20mm,
-right=25mm,
-bottom=20mm,
-]{geometry}
-\usepackage{mathtext}
-\usepackage{url}
-\usepackage{cmap}
-\usepackage[utf8x]{inputenc}
-\usepackage[russian]{babel}
-\usepackage[T2A]{fontenc}
-\usepackage{amsmath,amssymb,amsthm,amscd,amsfonts}
-
-\usepackage{bbm}
-\usepackage[boxed]{algorithm2e}
-
-\usepackage{color} %% это для отображения цвета в коде
-\usepackage{listings} %% собственно, это и есть пакет listings
-
-\usepackage{caption}
-\usepackage[pdftex]{graphicx}
-\DeclareCaptionFont{white}{\color{black}} %% это сделает текст заголовка белым
-%% код ниже нарисует серую рамочку вокруг заголовка кода.
-\DeclareCaptionFormat{listing}{\colorbox{white}{\parbox{\textwidth}{#1#2#3}}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
-
-\SetAlgorithmName{Алгоритм}{алгоритм}{Список алгоритмов}
-\SetKwInput{KwResult}{Результат}
-\SetKwInput{KwData}{Входные данные}
-\fi
+\maketitle
 
 \section*{Введение}
-\addcontentsline{toc}{section}{Введение}
-\sloppy
-  
  
-Язык PostScript – интерпретируемый графический язык программирования, который создавался с целью представления цифровой графики в машинонезависимой форме\cite{plrm}. PostScript предоставляет возможности вывода векторной и растровой графики, а также печати текста. Интерпретатор PostScript считывает программу и выводит результат на экран или принтер. 
+Язык PostScript --- интерпретируемый графический язык программирования, который создавался с целью представления цифровой графики в машинонезависимой форме~\cite{plrm2}. PostScript предоставляет возможности вывода векторной и растровой графики, а также печати текста. Интерпретатор PostScript считывает программу и выводит результат на экран или принтер. 
   
 Интерпретатор PostScript оперирует сущностями, которые называются объектами PostScript. У каждого объекта есть такие свойства, как тип, значение и атрибуты. У интерпретатора PostScript есть своя среда исполнения, которая состоит из стеков, виртуальной памяти и графической среды исполнения. Виртуальная память представляет собой хранилище для значений объектов PostScript, а сами объекты находятся в стеках. Графическая среда выполнения описывает графическое состояние исполняемой программы.
 
-Графическое состояние содержит  такие параметры, как ширину линии,  цвет,  текущий путь, текущую матрицу преобразования и  ограничивающий путь.  Применяя операторы рисования и построения пути, можно нарисовать линии, дуги и кривые Безье \cite{graphics}, залить заданным цветом внутреннюю область  пути, ограничить область рисования, преобразовать текущую систему координат.
+Графическое состояние содержит  такие параметры, как ширину линии,  цвет,  текущий путь, текущую матрицу преобразования и  ограничивающий путь.  Применяя операторы рисования и построения пути, можно нарисовать линии, дуги и кривые Безье~\cite{graphics}, залить заданным цветом внутреннюю область  пути, ограничить область рисования, преобразовать текущую систему координат.
 
 
 В языке PostScript есть графические операторы, которые действуют на графическое состояние. Такие операторы могут, например, поменять масштаб рисования, задать цвет или ширину линии. Кроме того есть операторы, сохраняющие текущее графическое состояние, в котором хранятся основные графические параметры. По сохраненному состоянию можно задать текущее графическое состояние таким, каким оно было в момент сохранения.  
 
 На сегодняшний день существует большое количество платформ, у каждой из которых есть свои отличительные особенности. Реализация интерпретатора PostScript для каждой платфромы довольно затруднительна, поэтому  необходимо обеспечить переносимость интерпретатора. 
 
- Java – объектно-ориентированный язык программирования. Программы на Java переводятся компилятором Java (javac)  в специальный байт-код Java. Виртуальная машина Java (сокращенно Java VM, JVM) – основная часть исполняющей системы Java, так называемой Java Runtime Environment (JRE). Виртуальная машина Java интерпретирует байт-код. В настоящий момент виртуальная машина Java широко распространена. Следовательно, программа, написанная на языке Java, может быть исполнена на большом количестве платформ вне зависимости от архитектуры компьютера. Язык Java предоставляет основные графические возможности для рисования. 
+ Java --- объектно-ориентированный язык программирования. Программы на Java переводятся компилятором Java (javac)  в специальный байт-код Java. Виртуальная машина Java (сокращенно Java VM, JVM) --- основная часть исполняющей системы Java, так называемой Java Runtime Environment (JRE). Виртуальная машина Java интерпретирует байт-код. В настоящий момент виртуальная машина Java широко распространена. Следовательно, программа, написанная на языке Java, может быть исполнена на большом количестве платформ вне зависимости от архитектуры компьютера. Язык Java предоставляет основные графические возможности для рисования. 
  
-Целью курсовой работы является реализация графической части интерпретатора языка PostScript.  Необходимо реализовать на языке Java графическую среду исполнения для интерпретатора программ PostScript. Интерпретатор должен поддерживать основные графические операторы, отображать графическое состояние на экране согласно спецификации.
-
-
-\pagebreak
+Целью работы является реализация графической части интерпретатора языка PostScript.  Необходимо реализовать на языке Java графическую среду исполнения для интерпретатора программ PostScript. Интерпретатор должен поддерживать основные графические операторы, отображать графическое состояние на экране согласно спецификации.
 
 \section{Общие сведения о языке PostScript}
-Язык PostScript – это динамический интерпретируемый язык программирования, который содержит стандартное множество типов данных (числа, массивы и строки), основные элементы управления (условия, метки и процедуры), а также некоторые необычные особенности, например, словари. 
+Язык PostScript --- это динамический интерпретируемый язык программирования, который содержит стандартное множество типов данных (числа, массивы и строки), основные элементы управления (условия, метки и процедуры), а также некоторые необычные особенности, например, словари. 
 
 
 Язык PostScript имеет следующие графические возможности, содержащиеся в среде языка:
@@ -165,7 +61,7 @@ bottom=20mm,
 
 %Другим атрибутом является тип доступа к объекту. Есть четыре типа доступа к объекту: неограниченный \textit{Unlimited}, для чтения и исполнения  \textit{Read-only}, только для исполнения \textit{Execute-only} и тип доступа \textit{None}, при котором запрещаются все операции.
 
-\subsubsection*{Типы данных и объекты}
+\subsubsection*{Типы данных и объекты.}
 
 Объекты в PostScript бывают простые и сложные. Ниже приведены виды простых и сложных объектов в PostScript:
 
@@ -214,7 +110,7 @@ $$ $$
 
 \subsection{Структура памяти интерпретатора}
 Данные в языке PostScript представлены в виде объектов. Важное место в языке занимают стеки и виртуальная память, поскольку все объекты хранятся на стеках, а виртуальная память предоставляет место для хранения значений сложных объектов.
-\subsubsection{Стеки }
+\subsubsection{Стеки.}
 Интерпретатор PostScript управляет стеками, которые представляют исполняемое состояние программы. 
 \begin{itemize}
 \item Стек операндов содержит произвольные объекты PostScript, являющиеся операндами или результатами некоторых исполняемых операторов.
@@ -223,7 +119,7 @@ $$ $$
 \item Графический стек хранит только объекты графического состояния.
 \end{itemize}
 
-\subsubsection{Управление памятью}
+\subsubsection{Управление памятью.}
 В языке PostScript предусмотрено хранилище для значений \textit{сложных} объектов --- \textit{виртуальная память}. \textit{Сложный} объект имеет ссылку на свое \textit{значение}. \textit{Виртуальная память} подразделяется на \textit{локальную} и \textit{глобальную}.
 Основным отличием является то, что операторы сохранения \texttt{save} и восстановления \texttt{restore} состояния памяти влияют только на \textit{локальную виртуальную память}. 
 Для освобождения памяти, выделенной для объектов, которые уже не используются, используется сборщик мусора. 
@@ -301,8 +197,8 @@ s_x & 0 & 0 \\ 0 & s_y & 0 \\ 0 & 0 & 1
 \item [2 ---] выдвинутый прямоугольный конец.
 \end{itemize} 
 
-\begin{figure} [h]
-\center{\includegraphics[width=360pt]{linecap.png}}
+\begin{figure}[t]
+\center{\includegraphics[width=\linewidth]{Gudiev/linecap.png}}
 \caption{Формы параметров конца линии}\label{pic_linecap}
 \end{figure}
 
@@ -313,20 +209,20 @@ s_x & 0 & 0 \\ 0 & s_y & 0 \\ 0 & 0 & 1
 \item [2 ---] скошенное соединение.
 \end{itemize} 
 
-\begin{figure} [h]
-\center{\includegraphics[width=360pt]{linejoin.png}}
+\begin{figure}[t]
+\center{\includegraphics[width=\linewidth]{Gudiev/linejoin.png}}
 \caption{Формы параметров соединения отрезков}\label{pic_linejoin}
 \end{figure}
 
 Параметр пунктирности задается с помощью двух элментов: массива, в котором числа поочередно показывают, сколько пикселей нужно заштриховать, а сколько пропустить, и начального сдвига, задаваемого целым числом.
 
-\begin{figure} [h]
-\center{\includegraphics[width=180pt]{dash.png}}
+\begin{figure}[t]
+\center{\includegraphics[width=\linewidth]{Gudiev/dash.png}}
 \caption{Примеры параметров пунктирности линии}\label{pic_dash}
 \end{figure}
 
  
-Непосредственно рисованием занимаются операторы прорисовки \texttt{stroke} и операторы заливки цветом \texttt{fill} по правилу ненулевого количества поворотов (Nonzero winding number rule) и \texttt{eofill} по правилу четный-нечетный (Even-odd rule)\cite{plrm}. Операторы рисования неявно используют такие параметры, как ширину линии и цвет. Самым важным неявным параметром является \textit{текущий путь}, который изменяется при исполнении рисующего оператора. 
+Непосредственно рисованием занимаются операторы прорисовки \texttt{stroke} и операторы заливки цветом \texttt{fill} по правилу ненулевого количества поворотов (Nonzero winding number rule) и \texttt{eofill} по правилу четный-нечетный (Even-odd rule)~\cite{plrm2}. Операторы рисования неявно используют такие параметры, как ширину линии и цвет. Самым важным неявным параметром является \textit{текущий путь}, который изменяется при исполнении рисующего оператора. 
 
 Для сохранения и восстановления графического состояния предусмотрены операторы \texttt{gsave} и \texttt{grestore}, которые соответственно кладут на графический стек копию графического состояния и восстанавливают сохраненное значение по копии.
 
@@ -346,7 +242,6 @@ backgroundcolor=\color{white}, % цвет фона подсветки - испо
 showspaces=false,            % показывать или нет пробелы специальными отступами
 showstringspaces=false,      % показывать или нет пробелы в строках
 showtabs=false,             % показывать или нет табуляцию в строках
-frame=single,              % рисовать рамку вокруг кода
 tabsize=2,                 % размер табуляции по умолчанию равен 2 пробелам
 captionpos=t,              % позиция заголовка вверху [t] или внизу [b] 
 breaklines=true,           % автоматически переносить строки (да\нет)
@@ -357,7 +252,7 @@ escapeinside={\%*}{*)}   % если нужно добавить коммента
 
 %\begin{figure} [h]
 %\caption{Простая программа на языке PostScript}
-\begin{lstlisting}[label=PostScript-example,caption=Простая программа на языке PostScript, frame = single, language = PostScript]
+\begin{lstlisting}[label=PostScript-example,caption=Простая программа на языке PostScript, language = PostScript]
 % transform inches to pixels
 /inch {72 mul} def
 
@@ -385,14 +280,11 @@ showpage
 
 Данная программа закрашивает три прямоугольника разными цветами: 
 
-\begin{figure} [h]
-\center{\includegraphics[width=360pt]{rectangles.png}}
+\begin{figure}[t]
+\center{\includegraphics[width=\linewidth]{Gudiev/rectangles.png}}
 \caption{Результат работы программы}\label{pic_Rect}
 \end{figure}
 %\end{figure}
-
-
-\pagebreak
 
 \section{Реализация графической среды исполнения}
 %\addcontentsline{toc}{section}{Реализация графической среды исполнения}
@@ -408,7 +300,6 @@ showpage
 
 Графические настройки представлены классом \texttt{GraphicsSettings}, содержащим такие параметры, как цвет, ширина линии, параметры соединения отрезков и параметры пунктирной линии. 
 
-\pagebreak
 \subsection{Отображение на экране}
 %\addcontentsline{toc}{section}{Отображение на экране}
 \sloppy
@@ -417,12 +308,11 @@ showpage
 Класс \texttt{PSImage}, реализованный с помощью стандартного класса \texttt{java.awt.image.BufferedImage}, представляет отображение графического состояния на экране. Класс \texttt{PSDrawer} непосредственно отрисовывает графическое состояние. Объект \texttt{PSDrawer} хранит экземпляр класса \texttt{PSFrame}, наследуемого от стандартного класса \texttt{javax.swing.JFrame} и отвечающего за окно, в котором изображается графическое состояние. 
 
 
-\begin{figure} [h]
-\center{\includegraphics[width=360pt]{PSDrawer.png}}
-\caption{Диаграмма классов отображения}\label{pic_Frame}
+\begin{figure}[t]
+\center{\includegraphics[width=\linewidth]{Gudiev/PSDrawer.png}}
+\caption{Диаграмма классов отображения}\label{pic_Frame2}
 \end{figure}
 
-\pagebreak
 \subsection{Графические операторы}
 %\addcontentsline{toc}{section}{Графические операторы}
 \sloppy
@@ -436,12 +326,11 @@ showpage
 
 Среди операторов рисования есть операторы рисования контура пути \texttt{StrokeOp()}, заливки области пути \texttt{FillOp()} и \texttt{EoFillOp()}, а также заливки области заданного прямоугольника \texttt{RectFillOp()}. 
 
-\pagebreak
 
 \section*{Заключение}
 \addcontentsline{toc}{section}{Заключение}
 
-В рамках курсовой работы разработана графическая среда исполнения для интерпретатора языка PostScript. В графической среде выполнения хранятся такие параметры, как текущая точка, текущий путь, ограничивающий путь,  цвет,  матрица преобразования системы координат и ширина линии. 
+В рамках работы разработана графическая среда исполнения для интерпретатора языка PostScript. В графической среде выполнения хранятся такие параметры, как текущая точка, текущий путь, ограничивающий путь,  цвет,  матрица преобразования системы координат и ширина линии. 
 При этом выполнены следующие требования:
 \begin{itemize}
 \item Реализованы основные графические операторы.
@@ -451,11 +340,9 @@ showpage
 \item Графическая среда исполнения интерпретатора PostScript реализована на языке Java.
 \end{itemize}
 
-\bibliographystyle{ugost2008ls}
-%\bibliography{expression}
 
-\begin{thebibliography}{}
-\bibitem{plrm}
+\begin{thebibliography}{99}
+\bibitem{plrm2}
 PoscScript Language Reference. Third edition, 1999
 \\
 \url{http://www.adobe.com/products/postscript/pdfs/PLRM.pdf}
@@ -465,5 +352,3 @@ PoscScript Language Reference. Third edition, 1999
 
 \end{thebibliography}
 
-
-\end{document}
