@@ -45,6 +45,12 @@
 
 \topmargin=0pt
 
+\makeatletter
+\newcommand{\StatexIndent}[1][3]{%
+  \setlength\@tempdima{\algorithmicindent}%
+  \Statex\hskip\dimexpr#1\@tempdima\relax}
+\algdef{S}[IF]{IfNoDo}[1]{\algorithmicif\ #1}%
+\makeatother
 
 \begin{document}
 
