@@ -1,161 +1,30 @@
-\documentclass[14pt]{extarticle}
-\usepackage[left=25mm,top=20mm,right=15mm,bottom=20mm,]{geometry}
+\title{Архитектура интерпретатора\\ 
+для исполнения программ на языке PostScript\\
+в JVM}
+%
+\titlerunning{Архитектура интерпретатора PostScript}
+\author{Макулов Рустам Наилевич}
+%
+\authorrunning{Р.Н.Макулов} % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{Р.Н.Макулов}
+%
+\institute{Санкт-Петербургский государственный университет\\
+\email{r.n.makulov@gmail.com}}
 
-%\usepackage{graphicx}
-\usepackage[pdftex]{graphicx}
-\usepackage[utf8x]{inputenc}
-\usepackage[russian]{babel}
-\usepackage[T1]{fontenc}
-\usepackage{float}
-\usepackage{listings}
-\usepackage{cite}
-\usepackage{hyperref}
-\usepackage{etoolbox}
-\usepackage{indentfirst}
-\usepackage[linesnumbered,boxed]{algorithm2e}
-\sloppy
-
-\lstdefinelanguage{llang}{
-keywords={skip, do, while, read, write, if, then, else},
-sensitive=true,
-basicstyle=\small,
-commentstyle=\scriptsize\rmfamily,
-keywordstyle=\ttfamily\underbar,
-identifierstyle=\ttfamily,
-basewidth={0.5em,0.5em},
-columns=fixed,
-fontadjust=true,
-literate={->}{{$\to$}}1
-}
-
-\lstset{
-language=llang
-}
-\makeatletter
-
-\makeatother
-\gappto\captionsrussian{\renewcommand{\contentsname}{Оглавление}}
-\renewcommand\baselinestretch{1.5}
-\renewcommand{\lstlistingname}{Листинг}
-
-\usepackage[left=25mm,top=20mm,right=15mm,bottom=20mm,]{geometry}
-
-%\usepackage{graphicx}
-\usepackage[pdftex]{graphicx}
-\usepackage[utf8x]{inputenc}
-\usepackage[russian]{babel}
-\usepackage[T1]{fontenc}
-\usepackage{float}
-\usepackage{listings}
-\usepackage{cite}
-\usepackage{hyperref}
-\usepackage{etoolbox}
-\usepackage{indentfirst}
-\usepackage[linesnumbered,boxed]{algorithm2e}
-\sloppy
-
-\lstdefinelanguage{llang}{
-keywords={skip, do, while, read, write, if, then, else},
-sensitive=true,
-basicstyle=\small,
-commentstyle=\scriptsize\rmfamily,
-keywordstyle=\ttfamily\underbar,
-identifierstyle=\ttfamily,
-basewidth={0.5em,0.5em},
-columns=fixed,
-fontadjust=true,
-literate={->}{{$\to$}}1
-}
-
-\lstset{
-language=llang
-}
-\makeatletter
-%\renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
-\makeatother
-
-\begin{document}
-
-\begin{titlepage}
-\thispagestyle{empty}
-\def\baselinestretch{1.0}
-\begin{center}
-	{САНКТ-ПЕТЕРБУРГСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ \\ \vskip 0.3em {\large Математико-механический факультет \\ \vskip 0.7em{\large Кафедра системного программирования \\}}}
-    \vspace*{0.15\textheight}
-    {\large Макулов Рустам Наилевич}
-    
-    \vskip 2em
-    {\huge Архитектура интерпретатора для исполнения программ на языке PostScript в JVM}
-    
-    \vskip 1em
-    {\large Курсовая работа} \\
-    \vskip 2em
-    {\normalsize \raggedleft 
-    Допущена к защите.\\
-    Зав. кафедрой:\\
-    д.ф.-м.н., проф. А.Н. Терехов
-    \\[3em]
-    Научный руководитель:\\
-    к.ф.-м.н. Д.Ю. Булычев
-    \\[3em]
-    %Рецензент:\\
-    %Неизвестно \\
-    \vspace*{0.08\textheight}
-    {\centering Санкт-Петербург \\ 2014}
-    }
-\end{center}
-\end{titlepage}
-
-\tableofcontents
-\thispagestyle{empty} 
-\pagebreak
-
-\iffalse
-\documentclass[a4paper, 12pt]{article}
-\usepackage[
-left=25mm,
-top=20mm,
-right=25mm,
-bottom=20mm,
-]{geometry}
-\usepackage{mathtext}
-\usepackage{url}
-\usepackage{cmap}
-\usepackage[utf8x]{inputenc}
-\usepackage[russian]{babel}
-\usepackage[T2A]{fontenc}
-\usepackage{amsmath,amssymb,amsthm,amscd,amsfonts}
-
-\usepackage{bbm}
-\usepackage[boxed]{algorithm2e}
-
-\usepackage{color} %% это для отображения цвета в коде
-\usepackage{listings} %% собственно, это и есть пакет listings
-
-\usepackage{caption}
-\usepackage[pdftex]{graphicx}
-\DeclareCaptionFont{white}{\color{black}} %% это сделает текст заголовка белым
-%% код ниже нарисует серую рамочку вокруг заголовка кода.
-\DeclareCaptionFormat{listing}{\colorbox{white}{\parbox{\textwidth}{#1#2#3}}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
-
-\SetAlgorithmName{Алгоритм}{алгоритм}{Список алгоритмов}
-\SetKwInput{KwResult}{Результат}
-\SetKwInput{KwData}{Входные данные}
-\fi
+\maketitle              % typeset the title of the contribution
 
 \section*{Введение}
-\addcontentsline{toc}{section}{Введение}
-\sloppy
+
 Одной из задач программной инженерии является создание средств, позволяющих сделать процесс разработки более простым, удобным и универсальным. Все больше внимания уделяется кроссплатформенности программ, при которой программное обеспечение (ПО), написанное один раз, поддерживается более чем одной аппаратной платформой или операционной системой. Можно выделить два типа такого ПО: первый тип требует отдельной сборки или компиляции для каждой поддерживаемой платформы, а второй – может быть непосредственно запущен на любой платформе без предварительной подготовки. Ко второму типу относятся программы, написанные на интерпретируемом языке или предварительно скомпилированные в байт-код. Для них интерпретатор или среда исполнения являются общей или стандартной компонентой многих платформ. В целом это упрощает процесс разработки и делает его более универсальным с точки зрения перенесения с одной платформы на другую.
 Для реализации ПО второго типа применяются виртуальные машины. Они исполняют некоторый машинно-независимый код или машинный код реального процессора. Одной из виртуальных машин, предназначенных для исполнения байт-кода, является виртуальная машина Java (JVM)\cite{jvms}.
 
-JVM первоначально была разработана для поддержки только языка программирования Java. Тем не менее, с течением времени все больше языков были адаптированы или созданы  для работы на Java-платформе. Например, исходный код на языке Ada\footnote{\url{http://www.adacore.com/press/ada-java_interfacing_suite/}} может быть откомпилирован в байт-код Java, который затем можно выполнить с помощью JVM. Помимо Ada, многие существующие языки имеют JVM-реализации, например, C\footnote{\url{http://nestedvm.ibex.org/}}, Cobol\footnote{\url{http://www.elasticcobol.com/}}, Common Lisp\footnote{\url{http://clforjava.org/}}, Erlang\footnote{\url{http://erjang.org/}}, JavaScript\footnote{\url{http://www.mozilla.org/rhino}}, OCaml\footnote{\url{http://ocamljava.x9c.fr/}}, R\footnote{\url{http://code.google.com/p/renjin/}}, Ruby\footnote{\url{http://jruby.org/}} и так далее. Таким образом, JVM является универсальной платформой для исполнения программ на многих языках программирования. 
+JVM первоначально была разработана для поддержки только языка программирования Java. Тем не менее, с течением времени все больше языков были адаптированы или созданы  для работы на Java-платформе. Например, исходный код на языке Ada\footnote{\url{http://www.adacore.com/press/ada-java\_interfacing\_suite}} может быть откомпилирован в байт-код Java, который затем можно выполнить с помощью JVM. Помимо Ada, многие существующие языки имеют JVM-реализации, например, C\footnote{\url{http://nestedvm.ibex.org/}}, Cobol\footnote{\url{http://www.elasticcobol.com/}}, Common Lisp\footnote{\url{http://clforjava.org/}}, Erlang\footnote{\url{http://erjang.org/}}, JavaScript\footnote{\url{http://www.mozilla.org/rhino}}, OCaml\footnote{\url{http://ocamljava.x9c.fr/}}, R\footnote{\url{http://code.google.com/p/renjin/}}, Ruby\footnote{\url{http://jruby.org/}} и так далее. Таким образом, JVM является универсальной платформой для исполнения программ на многих языках программирования. 
 
-Данная курсовая работа посвящена разработке архитектуры переносимого интерпретатора программ на языке PostScript \cite{plrm} в JVM-среде. PostScript —  это гибкий,  компактный и мощный язык	программирования, предназначенный как для отображения графических изображений, так и для выполнения других задач программирования. Как и в случае со многими языками, PostScript был разработан для конкретной цели – для описания сложной цифровой графики аппаратно-независимым образом. Несмотря на легкость в изучении, программы на этом языке генерируются в основном другими программами. Результат выполнения PostScript-программ может быть показан на экране в виде документа. Для выполнения программ, написанных на PostScript, существуют интерпретаторы языка для каждой  операционной системы.
-В рамках курсовой работы решается задача построения и реализации архитектуры интерпретатора для исполнения программ на языке PostScript в среде виртуальной машины Java. Для этого необходимо спроектировать и реализовать модель памяти языка, иерархию объектов, структуры данных.
+Данная работа посвящена разработке архитектуры переносимого интерпретатора программ на языке PostScript \cite{plrm} в JVM-среде. PostScript —  это гибкий,  компактный и мощный язык	программирования, предназначенный как для отображения графических изображений, так и для выполнения других задач программирования. Как и в случае со многими языками, PostScript был разработан для конкретной цели – для описания сложной цифровой графики аппаратно-независимым образом. Несмотря на легкость в изучении, программы на этом языке генерируются в основном другими программами. Результат выполнения PostScript-программ может быть показан на экране в виде документа. Для выполнения программ, написанных на PostScript, существуют интерпретаторы языка для каждой  операционной системы.
+В рамках работы решается задача построения и реализации архитектуры интерпретатора для исполнения программ на языке PostScript в среде виртуальной машины Java. Для этого необходимо спроектировать и реализовать модель памяти языка, иерархию объектов, структуры данных.
 
-\pagebreak
 \section{Общие сведения о языке PostScript}
 PostScript --- это полнофункциональный тьюринг-полный язык программирования. Синтаксис языка использует обратную польскую нотацию. Далее мы рассмотрим используемую в языке модель данных и основные компоненты среды исполнения.
 
@@ -234,7 +103,7 @@ PostScript --- это полнофункциональный тьюринг-по
 
 %\begin{figure} [h]
 %\caption{Простой объект на стеке операндов после операции save}
-\begin{lstlisting}[label=PostScript-example,caption=Простой объект на стеке операндов после операции save, frame = single, language = PostScript]
+\begin{lstlisting}[label=PostScript-example3,caption=Простой объект на стеке операндов после операции save, language = PostScript]
 /AnArray 10 array def
 AnArray
 save
@@ -249,7 +118,7 @@ restore
 
 %\begin{figure} [h]
 %\caption{Сложный объект на стеке операндов после операции save}
-\begin{lstlisting}[label=PostScript-example,caption=Сложный объект на стеке операндов после операции save, frame = single, language = PostScript]
+\begin{lstlisting}[label=PostScript-example4,caption=Сложный объект на стеке операндов после операции save, language = PostScript]
 save
 /AnArray 10 array def
 AnArray
@@ -262,7 +131,7 @@ restore
 
 %\begin{figure} [h]
 %\caption{Изменение значения строки}
-\begin{lstlisting}[label=PostScript-example,caption=Изменение значения строки, frame = single, language = PostScript]
+\begin{lstlisting}[label=PostScript-example1,caption=Изменение значения строки, language = PostScript]
 /str (String) def 		% (String)
 str 1 (test) putinterval	% (Stestg)
 save
@@ -277,7 +146,7 @@ restore				% (String)
 
 %\begin{figure} [h]
 %\caption{Изменение значения массива}
-\begin{lstlisting}[label=PostScript-example,caption=Изменение значения массива, frame = single, language = PostScript]
+\begin{lstlisting}[label=PostScript-example2,caption=Изменение значения массива, language = PostScript]
 /AnArray 10 array def		% [null null null null null null null null null null]
 AnArray 8 (str) put		% [null null null null null null null null (str) null]
 save
@@ -297,7 +166,6 @@ restore				% [null null null null null null null null (str) null]
 Несмотря на сборку мусора операторы save и restore не меняют своего поведения. restore восстанавливает все доступные объекты в локальной памяти к моменту операции save. Все объекты, созданные в локальной памяти после операции save, удаляются, при этом затрачивается намного меньше ресурсов. Но с другой стороны, сборка мусора --- это единственный способ очистки глобальной памяти, так как save и restore не затрагивают её.
 
 
-\pagebreak
 \section{Архитектура интерпретатора}
 С точки зрения языка Java архитектура --- это иерархия объектов, которая достаточно полно описывает все объекты языка, а также основные компоненты среды исполнения: виртуальную память и необходимые стеки. 
 
@@ -311,8 +179,15 @@ restore				% [null null null null null null null null (str) null]
 Объекты, создаваемые в глобальной памяти, интерпретатор размещает в памяти JVM. Они не входят в область действия операторов save и restore, и поэтому могут быть удалены только сборщиком мусора.
 
 Переключение между двумя типами памяти производится при помощи метода setGlobal() в классе Runtime.
+
+\begin{figure}[t]
+\center{\includegraphics[width=\linewidth]{Makulov/class_diagram.jpg}}
+\caption{Диаграмма классов}\label{pic_Frame}
+\end{figure}
+
 \subsection{Иерархия объектов}
-Каждый объект языка PostScript реализован в виде класса PSObject. Он имеет три поля: значение, тип и атрибуты (рис. \ref{pic_Frame}). Значение всех объектов наследуется от абстрактного класса Value, в котором есть абстрактный метод getValue(). Для простых значений он возвращает этот же простой объект, для сложных -- используя ссылку, значение сложного объекта в локальной памяти. 
+
+Каждый объект языка PostScript реализован в виде класса PSObject. Он имеет три поля: значение, тип и атрибуты (рис.~\ref{pic_Frame}). Значение всех объектов наследуется от абстрактного класса Value, в котором есть абстрактный метод getValue(). Для простых значений он возвращает этот же простой объект, для сложных -- используя ссылку, значение сложного объекта в локальной памяти. 
 
 \begin{itemize}
 \item SimpleValue ---  базовый абстрактный класс, объединяющий все значения простых объектов.
@@ -337,28 +212,17 @@ restore				% [null null null null null null null null (str) null]
 
 Все объекты могут быть сравнимы между собой и поэтому в каждом классе реализованы методы compareTo() и equals().
 
-\begin{figure} [h]
-\center{\includegraphics[width=480pt]{class_diagram.jpg}}
-\caption{Диаграмма классов}\label{pic_Frame}
-\end{figure}
-
 \subsection{Значения объектов и операторы save и restore}
 
 Значения всех объектов сделаны неизменяемыми. Объекты могут изменить свое значение только в том случае, если они сложные. В этом случае  подменяется значение, которое лежит по ссылке (Reference). Если ссылка локальная, то по адресу этой ссылки в локальной памяти значение меняется на новое. При изменении объекта, содержащего ссылку на глобальную память, подменяется значение, которое находилось в этой ссылке в качестве поля. Поскольку все значения неизменяемые или immutable, то все методы, их изменяющие, возвращают новые изменённые значения. Старые значения либо используются по-прежнему используются другими объектами, либо удаляются сборщиком мусора.
 
 Операторы save и restore реализованы в классе Runtime. Оператор save делает копию локальной памяти и кладет ее на вершину стека операндов. Оператор restore берет объект с вершины стека операндов и проверяет, является ли данный объект снимком состояния памяти. Далее берется каждый элемент стека операндов и, если это сложный объект, который был создан после операции save (т.е. его нет в снимке памяти), выбрасывается ошибка, операция restore не выполняется. Если ошибок не возникло, то обновляется значение всех строк из снимка (restore не меняет значения строк согласно спецификации). В конце локальная память возвращается к состоянию на обновленном снимке. 
-\pagebreak
-\pagebreak
+
 \section*{Заключение}
-\addcontentsline{toc}{section}{Заключение}
 
-В рамках курсовой работы построена и реализована архитектура для интерпретатора программ на языке Postscript. Реализованная архитектура правильным образом описывает все основные компоненты: локальную и глобальную память, стек операндов, стек словарей, стек исполнения и графический стек. Реализована иерархия объектов, поддерживаются операторы сохранения состояния локальной памяти, для сохранения состояния локальной памяти все объекты неизменяемые, среда исполнения реализована на Java. Есть тестовая база, которая работает как в эталонном интерпретаторе ghostscript.
+В рамках данной работы построена и реализована архитектура для интерпретатора программ на языке Postscript. Реализованная архитектура правильным образом описывает все основные компоненты: локальную и глобальную память, стек операндов, стек словарей, стек исполнения и графический стек. Реализована иерархия объектов, поддерживаются операторы сохранения состояния локальной памяти, для сохранения состояния локальной памяти все объекты неизменяемые, среда исполнения реализована на Java. Есть тестовая база, которая работает как в эталонном интерпретаторе ghostscript.
 
-\pagebreak
-\bibliographystyle{ugost2008ls}
-%\bibliography{expression}
-
-\begin{thebibliography}{}
+\begin{thebibliography}{99}
 \bibitem{jvms}
 Tim Lindholm, Frank Yellin, Gilad Bracha, Alex Buckley.
 The Java Virtual Machine Specification.
@@ -368,6 +232,4 @@ Java SE 8 Edition, 2014. \\
 \bibitem{plrm}
 PostScript Language Reference, Third Edition, 1999, 912 p. \\
 \url{http://www.adobe.com/products/postscript/pdfs/PLRM.pdf}
-
 \end{thebibliography}
-\end{document}
