@@ -339,6 +339,36 @@ Boehm-Demers-Weiser и описанной в статье~\cite{BDW}.
 этой стратегии нужно определить переменную \texttt{GC\_STRATEGY} равной \texttt{BDW}. Также можно при запуске приложения
 определить параметры \texttt{FSD} и \texttt{IF}.
 
+\begin{figure}[ph]
+\caption{\label{pic:pause-no-gc}распределение пауз при работе no gc}
+\includegraphics[width=1\linewidth]{Bakradze/no-apce.png}
+\end{figure}
+
+\begin{figure}[ph]
+\caption{\label{pic:space-based-pause}распределение пауз при работе space based}
+\includegraphics[width=1\linewidth]{Bakradze/space-based-pause-same.png}
+\end{figure}
+
+\begin{figure}[ph]
+\caption{\label{pic:time-based-pause}распределение пауз при работе time based}
+\includegraphics[width=1\linewidth]{Bakradze/time_based.png}
+\end{figure}
+
+\begin{figure}[ph]
+\caption{\label{pic:pause-bdw}распределение пауз при работе bdw}
+\includegraphics[width=1\linewidth]{Bakradze/bdw.png}
+\end{figure}
+
+\begin{figure}[ph]
+\caption{\label{pic:allocated}распределение занятой памяти при работе parser}
+\includegraphics[width=1\linewidth]{Bakradze/all-allocated.png}
+\end{figure}
+
+\begin{figure}[ph]
+\caption{\label{pic:perf}Время работы приложения с различными дисциплинами сборки мусора}
+\includegraphics[width=1\linewidth]{Bakradze/perf.png}
+\end{figure}
+
 \section{Результаты}
 
 Ниже представлены и описаны результаты, полученные при работе написанного на 
@@ -383,36 +413,6 @@ Boehm-Demers-Weiser и описанной в статье~\cite{BDW}.
 \item cамые маленькие накладные расходы на сборку мусора обеспечивает
 дисциплина инициирования \emph{``bdw''}.
 \end{itemize}
-
-\begin{figure}[ph]
-\caption{\label{pic:pause-no-gc}распределение пауз при работе no gc}
-\includegraphics[width=1\linewidth]{Bakradze/no-apce.png}
-\end{figure}
-
-\begin{figure}[ph]
-\caption{\label{pic:space-based-pause}распределение пауз при работе space based}
-\includegraphics[width=1\linewidth]{Bakradze/space-based-pause-same.png}
-\end{figure}
-
-\begin{figure}[ph]
-\caption{\label{pic:time-based-pause}распределение пауз при работе time based}
-\includegraphics[width=1\linewidth]{Bakradze/time_based.png}
-\end{figure}
-
-\begin{figure}[ph]
-\caption{\label{pic:pause-bdw}распределение пауз при работе bdw}
-\includegraphics[width=1\linewidth]{Bakradze/bdw.png}
-\end{figure}
-
-\begin{figure}[ph]
-\caption{\label{pic:allocated}распределение занятой памяти при работе parser}
-\includegraphics[width=1\linewidth]{Bakradze/all-allocated.png}
-\end{figure}
-
-\begin{figure}[ph]
-\caption{\label{pic:perf}Время работы приложения с различными дисциплинами сборки мусора}
-\includegraphics[width=1\linewidth]{Bakradze/perf.png}
-\end{figure}
 
 \section*{Заключение}
 Результатом данной работы явилась реализация
