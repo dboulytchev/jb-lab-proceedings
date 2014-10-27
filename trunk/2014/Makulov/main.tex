@@ -13,6 +13,19 @@
 \institute{Санкт-Петербургский государственный университет\\
 \email{r.n.makulov@gmail.com}}
 
+\renewcommand\lstlistingname{Листинг}
+\renewcommand{\thelstlisting}{\arabic{lstlisting}}
+
+\lstset{
+%basicstyle=\small,
+%identifierstyle=\ttfamily,
+%keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily
+%basewidth={0.5em,0.5em},
+%fontadjust=true,
+%escapechar=~,
+}
+
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
@@ -156,11 +169,18 @@ restore				% (String)
 %\begin{figure} [h]
 %\caption{Изменение значения массива}
 \begin{lstlisting}[label=PostScript-example2,caption=Изменение значения массива, language = PostScript]
-/AnArray 10 array def		% [null null null null null null null null null null]
-AnArray 8 (str) put		% [null null null null null null null null (str) null]
+/AnArray 10 array def 
+% [null null null null null null null null null null]
+
+AnArray 8 (str) put   
+% [null null null null null null null null (str) null]
+
 save
-AnArray 8 (tst) put		% [null null null null null null null null (tst) null]
-restore				% [null null null null null null null null (str) null]
+AnArray 8 (tst) put   
+% [null null null null null null null null (tst) null]
+
+restore		      
+% [null null null null null null null null (str) null]
 \end{lstlisting}
 %\end{figure}
 
