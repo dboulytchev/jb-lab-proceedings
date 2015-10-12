@@ -1,0 +1,7 @@
+if (someValue == 0) {
+    doFirstThing();
+    doSecondThing();
+}
+else {
+    doThirdThing();
+}

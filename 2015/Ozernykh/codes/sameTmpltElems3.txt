@@ -1,0 +1,6 @@
+if (someValue == 0) { return; }
+if (someObject == null) { return; }
+
+if (veryLongUsefulFunctionName()) {
+    doSomethingSpecial();
+}

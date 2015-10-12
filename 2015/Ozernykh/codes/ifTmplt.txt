@@ -1,0 +1,7 @@
+if (condition#0 OneLineB#) {
+    then block#-1 MultiB#
+}
+else {
+    else block#-1 OneLineB#
+}
+ 

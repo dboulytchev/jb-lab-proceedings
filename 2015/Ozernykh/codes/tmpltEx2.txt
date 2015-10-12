@@ -1,0 +1,8 @@
+if ('condition')
+{
+    'thenbranch'
+}
+else 
+{
+    'elseBranch'
+}

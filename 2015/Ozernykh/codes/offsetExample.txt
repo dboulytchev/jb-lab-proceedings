@@ -1,0 +1,7 @@
+public void foo() {
+    int someValue = getSomeValue();
+    if (someValue != 0) {
+        doSomething();
+        doAnotherThing();
+    }
+}
