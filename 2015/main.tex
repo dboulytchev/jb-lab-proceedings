@@ -52,6 +52,31 @@
 \algdef{S}[IF]{IfNoDo}[1]{\algorithmicif\ #1}%
 \makeatother
 
+\lstdefinelanguage{Haskell}{
+keywords={let, in, where, module, case, of, if, the, else, type, newtype, data, class, instance},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]",
+literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstset{
+basicstyle=\small,
+identifierstyle=\ttfamily,
+stringstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+escapechar=~
+}
+
 \begin{document}
 
 \newcommand{\Issue}[0]{3}
@@ -102,7 +127,7 @@
 \thispagestyle{plain}
 }
 
-%\include{Podkopaev/main}
+\include{Aliev/main}
 
 %\include{Polubelova/main}
 %\include{Verbitskaia/main}
