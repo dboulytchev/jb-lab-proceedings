@@ -24,6 +24,9 @@
 \usepackage{ucs}
 \usepackage[caption=false]{subfig}
 
+\usepackage{verbments}
+\usepackage{minted}
+
 \usepackage{xcolor}
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{dred}{rgb}{0.545,0,0}
@@ -64,6 +67,21 @@ columns=fixed,
 fontadjust=true,
 morestring=[b]",
 literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstdefinelanguage{Java}{
+keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
+          do, while, switch, case, else, try, catch, finally, if, return, true, false},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]"
+%literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
 }
 
 \lstset{
@@ -127,6 +145,7 @@ escapechar=~
 \thispagestyle{plain}
 }
 
+\include{Korovyansky/main}
 \include{Aliev/main}
 
 %\include{Polubelova/main}
