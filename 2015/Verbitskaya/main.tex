@@ -1,65 +1,112 @@
-% Тут используется класс, установленный на сервере Papeeria. На случай, если
-% текст понадобится редактировать где-то в другом месте, рядом лежит файл matmex-diploma-custom.cls
-% который в момент своего создания был идентичен классу, установленному на сервере.
-% Для того, чтобы им воспользоваться, замените matmex-diploma на matmex-diploma-custom
-% Если вы работаете исключительно в Papeeria то мы настоятельно рекомендуем пользоваться
-% классом matmex-diploma, поскольку он будет автоматически обновляться по мере внесения корректив
-%
-\documentclass{matmex-diploma}
-\usepackage{algpseudocode}
-\usepackage{algorithm}
-\usepackage{caption}
-\usepackage{algorithmicx}
-\usepackage{amssymb}
-
-\begin{document}
-
 \algtext*{EndWhile}% Remove "end while" text
 \algtext*{EndIf}% Remove "end if" text
 \algtext*{EndFor}% Remove "end for" text
 \algtext*{EndFunction}% Remove "end function" text
 
-% Год, город, название университета и факультета предопределены,
-% но можно и поменять.
-% Если англоязычная титульная страница не нужна, то ее можно просто удалить.
-\filltitle{ru}{
-    chair              = {Кафедра системного программирования},
-    title              = {Синтаксический анализ регулярных множеств},
-    type               = {diploma},
-    position           = {студентка},
-    group              = 544,
-    author             = {Вербицкая Екатерина Андреевна},
-    supervisorPosition = {ст. пр., магистр информационных технологий},
-    supervisor         = {Григорьев С.\,B.},
-    reviewerPosition   = {программист ООО "ИнтеллиДжей Лабс", \\магистр прикладной математики и информатики},
-    reviewer           = {Бреслав А.\,А.},
-    chairHeadPosition  = {д.\,ф.-м.\,н., профессор},
-    chairHead          = {Терехов А.\,Н.},
-    city               = {Санкт-Петербург},
-    year               = {2015}
-}
-\filltitle{en}{
-    chair              = {Chair of Software Engineering},
-    title              = {Parsing of Regular Sets},
-    author             = {Ekaterina Verbitskaia},
-    supervisorPosition = {Senior Lecturer},
-    supervisor         = {Semen Grigorev},
-    reviewerPosition   = {Software Developer at IntelliJ Labs},
-    reviewer           = {Andrey Breslav},
-    chairHeadPosition  = {Professor},
-    chairHead          = {Andrey Terekhov},
-}
-\maketitle
-\tableofcontents
+\title{Синтаксический анализ регулярных множеств}
 
-\input{introduction}
-\input{statement}
-\input{relatedworks}
-\input{algorithm}
-\input{correctness}
-\input{evaluation}
-\input{conclusion}
+\titlerunning{Синтаксический анализ регулярных множеств}
 
-\bibliographystyle{ugost2008ls}
-\bibliography{diploma.bib}
-\end{document}
+\author{Вербицкая Екатерина Андреевна}
+
+\authorrunning{Е.А.Вербицкая}
+
+\tocauthor{Е.А.Вербицкая}
+\institute{Санкт-Петербургский государственный университет\\
+\email{kajigor@gmail.com}}
+
+\maketitle             
+
+\begin{abstract}
+test
+\end{abstract}
+
+\input{Verbitskaya/introduction}
+\input{Verbitskaya/statement}
+\input{Verbitskaya/relatedworks}
+\input{Verbitskaya/algorithm}
+\input{Verbitskaya/correctness}
+\input{Verbitskaya/evaluation}
+\input{Verbitskaya/conclusion}
+
+\begin{thebibliography}{99}
+\bibitem{Alvor}
+  A.Annamaa, A.Breslav, J.Kabanov, V.Vene.
+  An Interactive Tool for Analyzing Embedded SQL Queries //
+  Programming Languages and Systems, 2010, P.~131--138.
+
+\bibitem{Alvor2}
+  A.Annamaa, A.Breslav, V.Vene.
+  Using Abstract Lexical Analysis and Parsing to Detect Errors in String-Embedded DSL Statements //
+  Proceedings of the 22nd Nordic Workshop on Programming Theory, 2010, P.~20--22.
+
+\bibitem{DSQLISO}
+  Information technology --- Database languages --- SQL. ISO. ISO/IEC 9075:1992, 1992.
+
+\bibitem{JSP}
+  D.Houglan, A.Tavistock. Core JSP. Prentice Hall PTR, 2000.
+
+\bibitem{PHPmySQL}
+  PHP mySQL interface. \url{http://php.net/manual/en/mysqli.query.php}.
+
+\bibitem{SPPF}
+  J.Rekers. Parser Generation for Interactive Environments, 1992.
+
+\bibitem{LangInclusion}
+  P.R.J.Asveld, A.Nijholt, Anton.
+  The Inclusion Problem for Some Subclasses of Context-free Languages /
+  Theoretical Computer Science, Vol.~230, \textnumero~1--2, 1999.
+
+\bibitem{Stranger}
+ F.Yu, M.Alkhalaf, T.Bultan, O.H.Ibarra.
+ Automata-based Symbolic String Analysis for Vulnerability Detection //
+ Form. Methods Syst. Des., Vol.~44, \textnumero~1, 2014.
+
+\bibitem{JSA}
+ A.S.Christensen, A.M{\o}ller, M.I.Schwartzbach.
+ Precise Analysis of String Expressions //
+ Proceedings of the International Conference on Static Analysis, 2003.
+
+\bibitem{AbstrParsing}
+ K-G.Doh, H.Kim, D.A.Schmidt.
+ Abstract Parsing: Static Analysis of Dynamically Generated String Output Using LR-Parsing Technology //
+ Proceedings of the International Symposium on Static Analysis, 2009, P.~256--272.
+
+\bibitem{LRAbstrParsing}
+ K-G.Doh, H.Kim, D.A.Schmidt, David A.
+ Abstract LR-parsing // Formal Modeling, 2011, P.~90--109.
+
+\bibitem{LRAbstrParsingSema}
+ K-G.Doh, H.Kim, D.A.Schmidt.
+ Static Validation of Dynamically Generated HTML Documents Based on Abstract Parsing and Semantic Processing //
+ Proceedings of the International Symposium on Static Analysis, 2013, P.~194--214.
+
+\bibitem{AbstractInterpretation}
+ P.Cousot, R.Cousot.
+ Abstract Interpretation: a Unified Lattice Model for Static Analysis of Programs by Construction 
+ or Approximation of Fixpoints // Conference Record of the Fourth Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages,
+ 1977.
+
+\bibitem{Tomita}
+ M.Tomitqa. An Efficient Context-free Parsing Algorithm for Natural Languages //
+ Proceedings of the 9th International Joint Conference on Artificial Intelligence, 1985, P.~756--764.
+
+\bibitem{SECR13}
+ S.Grigorev, I.Kirilenko, Iakov.
+ GLR-based Abstract Parsing //
+ Proceedings of the 9th Central \&\#38; Eastern European Software Engineering Conference in Russia, 2013, P.~5:1--5:9.
+
+\bibitem{SECR14}
+ S.Grigorev, E.Verbitskaia, A.Ivanov, M.Polubelova, E.Mavchun.
+ String-embedded Language Support in Integrated Development Environment //
+ Proceedings of the 10th Central and Eastern European Software Engineering Conference in Russia, 2014, P.~21:1--21:11.
+
+\bibitem{YC}
+ I.Kirilenko, S.Grigorev, D.Avdiukhin.
+ Syntax Analyzers Development in Automated Reengineering of Informational System //
+ St. Petersburg State Polytechnical University Journal. Computer Science. Telecommunications and Control Systems,
+ Vol.~174, \textnumero~3, P.~94--98.
+
+\bibitem{FSharp}
+ D.Syme, A.Granicz, A.Cisternino. Expert F\# (Expert's Voice in .Net). Apress, 2011.
+\end{thebibliography}

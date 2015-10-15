@@ -18,7 +18,8 @@ RNGLR-алгоритм (Right-Nulled Generalized LR) является модиф
 \caption{RNGLR-алгоритм}
 \label{rnglr}
 \Function{parse}{$grammar, input$}
-  \State{$\mathcal{R} \gets \emptyset$} \Comment{Очередь троек: вершина GSS, нетерминал, длина свёртки}
+  \State{$\mathcal{R} \gets \emptyset$} \Comment{Очередь троек: вершина GSS, нетерминал,\par
+       \hskip2.5cm длина свёртки}
   \State{$\mathcal{Q} \gets \emptyset$} \Comment{Коллекция пар: вершина GSS, состояние парсера}
   \If{$input = \epsilon$}
     \If{$grammar$ accepts empty input} {report success}
@@ -30,7 +31,8 @@ RNGLR-алгоритм (Right-Nulled Generalized LR) является модиф
       \State{\Call{reduce}{$i$}}
       \State{\Call{push}{$i$}}
     \EndFor
-    \If{$i=input.Length-1$ and there is a vertex in the last level of GSS which state is accepting}
+    \If{$i=input.Length-1$ and there is a vertex in the last\par 
+      \hskip1cm level of GSS which state is accepting}
       \State{report success}
     \Else { report failure}
     \EndIf
@@ -39,10 +41,11 @@ RNGLR-алгоритм (Right-Nulled Generalized LR) является модиф
 \Function{reduce}{$i$}
   \While{$\mathcal{R}$ is not empty}
     \State{$(v, N, l) \gets \mathcal{R}.Dequeue()$}
-    \State{find the set $\mathcal{X}$ of vertices reachable from $v$ along the path of length $(l-1)$}
-    \State{or length $0$ if $l=0$}
+    \State{find the set $\mathcal{X}$ of vertices reachable from $v$ along the path}
+    \State{of length $(l-1)$ or length $0$ if $l=0$}
     \ForAll{$v_{h} = (level_{h}, state_{h})$ in $\mathcal{X}$}
-      \State{$state_{t} \gets$ calculate new state by $state_{h}$ and nonterminal $N$}
+      \State{$state_{t} \gets$ calculate new state by $state_{h}$}
+      \State{    and nonterminal $N$}
       \State{\Call{addEdge}{$i, v_{h}, v.level, state_{tail}, (l=0)$}}
     \EndFor
   \EndWhile
@@ -64,9 +67,10 @@ RNGLR-алгоритм (Right-Nulled Generalized LR) является модиф
 \Function{addVertex}{$i, level, state$}
   \If{GSS does not contain vertex $v = (level, state)$}
     \State{add new vertex $v = (level, state)$ to GSS}
-    \State{calculate the set of shifts by $v$ and the $input[i+1]$ and add them to $\mathcal{Q}$}
-    \State{calculate the set of zero-reductions by $v$ and the $input[i+1]$ and}
-    \State{add them to $\mathcal{R}$}
+    \State{calculate the set of shifts by $v$ and the $input[i+1]$ and}
+    \State{add them to $\mathcal{Q}$}
+    \State{calculate the set of zero-reductions by $v$ and the $input[i+1]$} 
+    \State{and add them to $\mathcal{R}$}
   \EndIf
   \State{\Return{$v$}}
 \EndFunction
@@ -75,8 +79,8 @@ RNGLR-алгоритм (Right-Nulled Generalized LR) является модиф
   \If{GSS does not contain edge from $v_{t}$ to $v_{h}$}
     \State{add new edge from $v_{t}$ to $v_{h}$ to GSS}
     \If{not $isZeroReduction$}
-      \State{calculate the set of reductions by $v$ and the $input[i+1]$ and}
-      \State{add them to $\mathcal{R}$}
+      \State{calculate the set of reductions by $v$ and the $input[i+1]$}
+      \State{and add them to $\mathcal{R}$}
     \EndIf
   \EndIf
 \EndFunction
@@ -85,7 +89,7 @@ RNGLR-алгоритм (Right-Nulled Generalized LR) является модиф
 
 Для эффективного представления множества стеков во время синтаксического анализа в алгоритме RNGLR используется структурированный в виде графа стек (Graph Structured Stack, GSS), который является ориентированным графом, чьи вершины соответствуют  элементам отдельных стеков, а ребра связывают последовательные элементы. Каждая вершина может иметь несколько входящих рёбер, что соответствует слиянию нескольких стеков, за счёт чего производится переиспользование общих участков отдельных стеков. Вершина GSS~--- это пара $(s,l)$, где $s$~--- состояние парсера, а $l$~--- уровень (позиция во входном потоке).
 
-RNGLR-алгоритм последовательно считывает символы входного потока слева направо, по одному за раз, и строит GSS по "слоям": сначала осуществляются все возможные свёртки для данного символа, после чего сдвигается следующий символ со входа. Свёртка или сдвиг модифицируют GSS следующим образом. Предположим, что необходимо добавить ребро $(v_t,v_h)$ в GSS. По построению, конечная вершина добавляемой дуги к такому моменту уже обязательно находится в GSS. Если начальная вершина также содержится в GSS, то в граф добавляется новое ребро (если оно ранее не было добавлено), иначе создаются и добавляются в граф и начальная вершина, и ребро. Каждый раз, когда создаётся новая вершина $v=(s,l)$, алгоритм вычисляет новое состояние парсера $s'$ по $s$ и следующему символу входного потока. Пара $(v,s')$, называемая push, добавляется в глобальную коллекцию $\mathcal{Q}$. Также при добавлении новой вершины в GSS вычисляется множество $\epsilon$-свёрток, после чего элементы этого множества добавляются в глобальную очередь $\mathcal{R}$. Свёртки длины $l>0$ вычисляются и добавляются в $\mathcal{R}$ каждый раз, когда создаётся новое (не-$\epsilon$) ребро. Подробное описание работы со структурированным в виде графа стеком GSS содержится в алгоритме~\ref{RNGLRMain}.
+RNGLR-алгоритм последовательно считывает символы входного потока слева направо, по одному за раз, и строит GSS по ``слоям'': сначала осуществляются все возможные свёртки для данного символа, после чего сдвигается следующий символ со входа. Свёртка или сдвиг модифицируют GSS следующим образом. Предположим, что необходимо добавить ребро $(v_t,v_h)$ в GSS. По построению, конечная вершина добавляемой дуги к такому моменту уже обязательно находится в GSS. Если начальная вершина также содержится в GSS, то в граф добавляется новое ребро (если оно ранее не было добавлено), иначе создаются и добавляются в граф и начальная вершина, и ребро. Каждый раз, когда создаётся новая вершина $v=(s,l)$, алгоритм вычисляет новое состояние парсера $s'$ по $s$ и следующему символу входного потока. Пара $(v,s')$, называемая push, добавляется в глобальную коллекцию $\mathcal{Q}$. Также при добавлении новой вершины в GSS вычисляется множество $\epsilon$-свёрток, после чего элементы этого множества добавляются в глобальную очередь $\mathcal{R}$. Свёртки длины $l>0$ вычисляются и добавляются в $\mathcal{R}$ каждый раз, когда создаётся новое (не-$\epsilon$) ребро. Подробное описание работы со структурированным в виде графа стеком GSS содержится в алгоритме~\ref{RNGLRMain}.
 
 В силу неоднозначности грамматики входная строка может иметь несколько деревьев вывода, как правило, содержащих множество идентичных поддреревьев. Для того, чтобы компактно хранить множество деревьев вывода, создано компактное представление леса разбора (Shared Packed Parse Forest, SPPF)~\cite{SPPF}. SPPF является ориентированным графом и обладает следующей структурой.
 \begin{enumerate}
@@ -100,10 +104,10 @@ SPPF создаётся одновременно с построением GSS. 
 Алгоритм~\ref{rnglr} представляет более детальное описание алгоритма.
 
 \subsection{Проект YaccConstructor и платформа для анализа встроенных языков}
-В рамках проекта YaccConstructor~\cite{YC} лаборатории языков инструментов JetBrains на математико-механическом факультете СПбГУ проводятся исследования в области лексического и синтаксического анализа, а также статического анализа встроенных языков. Проект YaccConstructor представляет собой модульный инструмент, имеет собственный язык спецификации грамматик, объединяет различные алгоритмы лексического и синтаксического анализа. В рамках проекта была создана платформа для статического анализа встроенного кода~\cite{SECR14}; диаграмма последовательности, иллюстрирующая взаимодействие модулей платформы представлена на рисунке~\ref{seq}. Цветом выделена компонента, осуществляющая синтаксический анализ множества значений динамически формируемого выражения. 
+В рамках проекта YaccConstructor~\cite{YC} лаборатории языков инструментов JetBrains на математико-механическом факультете СПбГУ проводятся исследования в области лексического и синтаксического анализа, а также статического анализа встроенных языков. Проект YaccConstructor представляет собой модульный инструмент, имеет собственный язык спецификации грамматик, объединяет различные алгоритмы лексического и синтаксического анализа. В рамках проекта была создана платформа для статического анализа встроенного кода~\cite{SECR14}; диаграмма последовательности, иллюстрирующая взаимодействие модулей платформы представлена на рис.~\ref{seq}. Цветом выделена компонента, осуществляющая синтаксический анализ множества значений динамически формируемого выражения. 
 \begin{figure}[!h]
  \centering
- \includegraphics[width=15cm]{pics/Seq_rus.png}
+ \includegraphics[width=10cm]{Verbitskaya/pics/Seq_rus.png}
  \caption{Диаграмма последовательности: взаимодействие компонентов
 инструмента YaccConstructor}
  \label{seq}
