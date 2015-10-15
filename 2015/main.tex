@@ -33,6 +33,11 @@
 \definecolor{gray}{rgb}{0.4,0.4,0.4}
 \definecolor{darkblue}{rgb}{0.0,0.0,0.6}
 
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{minted}
+\usepackage{array}
+
 \newcommand{\cd}[1]{\texttt{#1}}
 
 \pdfpagewidth=14.8cm
@@ -70,6 +75,21 @@ literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
 \lstdefinelanguage{Java}{
 keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
           break, do, while, switch, case, else, try, catch, finally, if, return, true, false},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]"
+%literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstdefinelanguage{csharp}{
+keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
+          break, do, while, switch, case, else, try, catch, finally, if, return, true, false, for, private, bool, string},
 sensitive=true,
 basicstyle=\small,
 commentstyle=\scriptsize\rmfamily,
@@ -145,6 +165,7 @@ escapechar=~
 
 
 \include{Verbitskaya/main}
+\include{Polubelova/main}
 \include{Samofalov/main}
 
 \include{Korovyansky/main}

@@ -1,65 +1,24 @@
-% Тут используется класс, установленный на сервере Papeeria. На случай, если
-% текст понадобится редактировать где-то в другом месте, рядом лежит файл matmex-diploma-custom.cls
-% который в момент своего создания был идентичен классу, установленному на сервере.
-% Для того, чтобы им воспользоваться, замените matmex-diploma на matmex-diploma-custom
-% Если вы работаете исключительно в Papeeria то мы настоятельно рекомендуем пользоваться
-% классом matmex-diploma, поскольку он будет автоматически обновляться по мере внесения корректив
-%
-\documentclass{matmex-diploma}
 
-\usepackage{verbatim}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{graphicx}
-\usepackage{minted}
-\usepackage{verbments}
-\usepackage{array}
+\title{Лексический анализ динамически формируемых строковых выражений}
 
-% * <Семён Григорьев> 12:24:40 18 May 2015 UTC+0100:
-% Просто тест комментов
-% * <Семён Григорьев> 12:24:28 18 May 2015 UTC+0100:
-% Просто тест комментов.
-\begin{document}
-% Год, город, название университета и факультета предопределены,
-% но можно и поменять.
-% Если англоязычная титульная страница не нужна, то ее можно просто удалить.
-\filltitle{ru}{
-    chair              = {Кафедра Системного Программирования},
-    title              = {Лексический анализ динамически формируемых строковых выражений},
-    % Здесь указывается тип работы. Возможные значения:
-    %   coursework - Курсовая работа
-    %   diploma - Диплом специалиста
-    %   master - Диплом магистра
-    %   bachelor - Диплом бакалавра
-    type               = {bachelor},
-    position           = {студента},
-    group              = 444,
-    author             = {Полубелова Марина Игоревна},
-    supervisorPosition = {магистр информационных технологий, ст. преп.},
-    supervisor         = {Григорьев С.\,В.},
-    reviewerPosition   = {программист OOO ``ИнтеллиДжей Лабс''},
-    reviewer           = {Беляков А.\,М.},
-    chairHeadPosition  = {д.\,ф.-м.\,н., профессор},
-    chairHead          = {Терехов А.\,Н.},
-%   university         = {Санкт-Петербургский Государственный Университет},
-%   faculty            = {Математико-механический факультет},
-%   city               = {Санкт-Петербург},
-%   year               = {2013}
-}
-\filltitle{en}{
-    chair              = {Chair of Software Engineering},
-    title              = {Lexical analysis of dynamically generated string expressions},
-    author             = {Polubelova Marina},
-    supervisorPosition = {master of Information Technology, senior lecturer},
-    supervisor         = {Grigorev S.\,V.},
-    reviewerPosition   = {software developer at ``IntelliJ Labs Co.Ltd''},
-    reviewer           = {Belyakov А.\,М.},
-    chairHeadPosition  = {professor},
-    chairHead          = {Terekhov A.\,N.},
-}
-\maketitle
-\tableofcontents
+\titlerunning{Лексический анализ динамических строковых выражений}
+
+\author{Полубелова Марина Игоревна}
+
+\authorrunning{М.И.Полубелова}
+
+\tocauthor{М.И.Полубелова}
+\institute{Санкт-Петербургский государственный университет\\
+\email{polubelovam@gmail.com}}
+
+\maketitle             
+
+\begin{abstract}
+test
+\end{abstract}
+
+
+
 % У введения нет номера главы
 \section*{Введение}
 
@@ -67,7 +26,7 @@
 
 \fvset{frame=lines,framesep=5pt}
 \begin{listing}[H]
-    \begin{pyglist}[language=csharp,numbers=left,numbersep=5pt]
+    \begin{lstlisting}[language=csharp]
  private void Go(bool cond)
  {
    string tableName = cond ? "Sold" : "OnSale ";
@@ -78,7 +37,7 @@
            + "ORDER BY UnitPrice DESC;";
    Program.ExecuteImmediate(queryString);
  }
-    \end{pyglist}
+    \end{lstlisting}
 \caption{Пример встроенного SQL в C\#}
 \label{lst:verbments}
 \end{listing}
@@ -87,9 +46,9 @@
 
 Динамически формируемые строковые выражения воспринимаются компилятором как обычные строки, что делает систему, использующую такой подход, ненадежной и уязвимой. Несмотря на то, что сейчас распространены другие технологии разработки программ, использующих язык запросов SQL, например LINQ, обозначенная выше проблема все равно остается актуальной. Во-первых, существует множество  уже написанных программ и систем с использованием динамически формируемых строковых выражений, которые необходимо поддерживать. Во-вторых, может потребоваться реинжиниринг этих программ. Например, если выполнять миграцию системы с языка Transact-SQL на Oracle-SQL, то тогда в приведенном выше примере необходимо формировать запрос уже на другом языке и при этом необходимо сохранить связь преобразованного кода с исходным. Так как в результате миграции  могут возникнуть новые имена переменных, функций и другие языковые конструкции, то пользователям системы нужно быть уверенным в том, что логика и объекты системы не изменились. В-третьих, в web-программировании широко используется такой подход, например, динамически генерируемый HTML в PHP-программах. То есть в этом случае необходим статический анализ динамически формируемых строковых выражений.    
 
-Таким образом, ставится вопрос корректности программ, получающихся в результате использования динамически формируемых строковых выражений. Один из подходов к анализу таких программ заключается в проверке включения языков~\cite{JSA, PHPSA}. Этот подход только отвечает на вопрос, включается ли язык, который порождает программа, в язык, описанный пользователем. Следующий подход состоит в проведении лексического анализа и синтаксического разбора компактного представления множества динамически формируемых строковых выражений, в качестве которого может быть регулярное выражение~\cite{Alvor} или data-flow уравнение~\cite{Doh}. Этот подход позволяет для динамически формируемых строковых выражений разработать такую же функциональность, которую предоставляют интегрированные среды разработки для обычных языков, например, автодополнение, рефакторинг и дополнительные статические проверки.
+Таким образом, ставится вопрос корректности программ, получающихся в результате использования динамически формируемых строковых выражений. Один из подходов к анализу таких программ заключается в проверке включения языков~\cite{JSA1, PHPSA}. Этот подход только отвечает на вопрос, включается ли язык, который порождает программа, в язык, описанный пользователем. Следующий подход состоит в проведении лексического анализа и синтаксического разбора компактного представления множества динамически формируемых строковых выражений, в качестве которого может быть регулярное выражение~\cite{Alvor1} или data-flow уравнение~\cite{Doh}. Этот подход позволяет для динамически формируемых строковых выражений разработать такую же функциональность, которую предоставляют интегрированные среды разработки для обычных языков, например, автодополнение, рефакторинг и дополнительные статические проверки.
 
-Существуют инструменты, которые реализуют рассмотренные подходы, например, Java String Analyzer \cite{JSA}, PHP String Analyzer \cite{PHPSA} и Alvor \cite{Alvor}. Однако они обладают рядом недостатков, среди которых можно выделить низкую точность проводимого анализа и трудность добавления поддержки нового языка. Последний недостаток можно заменить автоматизированным процессом, использовав, например, стандартные генераторы лексических и синтаксических анализаторов. В статье~\cite{LexerAdv} были показаны преимущества проведения лексического анализа отдельно от синтаксического разбора. Одним из преимуществ лексического анализа является то, что он не вносит потери точности проводимого анализа, а также позволяет переиспользовать существующие определения грамматик. В данной работе, выполненной в рамках проекта YaccConstructor~\cite{YC_article}, будет представлена реализация инструмента для проведения лексического анализа выражений, которые могут быть получены с помощью строковых операций и циклов, с сохранением привязки к исходному коду. В этой работе также будет представлена реализация генератора лексических анализаторов, что позволит сравнительно легко добавить обработку нового языка в реализованный инструмент.
+Существуют инструменты, которые реализуют рассмотренные подходы, например, Java String Analyzer \cite{JSA1}, PHP String Analyzer \cite{PHPSA} и Alvor \cite{Alvor1}. Однако они обладают рядом недостатков, среди которых можно выделить низкую точность проводимого анализа и трудность добавления поддержки нового языка. Последний недостаток можно заменить автоматизированным процессом, использовав, например, стандартные генераторы лексических и синтаксических анализаторов. В статье~\cite{LexerAdv} были показаны преимущества проведения лексического анализа отдельно от синтаксического разбора. Одним из преимуществ лексического анализа является то, что он не вносит потери точности проводимого анализа, а также позволяет переиспользовать существующие определения грамматик. В данной работе, выполненной в рамках проекта YaccConstructor~\cite{YC_article}, будет представлена реализация инструмента для проведения лексического анализа выражений, которые могут быть получены с помощью строковых операций и циклов, с сохранением привязки к исходному коду. В этой работе также будет представлена реализация генератора лексических анализаторов, что позволит сравнительно легко добавить обработку нового языка в реализованный инструмент.
 
 
 \section{Постановка задачи}
@@ -133,7 +92,7 @@
 Для работы с динамически формируемыми строковыми выражениями существует ряд инструментов, которые реализуют два основных подхода. Первый подход заключается в проверке включения языков. Данный подход только отвечает на вопрос, включается ли язык, который порождает программа, в язык, описанный пользователем, например, с помощью грамматики или простым перечислением строковых выражений, которых он ожидает получить в результате выполнения программы. Его реализуют инструменты, представленные ниже.
 
 \begin{itemize}
-\item \textbf{Java String Analyzer} (JSA, \cite{JSA, JSAUrl}) {---}  инструмент для анализа формирования строк и строковых операций в программах на Java. Для каждого строкового выражения строится конечный автомат, представляющий приближенное значение всех значений этого выражения, которые могут быть получены во время выполнения программы. Для того, чтобы получить этот конечный автомат, необходимо из flow-графа анализируемой программы построить контекстно-свободную грамматику, которая получается в результате замены каждой строковой переменной нетерминалом, а каждой строковой операции {---} правилом продукции. После чего полученная грамматика аппроксимируется регулярным языком. В качестве результата работы данный инструмент также выдает строки, которые не входят в описанный пользователем язык, но могут сформироваться во время исполнения программы. 
+\item \textbf{Java String Analyzer} (JSA, \cite{JSA1, JSAUrl}) {---}  инструмент для анализа формирования строк и строковых операций в программах на Java. Для каждого строкового выражения строится конечный автомат, представляющий приближенное значение всех значений этого выражения, которые могут быть получены во время выполнения программы. Для того, чтобы получить этот конечный автомат, необходимо из flow-графа анализируемой программы построить контекстно-свободную грамматику, которая получается в результате замены каждой строковой переменной нетерминалом, а каждой строковой операции {---} правилом продукции. После чего полученная грамматика аппроксимируется регулярным языком. В качестве результата работы данный инструмент также выдает строки, которые не входят в описанный пользователем язык, но могут сформироваться во время исполнения программы. 
 
 \item \textbf{PHP String Analyzer} (PHPSA, \cite{PHPSA, PHPSAUrl}) {---} инструмент для статического анализа строк в программах на PHP. Расширяет подход предыдущего инструмента JSA. Отсутствует этап преобразования контекстно-свободной грамматики в регулярный язык, что повышает точность проводимого анализа. Для обработки строковых операций используется конечный преобразователь, который позволяет оставаться в рамках контекстно-свободной грамматики. Дальнейший анализ строковых выражений полностью взят из инструмента JSA.
 \end{itemize} 
@@ -154,12 +113,11 @@
 \begin{figure}[h!]
 \begin{center}
 \begin{tabular}{  c  c }
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=\linewidth]{alvor2}
-\end{minipage}
-    &
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=\linewidth]{alvor1}
+\begin{minipage}{\textwidth}
+  \includegraphics[width=\linewidth]{Polubelova/alvor2.png}
+\end{minipage}\\    
+\begin{minipage}{\textwidth}
+  \includegraphics[width=\linewidth]{Polubelova/alvor1.png}
 \end{minipage}
 \end{tabular}    
 \caption{Формирование строкового выражения с помощью цикла for и while в среде разработке Eclipse с установленным плагином Alvor}
@@ -169,7 +127,7 @@
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.6\textwidth]{alvor3.png}
+\includegraphics[width=\textwidth]{Polubelova/alvor3.png}
 \caption{Формирование строкового выражения с помощью строковой операции replace  в среде разработке Eclipse с установленным плагином Alvor}
 \label{fig:alvor3} 
 \end{center}
@@ -195,7 +153,7 @@
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.9\textwidth]{Seq_with_lexer_highlighted}
+\includegraphics[width=0.9\textwidth]{Polubelova/Seq_with_lexer_highlighted}
 \caption{Диаграмма последовательности, показывающая взаимодействие компонентов инструмента YaccConstructor}
 \label{fig:seqYC} 
 \end{center}
@@ -221,8 +179,6 @@
 
 \textbf{\underline{Шаг 5}}. На этом шаге происходит интерпретация полученного конечного преобразователя, результатом которой будет являться конечный автомат над токенами.
 
-\vspace{20.5}
-
 При поддержке строковых операций особый интерес представляет строковая операция \verb|replace|$(M_1, M_2, M_3)$, где $M_1, M_2, M_3$ являются детерминированными конечными автоматами, так как поддержка ряда других часто используемых строковых операций может быть реализована на его основе. Конечные автоматы $M_1, M_2, M_3$ порождают языки $L(M_1), L(M_2), L(M_3)$ соответственно. \textbf{Replace} --- это операция, которая для любого слова из языка $L(M_1)$ ищет вхождения любого слова из языка $L(M_2)$ и заменяет их на слова из языка $L(M_3)$. Результатом строковой операции \verb|replace| является конечный автомат. При этом есть строковые операции, которые выводят обрабатываемый язык за класс регулярных и контекстно-свободных языков. 
 
 Если строковые выражения формировались при участии строковых операций, которые можно выразить с помощью строковой операции \verb|replace|, то для их раскрытия требуется выполнение первых двух шагов описанного алгоритма для каждого участвующего в строковой операции конечного автомата. Далее применяется алгоритм, описанный в статье~\cite{ReplaceFangYu}. Но так как авторы этой статьи используют MBDD-представление для конечного автомата, а текущая реализация инструмента этого не предполагает, то алгоритм был упрощен и стал состоять из следующих шагов ($\#_1, \#_2 \notin \Sigma$, где $\Sigma$ --- входной алфавит конечных автоматов $M_1, M_2, M_3$): 
@@ -241,12 +197,12 @@
 
 \fvset{frame=lines,framesep=5pt}
 \begin{listing}[H]
-    \begin{pyglist}[language=csharp,numbers=left,numbersep=5pt]
+    \begin{lstlisting}[language=csharp]
  private void Go(int cond){
    string columnName = cond > 3 ? "X" : (cond < 0 ? "Y" : "Z");
    string queryString = "SELECT name" + columnName + " FROM table";
    Program.ExecuteImmediate(queryString);}
-    \end{pyglist}
+    \end{lstlisting}
 \caption{Пример кода}
 \label{lst:example1}
 \end{listing}
@@ -255,7 +211,7 @@
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[width=0.75\textwidth]{tsql_test}
+\includegraphics[width=0.75\textwidth]{Polubelova/tsql_test}
 \caption{Результат аппроксимации кода, представленного в листинге~\ref{lst:example1}}
 \label{fig:example_appr} 
 \end{center}
@@ -265,7 +221,7 @@
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.9\textwidth]{tsql_test_appr}
+\includegraphics[width=0.9\textwidth]{Polubelova/tsql_test_appr}
 \caption{Результат работы лексера для конечного автомата, представленного на рис.~\ref{fig:example_appr}}
 \label{fig:example_lexer} 
 \end{center}
@@ -275,7 +231,7 @@
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{tsql_select}
+\includegraphics[width=1.0\textwidth]{Polubelova/tsql_select}
 \caption{Конечный автомат, содержащейся в токене SELECT}
 \label{fig:tsql_select} 
 \end{center}
@@ -283,7 +239,7 @@
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{tsql_ident_1}
+\includegraphics[width=1.0\textwidth]{Polubelova/tsql_ident_1}
 \caption{Конечный автомат, содержащейся в первом токене IDENT}
 \label{fig:tsql_ident_1} 
 \end{center}
@@ -291,7 +247,7 @@
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{tsql_ident_2}
+\includegraphics[width=1.0\textwidth]{Polubelova/tsql_ident_2}
 \caption{Конечный автомат, содержащейся во втором токене IDENT}
 \label{fig:tsql_ident_2} 
 \end{center}
@@ -306,7 +262,7 @@
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{ComponentDiagram}
+\includegraphics[width=1.0\textwidth]{Polubelova/ComponentDiagram}
 \caption{Диаграмма компонентов реализованного инструмента}
 \label{fig:CompDiag} 
 \end{center}
@@ -322,7 +278,7 @@
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.8\textwidth]{ClassDiagramLexer}
+\includegraphics[width=0.8\textwidth]{Polubelova/ClassDiagramLexer}
 \caption{Диаграмма классов компоненты \textbf{Lexer}}
 \label{fig:ClassLexer} 
 \end{center}
@@ -330,7 +286,7 @@
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{ClassDiagramLib}
+\includegraphics[width=1.0\textwidth]{Polubelova/ClassDiagramLib}
 \caption{Диаграмма классов компоненты \textbf{Library for FSA and FST} }
 \label{fig:ClassLib} 
 \end{center}
@@ -373,7 +329,7 @@
 
 \begin{figure}[H]
 \begin{center}
-\includegraphics[width=0.28\textwidth]{calc_ex}
+\includegraphics[width=0.28\textwidth]{Polubelova/calc_ex}
 \caption{Входной конечный автомат}
 \label{fig:calc_ex} 
 \end{center}
@@ -382,7 +338,7 @@
 
 \fvset{frame=lines,framesep=5pt}
 \begin{listing}[H]
-    \begin{pyglist}[language=csharp,numbers=none]
+    \begin{lstlisting}[language=csharp,numbers=none]
 let digit = ['0'-'9']
 let whitespace = [' ' '\t' '\r' '\n']
 
@@ -396,14 +352,14 @@ rule token = parse
 | '+' { PLUS(gr)|> Some }
 | "**" { POW(gr)|> Some }
 | '*' { MULT(gr)|> Some }
-    \end{pyglist}
+    \end{lstlisting}
 \caption{Спецификация языка для калькулятора}
 \label{lst:calc}
 \end{listing}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.6\textwidth]{calc_ex_compose}
+\includegraphics[width=0.6\textwidth]{Polubelova/calc_ex_compose}
 \caption{Результат операции композиция}
 \label{fig:calc_ex_compose} 
 \end{center}
@@ -424,19 +380,19 @@ rule token = parse
     \hline
     0 & 24 & 28 & 41 \\ \hline
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{0_tok}
+      \includegraphics[width=\linewidth]{Polubelova/0_tok}
     \end{minipage}
     &
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{24_tok}
+      \includegraphics[width=\linewidth]{Polubelova/24_tok}
     \end{minipage}
     & 
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{28_tok}
+      \includegraphics[width=\linewidth]{Polubelova/28_tok}
     \end{minipage}
     & 
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{41_tok}
+      \includegraphics[width=\linewidth]{Polubelova/41_tok}
     \end{minipage}    
     \\ \hline
     24 & 41, 28 & 28, 41 & 55
@@ -454,19 +410,19 @@ rule token = parse
     \hline
     24 & 28 & 41 & 55 \\ \hline
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{24_inv}
+      \includegraphics[width=\linewidth]{Polubelova/24_inv}
     \end{minipage}
     &
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{28_inv}
+      \includegraphics[width=\linewidth]{Polubelova/28_inv}
     \end{minipage}
     & 
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{41_inv}
+      \includegraphics[width=\linewidth]{Polubelova/41_inv}
     \end{minipage}
     & 
     \begin{minipage}{.22\textwidth}
-      \includegraphics[width=\linewidth]{55_inv}
+      \includegraphics[width=\linewidth]{Polubelova/55_inv}
     \end{minipage}    
     \\ \hline
   \end{tabular}
@@ -481,27 +437,27 @@ rule token = parse
   \begin{tabular}{ | c | c | c |}
     \hline
     \begin{minipage}{.3\textwidth}
-      \includegraphics[width=\linewidth]{0_int}
+      \includegraphics[width=\linewidth]{Polubelova/0_int}
     \end{minipage}
     &
     \begin{minipage}{.3\textwidth}
-      \includegraphics[width=\linewidth]{24_int}
+      \includegraphics[width=\linewidth]{Polubelova/24_int}
     \end{minipage}
     & 
     \begin{minipage}{.3\textwidth}
-      \includegraphics[width=\linewidth]{24_1_int}
+      \includegraphics[width=\linewidth]{Polubelova/24_1_int}
     \end{minipage}
     \\ \hline
     \begin{minipage}{.3\textwidth}
-      \includegraphics[width=\linewidth]{28_int}
+      \includegraphics[width=\linewidth]{Polubelova/28_int}
     \end{minipage}
     &
     \begin{minipage}{.3\textwidth}
-      \includegraphics[width=\linewidth]{28_1_int}   
+      \includegraphics[width=\linewidth]{Polubelova/28_1_int}   
     \end{minipage}
     & 
     \begin{minipage}{.3\textwidth}
-      \includegraphics[width=\linewidth]{41_int}
+      \includegraphics[width=\linewidth]{Polubelova/41_int}
     \end{minipage}
     \\ \hline
   \end{tabular}
@@ -513,7 +469,7 @@ rule token = parse
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{calc_ex_res}
+\includegraphics[width=1.0\textwidth]{Polubelova/calc_ex_res}
 \caption{Результат лексического анализа}
 \label{fig:calc_ex_res} 
 \end{center}
@@ -538,15 +494,15 @@ rule token = parse
 Рассмотрим следующий пример кода:
 \fvset{frame=lines,framesep=5pt}
 \begin{listing}[H]
-    \begin{pyglist}[language=csharp,numbers=left,numbersep=5pt]
+    \begin{lstlisting}[language=csharp]
  private void Go(){
    String s = "SELECT nameX FROM tableY";
    s = s.Replace("SELECT nameX", "b");
    Program.ExecuteImmediate(s);
  }
-    \end{pyglist}
+    \end{lstlisting}
 \caption{Пример кода cо строковой операцией Replace}
-\label{lst:example}
+\label{lst:exampleR}
 \end{listing}
 
 В результате выполнения метода \verb|Replace| в переменной \verb|s| будет содержаться строка \textit{``b FROM tableY''}, что приведет к ошибке во время выполнения запроса. 
@@ -555,7 +511,7 @@ rule token = parse
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.7\textwidth]{ReplaceEx}
+\includegraphics[width=0.7\textwidth]{Polubelova/ReplaceEx}
 \caption{Результат лексического анализа с поддержкой строковой операцией Replace}
 \label{fig:replace_ex_1} 
 \end{center}
@@ -563,33 +519,32 @@ rule token = parse
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.8\textwidth]{ReplaceEx1}
+\includegraphics[width=0.8\textwidth]{Polubelova/ReplaceEx1}
 \caption{Результат лексического анализа без поддержки строковой операцией Replace}
 \label{fig:replace_ex} 
 \end{center}
 \end{figure}
 
-\newpage
 \textbf{\underline{Пример 2}}. 
 Рассмотрим следующий пример кода:
 \fvset{frame=lines,framesep=5pt}
 \begin{listing}[H]
-    \begin{pyglist}[language=csharp,numbers=left,numbersep=5pt]
+    \begin{lstlisting}[language=csharp]
  private void Go(int number){
    String s = "SELECT nameX FROM tableY WHERE x < ";
    while(s.Length < number){ s += "+ 1 ";}
    Program.ExecuteImmediate(s);
  }
-    \end{pyglist}
+    \end{lstlisting}
 \caption{Пример кода с циклом while}
-\label{lst:example}
+\label{lst:exampleW}
 \end{listing}
 
 Результатом аппроксимации кода будет конечный автомат, представленный на рис.~\ref{fig:while_appr}. Результат лексического анализа представлен на рис.~\ref{fig:while_ex}.
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=0.75\textwidth]{while_appr}
+\includegraphics[width=0.75\textwidth]{Polubelova/while_appr}
 \caption{Результат аппроксимации кода}
 \label{fig:while_appr} 
 \end{center}
@@ -598,7 +553,7 @@ rule token = parse
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{WhileEx}
+\includegraphics[width=1.0\textwidth]{Polubelova/WhileEx}
 \caption{Результат лексического анализа с поддержкой циклов}
 \label{fig:while_ex} 
 \end{center}
@@ -609,12 +564,12 @@ rule token = parse
 
 \fvset{frame=lines,framesep=5pt}
 \begin{listing}[H]
-    \begin{pyglist}[language=csharp,numbers=left,numbersep=5pt]
+    \begin{lstlisting}[language=csharp]
    String s = "SELECT name";
    for(int i = 0; i < 10; i++){ s += "X";}
    s+= " FROM tableY";
    Program.ExecuteImmediate(s);
-    \end{pyglist}
+    \end{lstlisting}
 \caption{Пример кода, в котором конечный автомат токена содержит цикл}
 \label{lst:example}
 \end{listing}
@@ -623,7 +578,7 @@ rule token = parse
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{TokenEx}
+\includegraphics[width=1.0\textwidth]{Polubelova/TokenEx}
 \caption{Результат лексического анализа}
 \label{fig:TokenEx} 
 \end{center}
@@ -631,7 +586,7 @@ rule token = parse
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=1.0\textwidth]{token}
+\includegraphics[width=1.0\textwidth]{Polubelova/token}
 \caption{Конечный автомат первого токена IDENT, содержащий цикл}
 \label{fig:token} 
 \end{center}
@@ -671,6 +626,109 @@ rule token = parse
 
 Более глобальной задачей является реализация инструмента для проведения миграции с одной языковой платформы на другую, поскольку динамически формируемые строковые выражения написаны на каком-то языке, а значит, может возникнуть задача перевода этих строк с одного языка на другой. 
 
-\bibliographystyle{ugost2008ls}
-\bibliography{diploma.bib}
-\end{document}
+\begin{thebibliography}{99}
+   \bibitem{FsLex}
+    Сайт проекта FsLex. \url{http://fsprojects.github.io/FsLexYacc}.
+
+   \bibitem{AlvorUrl}
+    Сайт проекта Alvor. \url{http://code.google.com/p/alvor}.
+
+   \bibitem{PHPSAUrl}
+    Сайт проекта PHP String Analyzer. \url{http://www.score.cs.tsukuba.ac.jp/~minamide/phpsa}.
+
+   \bibitem{JSAUrl}
+    Сайт проекта Java String Analyzer. \url{http://www.brics.dk/JSA}.
+
+   \bibitem{MONAUrl}
+    Сайт проекта MONA. \url{http://www.brics.dk/mona}.
+ 
+   \bibitem{YCUrl}
+    Сайт проекта YaccConstructor. \url{https://github.com/YaccConstructor}.
+
+   \bibitem{ReSharper}
+    Сайт проекта ReSharper. \url{https://www.jetbrains.com/resharper}.
+
+   \bibitem{QuickGraph}
+    Сайт проекта QuickGraph. \url{https://quickgraph.codeplex.com}.
+
+   \bibitem{Graphviz}
+    Сайт проекта Graphviz. \url{http://www.graphviz.org}.
+
+   \bibitem{MBDD}
+    M.Biehl, N.Klarlund, T.Rauhe.
+    Algorithms for Guided Tree Automata // Revised Papers from the First International Workshop on Implementing Automata,
+    1997, P.~6--25.
+
+   \bibitem{Polubelova}
+    М.Полубелова. Генератор абстрактных лексических анализаторов.
+    Курсовая работа кафедры системного программирования СПбГУ, 2014.
+
+   \bibitem{Verbitskaya}
+    Е.Вербицкая. Абстрактный лексический анализ.
+    Курсовая работа кафедры системного программирования СПбГУ, 2013.
+
+\bibitem{Doh}
+ K-G.Doh, H.Kim, D.A.Schmidt, David A.
+ Abstract LR-parsing // Formal Modeling, 2011, P.~90--109.
+
+\bibitem{Alvor1}
+  A.Annamaa, A.Breslav, J.Kabanov, V.Vene.
+  An Interactive Tool for Analyzing Embedded SQL Queries //
+  Programming Languages and Systems, 2010, P.~131--138.
+
+\bibitem{JSA1}
+ A.S.Christensen, A.M{\o}ller, M.I.Schwartzbach.
+ Precise Analysis of String Expressions //
+ Proceedings of the International Conference on Static Analysis, 2003.
+
+\bibitem{PHPSA}
+ Y.Minamide.
+ Static Approximation of Dynamically Generated Web Pages //
+ Proceedings of the 14th International Conference on World Wide Web, 2005,
+ P.~432--441.
+
+\bibitem{ReplaceFangYu}
+ F.Yu, M.Alkhalaf, T.Bultan, O.H.Ibarra.
+ Automata-based Symbolic String Analysis for Vulnerability Detection //
+ Form. Methods Syst. Des., Vol.~44, \textnumero~1, 2014.
+
+\bibitem{StrangerFangYu}
+ F.Yu, M.Alkhalaf, T.Bultan.
+ Stranger: An Automata-based String Analysis Tool for PHP //
+ Tools and Algorithms for the Construction and Analysis of Systems, 2010,
+ P.~154--157.
+
+\bibitem{AlgoFSA}
+ P.Hooimeijer, M.Veanes.
+ An Evaluation of Automata Algorithms for String Analysis //
+ VMCAI, 2011.
+
+\bibitem{Mohri}
+ M.Mohri. Finite-State Transducers in Language and Speech Processing //
+ Computational Linguistics, Vol.~23, 1997, P.~269--311.
+
+\bibitem{FST}
+  T.Hanneforth.
+  Finite-state Machines: Theory and Applications Unweighted Finite-state Automata.
+  Institut fur Linguistik Universitat Potsdam, 2010.
+
+\bibitem{FSA}
+  A.M. Pitts. Lecture Notes on Regular Languages and Finite Automata for 
+  Part IA of the Computer Science Tripos.
+  Cambridge University Computer Laboratory, 2010.
+
+\bibitem{LexerAdv}
+  A.Annamaa, A.Breslav, V.Vene.
+  Using Abstract Lexical Analysis and Parsing to Detect Errors in String-Embedded DSL Statements //
+  Proceedings of the 22nd Nordic Workshop on Programming Theory, 2010, P.~20--22.
+
+\bibitem{Tellier06learningrecursive}
+  I.Tellier. Learning Recursive Automata from Positive Examples //
+  New Methods in Machine Learning, 2006,  P.~775804.
+
+\bibitem{YC_article}
+ I.Kirilenko, S.Grigorev, D.Avdiukhin.
+ Syntax Analyzers Development in Automated Reengineering of Informational System //
+ St. Petersburg State Polytechnical University Journal. Computer Science. Telecommunications and Control Systems,
+ Vol.~174, \textnumero~3, P.~94--98.
+\end{thebibliography}
