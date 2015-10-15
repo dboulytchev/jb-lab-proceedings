@@ -235,7 +235,7 @@ $f$ в обратную сторону перед печатью. Однако �
    foldl :: Iso ($\alpha$, $\beta$) $\alpha$ -> Iso($\alpha$, [$\beta$]) $\alpha$
 \end{lstlisting}
 
-При обращении функции \textbf{foldl} конструкторам типа \lstinline[language=Haskell]{Iso} получится функция \textbf{unfoldl}.
+При обращении функции \lstinline{foldl} конструкторам типа \lstinline[language=Haskell]{Iso} получится функция \lstinline{unfoldl}.
 
 Таким образом, авторами был разработан интерфейс, который позволяет совместно задать синтаксический анализатор и принтер (см. рис.~\ref{ClassSyntDesc}).
 
@@ -660,41 +660,41 @@ stmnt =
 
 \begin{thebibliography}{99}
 \bibitem{Rendel}
-  Rendel T., Ostermann K. Invertible Syntax Descriptions: Unifying Parsing and Pretty Printing //
+  T.Rendel, K.Ostermann. Invertible Syntax Descriptions: Unifying Parsing and Pretty Printing //
   Proceedings of the 2010 ACM SIGPLAN Haskell Symposium, 2010, P~1--12.
 
 \bibitem{Matsuda}
-  Matsuda K., Wang M. FliPpr: A Prettier Invertible Printing System //
+  K.Matsuda, M.Wang. FliPpr: A Prettier Invertible Printing System //
   ESOP 2013: 22nd European Symposium on Programming, 2013, P~101--120.
 
 \bibitem{Boespflug}
-  Boespflug M. Rewinding the Stack for Parsing and Pretty Printing // 
+  M. Boespflug. Rewinding the Stack for Parsing and Pretty Printing // 
   \url{http://cs.mcgill.ca/~mboes/talks/20110726/slides.pdf}, 2012.
 
 \bibitem{Frost}
-  Frost R.A., Hafiz R., Callaghan P.
+  R.A. Frost, R. Hafiz, P. Callaghan.
   Parser Combinators for Ambiguous Left-Recursive Grammars // 
   Practical Aspects of Declarative Languages, 2008, P.~167--181.
 
 \bibitem{MatsudaPrew}
-  Matsuda K., Mu S., Hu Z., Takeichi M.
+  K. Matsuda, S. Mu, Z. Hu, M. Takeichi M.
   A Grammar-Based Approach to Invertible Programs //
   ESOP 2010: 19th European Symposium on Programming, 2010, P.~448--467.
 
 \bibitem{WadlerDeforest}
-  Wadler P. Deforestation: Transforming Programs to Eliminate Trees //
+  P. Wadler. Deforestation: Transforming Programs to Eliminate Trees //
   2'nd European Symposium on Programming, 1990, P.~231--248.
 
 \bibitem{WadlerPrinter}
-  Wadler P. A Prettier Printer // The Fun of Programming, 2003, P.~223--244.
+  P. Wadler. A Prettier Printer // The Fun of Programming, 2003, P.~223--244.
 
 \bibitem{parsec}
-  Leijen D., Meijer E.
+  D. Leijen, E. Meijer.
   Parsec: Direct Style Monadic Parser Combinators for the Real World //
   Utrecht University, 2002.
 
 \bibitem{Hughes1995}
-  Hughes J. The Design of a Pretty-printing Library // Advanced Functional Programming,
+  J. Hughes. The Design of a Pretty-printing Library // Advanced Functional Programming,
   1995, P.~53--96.
 
 \end{thebibliography}
