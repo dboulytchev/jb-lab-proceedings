@@ -1,7 +1,6 @@
 if (condition#0 OneLineB#) {
-    then block#-1 MultiB#
+    thenBlock#-1 MultiB#
 }
 else {
-    else block#-1 OneLineB#
+    elseBlock#-1 OneLineB#
 }
- 

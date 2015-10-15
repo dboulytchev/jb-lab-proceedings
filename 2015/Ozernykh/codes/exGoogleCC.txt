@@ -16,5 +16,3 @@ int ClassName::Foo(int k) {
   }
   return k;
 }
- 
-  

@@ -25,7 +25,7 @@
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{images/getElemDiag.jpg}
+	\includegraphics[width=\textwidth]{Ozernykh/images/getElemDiag.jpg}
 	\caption{Диаграмма этапов извлечения элемента из текста}
 	\label{fig:getElemDiag}
 \end{figure}
@@ -44,7 +44,7 @@
 
 \begin{figure}[h]
 	\centering
-	\lstinputlisting[language=C++]{codes/offsetExample.txt}
+	\lstinputlisting[language=Java]{Ozernykh/codes/offsetExample.txt}
 	\caption{Общий отступ элементов}
 	\label{fig:offsetExample}
 \end{figure}
@@ -80,11 +80,11 @@
 \fvset{frame=lines,framesep=7pt}
 \begin{figure}[ht]
 \noindent\begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/sameTmpltElems.txt}
+    \lstinputlisting[language=Java,basicstyle=\scriptsize]{Ozernykh/codes/sameTmpltElems.txt}
 \caption*{а) До переформатирования}    
 \end{minipage}\hfill
 \begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/sameTmpltElems2.txt}
+    \lstinputlisting[language=Java,basicstyle=\scriptsize]{Ozernykh/codes/sameTmpltElems2.txt}
 \caption*{б) После переформатирования}    
 \end{minipage}
 \caption{Переформатирование элементов одного типа без фильтрации шаблонов} 
@@ -93,18 +93,18 @@
 
 
 Чтобы сделать настройку форматирования более гибкой и избавиться от подобного рода проблем, необходимо производить сравнение шаблонов текущего элемента дерева разбора и элемента со старым форматированием. 
-Переформатировать элемент -- только в случае совпадения шаблонов.
+Переформатировать элемент~--- только в случае совпадения шаблонов.
 Шаблоны совпадают, если совпадет их текстовое представление: шаблон записывается в виде строки, которая содержит необходимые элементы: ключевые слова, пробелы, переносы строк, скобки, а так же метки для поддеревьев, в которых указывается дополнительная информация, например, количество выражений в поддереве (одно или несколько).
-В случае оператора ветвления (рис.~\ref{iftmpltcode}а) его поддеревьями являются: условие (condition), ветка, соответствующая выполнению условия (then block) и содержащая несколько подвыражений, ветка, соответствующая невыполнению условия (else block) и содержащая одно подвыражение. %ifTmplt ifTmpltCode
+В случае оператора ветвления (рис.~\ref{iftmpltcode}а) его поддеревьями являются: условие (condition), ветка, соответствующая выполнению условия (thenBlock) и содержащая несколько подвыражений, ветка, соответствующая невыполнению условия (elseBlock) и содержащая одно подвыражение. %ifTmplt ifTmpltCode
 Соответствующий ему шаблон изображен на рисунке~\ref{iftmpltcode}б.
 \fvset{frame=lines,framesep=7pt}
 \begin{figure}[ht]
 \noindent\begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/ifTmpltCode.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/ifTmpltCode.txt}
 \caption*{а) Оператор ветвления}    
 \end{minipage}\hfill
 \begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/ifTmplt.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/ifTmplt.txt}
 \caption*{б) Шаблон для оператора ветвления}    
 \end{minipage}
 \caption{Оператор ветвления и соответствующий ему шаблон}    
@@ -125,9 +125,10 @@
 Измерения производились на примере двух блоков: оператора ветвления и метода.
 
 \begin{table}[h]
+{\scriptsize
 \begin{tabular}{cc|c|c|c|c|}
 \cline{2-5}
-\multicolumn{1}{ c| }{ } & \multicolumn{2}{p{6cm} |}{Формат. операторов ветвления} & \multicolumn{2}{p{5cm} |}{Форматирование методов} \\
+\multicolumn{1}{ c| }{ } & \multicolumn{2}{p{3cm} |}{Формат. операторов ветвления} & \multicolumn{2}{p{3cm} |}{Форматирование методов} \\
 \hline
 \multicolumn{1}{ |c| }{Размер файла (строк)} & Кол-во & Время (сек.) & Кол-во & Время (сек.) \\ 
 \hline
@@ -136,7 +137,7 @@
 \multicolumn{1}{ |c| }{500..1000}       & 54    & 0.73  & 72   & 1.34 \\
 \multicolumn{1}{ |c| }{0..500}          & 35    & 0.2   & 36   & 0.67 \\
 \hline
-\end{tabular}
+\end{tabular}}
 \caption{Время переформатирования файлов I}
 \label{table:slow}
 \end{table}
@@ -168,9 +169,10 @@
 
 
 \begin{table}[h]
+{\scriptsize
 \begin{tabular}{cc|c|c|c|c|}
 \cline{2-5}
-\multicolumn{1}{ c| }{ } & \multicolumn{2}{p{6cm} |}{Формат. операторов ветвления} & \multicolumn{2}{p{5cm} |}{Форматирование  методов} \\
+\multicolumn{1}{ c| }{ } & \multicolumn{2}{p{3cm} |}{Формат. операторов ветвления} & \multicolumn{2}{p{3cm} |}{Форматирование  методов} \\
 \hline
 \multicolumn{1}{ |c| }{Размер файла (строк)} & Кол-во & Время (сек.) & Кол-во & Время (сек.) \\ 
 \hline
@@ -180,6 +182,7 @@
 \multicolumn{1}{ |c| }{0..500}          & 35    & 0.145 & 36   & 0.325 \\
 \hline
 \end{tabular}
+}
 \caption{Время переформатирования файлов II}
 \label{table:fast}
 \end{table}

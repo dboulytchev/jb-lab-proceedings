@@ -1,18 +1,18 @@
 \section*{Введение}
 
 Этап поддержки и сопровождения в жизненном цикле программного обеспечения может занимать до 90\% времени существования программного продукта. На этом этапе особенно важно понимание программного текста поддерживаемой системы, что зачастую бывает сложной задачей. Необходимым условием для лучшего понимания программного текста является его аккуратное оформление, отражающее структуру%(ы)
-программы. Существуют различные стандарты оформления кода (стили кодирования) -- наборы правил и соглашений, используемые при написании исходного кода на некотором языке программирования.
-Рассмотрим их на примере стандарта кодирования, принятого в компании Google\footnote{\texttt{https://google-styleguide.googlecode.com/svn/trunk/cppguide.html}}, и стандарта, используемого в проекте GNU\footnote{\texttt{http://www.gnu.org/prep/standards/standards.html}} (см. рис ~\ref{codingstandards}) для языка C++.
+программы. Существуют различные стандарты оформления кода (стили кодирования)~--- наборы правил и соглашений, используемые при написании исходного кода на некотором языке программирования.
+Рассмотрим их на примере стандарта кодирования, принятого в компании Google\footnote{\texttt{https://google-styleguide.googlecode.com/svn/trunk/cppguide.html}}, и стандарта, используемого в проекте GNU\footnote{\texttt{http://www.gnu.org/prep/standards/standards.html}} (см. рис.~\ref{codingstandards}) для языка C++.
 
 
 \fvset{frame=lines,framesep=7pt}
 \begin{figure}[ht]
 \noindent\begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/exGoogleCC.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/exGoogleCC.txt}
 \caption*{а) Стиль кодирования Google}    
 \end{minipage}\hfill
 \begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/exGNUCC.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/exGNUCC.txt}
 \caption*{б) Стиль кодирования GNU}    
 \end{minipage}
 \caption{Различные стили кодирования для языка С++}    
@@ -29,7 +29,7 @@
 % * <Anton Podkopaev> 12:15:51 22 May 2015 UTC+0300:
 % Нужно переработать это предложение.
 
-Еще одним примером может послужить принтер-плагин для IntelliJ IDEA\cite{podkopaev:diploma}, который позволяет форматировать исходный код проекта по образцу. 
+Еще одним примером может послужить принтер-плагин для IntelliJ IDEA~\cite{podkopaev:diploma1}, который позволяет форматировать исходный код проекта по образцу. 
 В качестве образца используется код из некоторого репозитория. 
 Из него выделяются шаблоны форматирования для структур языка, которые применяются к структурам целевого кода. 
 Под \textit{шаблоном} понимаются данные, сопоставление которых с элементом синтаксического дерева дает текстовое представление этого элемента (и его потомков). 
@@ -38,7 +38,7 @@
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{images/ifTree.jpg}
+	\includegraphics[width=\textwidth]{Ozernykh/images/ifTree.jpg}
 	\caption{Представление оператора ветвления в виде дерева разбора}
 	\label{fig:ifTree}
 \end{figure}
@@ -66,11 +66,12 @@
 \fvset{frame=lines,framesep=7pt}
 \begin{figure}[ht]
 \noindent\begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/ifTmpltIntro.txt}
-\caption*{а) Шаблон для оператора ветвления}    
+    \lstinputlisting[language=Java]{Ozernykh/codes/ifTmpltIntro.txt}
+\caption*{а) Шаблон для оператора\\
+ветвления}    
 \end{minipage}\hfill
 \begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=C++]{codes/ifCodeIntro.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/ifCodeIntro.txt}
 \caption*{б) Текст, полученный при применении шаблона к дереву разбора}    
 \end{minipage}
 \caption{Оператор ветвления и шаблон для него}    
@@ -83,7 +84,7 @@
 
 Шаблоны можно извлекать из уже существующего кода и применять их к другим элементам того же типа, но отформатированных иным способом. 
 Например, пользователь меняет форматирование некоторой структуры языка (в частности, оператор ветвления), программа извлекает из полученного участка кода новый шаблон и применяет его к структурам того же типа, содержащим старое форматирование. 
-Назовем такой способ задания шаблонов -- форматирование в режиме
+Назовем такой способ задания шаблонов~--- форматирование в режиме
 онлайн.
 %картинки
 

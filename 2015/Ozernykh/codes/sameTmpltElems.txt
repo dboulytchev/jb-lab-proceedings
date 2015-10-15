@@ -5,6 +5,3 @@ if (veryLongUsefulFunctionName())
 {
     doSomethingSpecial();
 }
- 
- 
- 

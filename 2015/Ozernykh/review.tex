@@ -13,7 +13,7 @@
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\textwidth]{images/intellijSettings}
+	\includegraphics[width=\textwidth]{Ozernykh/images/intellijSettings}
 	\caption{Окно настройки форматтера IntelliJ IDEA}
 	\label{fig:intellijSettings}
 \end{figure}
@@ -24,17 +24,17 @@
 
 \begin{figure}[h]
 	\centering
-	\lstinputlisting[language=c]{codes/unusualCC.txt}
+	\lstinputlisting[language=Java]{Ozernykh/codes/unusualCC.txt}
 	\caption{Нестандартный СК для языка С}
 	\label{fig:unusualCC}
 \end{figure}
 
 \subsection{Stratego/XT}
-Stratego/XT\footnote{\texttt{http://strategoxt.org}} -- язык и набор инструментов для преобразования программ. Язык предоставляет правила переписывания, описывающие базовые шаги преобразования программы\cite{stratego:xt}.
+Stratego/XT\footnote{\texttt{http://strategoxt.org}}~--- язык и набор инструментов для преобразования программ. Язык предоставляет правила переписывания, описывающие базовые шаги преобразования программы~\cite{stratego:xt}.
 Одно из этих правил изображено на рис.~\ref{fig:rewriting}.
 
 \begin{figure}[h]
-	\lstinputlisting[language=haskell]{codes/desugar.txt}
+	\lstinputlisting[language=Haskell]{Ozernykh/codes/desugar.txt}
 	\caption{Правило для развертки блока While}
 	\label{fig:rewriting}
 \end{figure}
@@ -43,7 +43,7 @@ Stratego/XT\footnote{\texttt{http://strategoxt.org}} -- язык и набор �
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/pipe.jpg}
+	\includegraphics[width=0.7\textwidth]{Ozernykh/images/pipe.jpg}
 	\caption[Преобразование программ в Stratego/XT]{Преобразование программ в Stratego/XT\footnotemark}
 	\label{fig:stratego}
 \end{figure}
@@ -53,7 +53,7 @@ Stratego/XT\footnote{\texttt{http://strategoxt.org}} -- язык и набор �
 
 \begin{figure}[h]
 	\centering
-	\lstinputlisting[language=haskell]{codes/strategopp.txt}
+	\lstinputlisting[language=Haskell]{Ozernykh/codes/strategopp.txt}
 	\caption{Правило для преобразование АСТ в текст в Stratego/XT}
 	\label{fig:strategopp}
 \end{figure}
@@ -64,18 +64,18 @@ Stratego/XT\footnote{\texttt{http://strategoxt.org}} -- язык и набор �
 \subsection{Принтер-плагин для IntelliJ IDEA}
 Другой метод задания шаблонов представляет собой принтер-плагин для IntelliJ IDEA, позволяющий форматировать исходный текст по образцу. Образцом является некоторый репозиторий, содержащий код с желаемым форматированием.
 %даиграмму?
-Пользователь выбирает файлы проекта-образца и целевой файл для форматирования. Каждый файл представляется в виде дерева разбора, состоящего из элементов классов типа \lstinline[language=C++]{PsiElement}\cite{intellij:plugdev}, например, \lstinline[language=C++]{PsiIfStatement} (оператор ветвления), \lstinline[language=C++]{PsiExpressionStatement} (выражение). Из этих элементов извлекаются шаблоны 
+Пользователь выбирает файлы проекта-образца и целевой файл для форматирования. Каждый файл представляется в виде дерева разбора, состоящего из элементов классов типа \lstinline[language=Java]{PsiElement}~\cite{intellij:plugdev}, например, \lstinline[language=Java]{PsiIfStatement} (оператор ветвления), \lstinline[language=Java]{PsiExpressionStatement} (выражение). Из этих элементов извлекаются шаблоны 
 % * <igor.ozernykh@gmail.com> 21:32:55 20 May 2015 UTC+0300:
 % Смотри картинку с иерархией
-форматирования с помощью метода \lstinline[language=C++]{getAndSaveTemplate()} 
-класса \lstinline[language=C++]{PsiElementComponent}. Эти шаблоны будут 
-использоваться принтером (\lstinline[language=C++]{Printer}) для изменения 
+форматирования с помощью метода \lstinline[language=Java]{getAndSaveTemplate()} 
+класса \lstinline[language=Java]{PsiElementComponent}. Эти шаблоны будут 
+использоваться принтером (\lstinline[language=Java]{Printer}) для изменения 
 форматирования целевого файла.
 
 Затем принтер получает на вход целевой файл и к каждому элементу дерева 
 применяет функцию% \lstinline[language=C++]{applyTmplt()}
 , которая строит 
-\lstinline[language=C++]{FormatSet}, набор, состоящий из различных вариантов 
+\lstinline[language=Java]{FormatSet}, набор, состоящий из различных вариантов 
 форматирования, построенных исходя из извлеченных шаблонов. Из этого набора
 выбирается лишь один вариант форматирования, и происходит перепечатывание
 этого элемента дерева разбора с учетом нового форматирования.
@@ -83,7 +83,7 @@ Stratego/XT\footnote{\texttt{http://strategoxt.org}} -- язык и набор �
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\textwidth]{images/hierarchyPP}
+	\includegraphics[width=\textwidth]{Ozernykh/images/hierarchyPP}
 	\caption{Основные классы принтер-плагина}
 	\label{fig:hierarchyPP}
 \end{figure}
