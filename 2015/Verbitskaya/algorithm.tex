@@ -1,4 +1,11 @@
-\begin{algorithm}[t]
+\section{Алгоритм ослабленного синтаксического анализа регулярной аппроксимации динамически формируемого выражения}
+
+\subsection{Описание алгоритма}
+Алгоритм принимает на вход эталонную грамматику $G$ над алфавитом терминальных символов $T$ и детерминированный конечный автомат $(Q,\Sigma,\delta,q_0,q_f)$, имеющий одно стартовое состояние $q_0$, одно конечное состояние $q_f$, без $\epsilon$-переходов, где $\Sigma \subseteq T$~--- алфавит входных символов, $Q$~--- множество состояний, $\delta$~--- отношение перехода. По описанию  грамматики генерируются управляющие RNGLR-таблицы и некоторая вспомогательная информация (называемая $parserSource$ в псевдокоде).
+
+Алгоритм производит обход графа входного автомата и последовательно строит GSS тем же способом, как это делает RNGLR-алгоритм. Однако, так как мы имеем дело с графом вместо линейного потока, понятие следующего символа трансформируется во \emph{множество терминальных символов}, лежащих на всех исходящих рёбрах данной вершины, что несколько изменяет операции shift и reduce (смотри строку 5 в алгоритме~\ref{processVertex} и строки 9 и 21 в алгоритме~\ref{gss_construction}). Для того, чтобы управлять порядком обработки вершин входного графа, мы используем глобальную очередь $\mathcal{Q}$. Каждый раз, когда добавляется новая вершина GSS, сначала необходимо произвести все свёртки длины 0, после чего выполнить сдвиг следующих токенов со входа. Таким образом, необходимо добавить соответствующую вершину графа в очередь на обработку. Добавление нового ребра GSS может порождать новые свёртки, следовательно, в очередь на обработку необходимо добавить вершину входного графа, которой соответствует начальная вершина добавленного ребра. Детальное описание процесса построения GSS приведено в алгоритме~\ref{parsing}. Свёртки производятся вдоль путей в GSS, и если было добавлено ребро, начальная вершина которого ранее присутствовала в GSS, необходимо заново вычислить проходящие через эту вершину свёртки (смотри функцию applyPassingReductions в алгоритме~\ref{processVertex}).
+
+\begin{algorithm}[H]
 \begin{algorithmic}[1]
 \caption{Алгоритм ослабленного синтаксического анализа регулярной аппроксимации динамически формируемого выражения}
 \label{parsing}
@@ -28,7 +35,48 @@
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\caption{Построение GSS}
+\label{gss_construction}
+\Function{addVertex}{$innerGraphV, state$}
+  \State{$v \gets$ find a vertex with state $=state$ in}
+  \State{    $innerGraphV.processed \cup innerGraphV.unprocessed$}
+  \If{$v$ is not $null$ } \Comment{Вершина была найдена в GSS}
+    \State{\Return{($v, false$)}} 
+  \Else
+    \State{$v \gets$ create new vertex for $innerGraphV$ with state $state$}
+    \State{add $v$ in $innerGraphV.unprocessed$}
+    \ForAll{$e\gets\mbox{ outgoing edges of }innerGraphV$}
+      \State{calculate the set of zero-reductions by $v$}
+      \State{    and the token on $e$ and}
+      \State{    add them in $innerGraphV.reductions$}
+    \EndFor
+    \State{\Return{$(v, true$)}}
+  \EndIf
+\EndFunction
+
+\Function{addEdge}{$v_{h}, innerGraphV, state_{t}, isZeroReduction$}
+  \State{$(v_{t}, isNew) \gets$ \Call{addVertex}{$innerGraphV, state_{t}$}}
+  \If{GSS does not contain edge from $v_{t}$ to $v_{h}$}
+    \State{$edge \gets$ create new edge from $v_{t}$ to $v_{h}$}
+    \State{$\mathcal{Q}.Enqueue(innerGraphV)$}
+    \If{not $isNew$ and $v_{t}.passingReductions.Count>0$}
+      \State{add $(v_{t}, edge)$ in $innerGraphV.passingReductionsToHandle$}
+    \EndIf
+    \If{not $isZeroReduction$}
+      \ForAll{$e\gets\mbox{ in outgoing edges of }innerGraphV$}
+        \State{calculate the set of reductions by $v$}
+        \State{    and the token on $e$ and}
+        \State{    add them in $innerGraphV.reductions$}
+      \EndFor
+    \EndIf
+  \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
 \begin{algorithmic}[1]
 \caption{Обработка вершины внутреннего графа}
 \label{processVertex}
@@ -76,13 +124,6 @@
 \end{algorithmic}
 \end{algorithm}
 
-\section{Алгоритм ослабленного синтаксического анализа регулярной аппроксимации динамически формируемого выражения}
-
-\subsection{Описание алгоритма}
-Алгоритм принимает на вход эталонную грамматику $G$ над алфавитом терминальных символов $T$ и детерминированный конечный автомат $(Q,\Sigma,\delta,q_0,q_f)$, имеющий одно стартовое состояние $q_0$, одно конечное состояние $q_f$, без $\epsilon$-переходов, где $\Sigma \subseteq T$~--- алфавит входных символов, $Q$~--- множество состояний, $\delta$~--- отношение перехода. По описанию  грамматики генерируются управляющие RNGLR-таблицы и некоторая вспомогательная информация (называемая $parserSource$ в псевдокоде).
-
-Алгоритм производит обход графа входного автомата и последовательно строит GSS тем же способом, как это делает RNGLR-алгоритм. Однако, так как мы имеем дело с графом вместо линейного потока, понятие следующего символа трансформируется во \emph{множество терминальных символов}, лежащих на всех исходящих рёбрах данной вершины, что несколько изменяет операции shift и reduce (смотри строку 5 в алгоритме~\ref{processVertex} и строки 9 и 21 в алгоритме~\ref{gss_construction}). Для того, чтобы управлять порядком обработки вершин входного графа, мы используем глобальную очередь $\mathcal{Q}$. Каждый раз, когда добавляется новая вершина GSS, сначала необходимо произвести все свёртки длины 0, после чего выполнить сдвиг следующих токенов со входа. Таким образом необходимо добавить соответствующую вершину графа в очередь на обработку. Добавление нового ребра GSS может порождать новые свёртки, таким образом в очередь на обработку необходимо добавить вершину входного графа, которой соответствует начальная вершина добавленного ребра. Детальное описание процесса построения GSS приведено в алгоритме~\ref{parsing}. Свёртки производятся вдоль путей в GSS, и если было добавлено ребро, начальная вершина которого ранее присутствовала в GSS, необходимо заново вычислить проходящие через эту вершину свёртки (смотри функцию applyPassingReductions в алгоритме~\ref{processVertex}).
-
 
 Так же как и RNGLR, мы ассоциируем вершины GSS с позициями входного графа, однако в нашем случае уровень вершины~--- это состояние входного автомата. Мы строим внутреннюю структуру данных (в дальнейшем изложении называемую \emph{внутренним графом}) посредством копирования графа входного автомата и ассоциации с его вершинами следующих коллекций.
 \begin{itemize}
@@ -91,47 +132,6 @@
   \item \emph{reductions}: очередь, аналогичная очереди $\mathcal{R}$ RNGLR-алгоритма: все операции reduce, которые ещё только предстоит выполнить.
   \item \emph{passingReductionsToHandle}: пары из вершины GSS и ребра GSS, вдоль которых необходимо осуществлять проходящие свёртки.
 \end{itemize}
-
-\begin{algorithm}[H]
-\begin{algorithmic}[1]
-\caption{Построение GSS}
-\label{gss_construction}
-\Function{addVertex}{$innerGraphV, state$}
-  \State{$v \gets$ find a vertex with state $=state$ in}
-  \State{    $innerGraphV.processed \cup innerGraphV.unprocessed$}
-  \If{$v$ is not $null$ } \Comment{Вершина была найдена в GSS}
-    \State{\Return{($v, false$)}} 
-  \Else
-    \State{$v \gets$ create new vertex for $innerGraphV$ with state $state$}
-    \State{add $v$ in $innerGraphV.unprocessed$}
-    \ForAll{$e\gets\mbox{ outgoing edges of }innerGraphV$}
-      \State{calculate the set of zero-reductions by $v$}
-      \State{    and the token on $e$ and}
-      \State{    add them in $innerGraphV.reductions$}
-    \EndFor
-    \State{\Return{$(v, true$)}}
-  \EndIf
-\EndFunction
-
-\Function{addEdge}{$v_{h}, innerGraphV, state_{t}, isZeroReduction$}
-  \State{$(v_{t}, isNew) \gets$ \Call{addVertex}{$innerGraphV, state_{t}$}}
-  \If{GSS does not contain edge from $v_{t}$ to $v_{h}$}
-    \State{$edge \gets$ create new edge from $v_{t}$ to $v_{h}$}
-    \State{$\mathcal{Q}.Enqueue(innerGraphV)$}
-    \If{not $isNew$ and $v_{t}.passingReductions.Count>0$}
-      \State{add $(v_{t}, edge)$ in $innerGraphV.passingReductionsToHandle$}
-    \EndIf
-    \If{not $isZeroReduction$}
-      \ForAll{$e\gets\mbox{ in outgoing edges of }innerGraphV$}
-        \State{calculate the set of reductions by $v$}
-        \State{    and the token on $e$ and}
-        \State{    add them in $innerGraphV.reductions$}
-      \EndFor
-    \EndIf
-  \EndIf
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
 
 Помимо состояния анализатора $state$ и уровня $level$ (который совпадает с состоянием входного автомата), в вершине GSS хранится коллекция \emph{проходящих свёрток}. Проходящая свёртка~--- это тройка $(startV, N, l)$, соответствующая свёртке, чей путь содержит данную вершину GSS. Аналогичная тройка используется в RNGLR-алгоритме для описания свёртки, но в данном случае $l$ обозначает длину оставшейся части пути. Проходящие свёртки сохраняются в каждой вершине пути (кроме первой и последней) во время поиска путей в функции $makeReductions$ (см. алгоритм~\ref{processVertex}).
 
@@ -158,15 +158,15 @@
 \end{verbatim}
 
 Множество значений выражения \emph{expr} аппроксимируется регулярным выражением $(\mbox{\texttt{LBR }} \mbox{\texttt{RBR}})*$, где $\mbox{\texttt{LBR }}$ соответствует открывающейся скобке, а $\mbox{\texttt{RBR}}$~--- закрывающейся. Граф конечного автомата, задающего такую аппроксимацию, изображён на рис.~\ref{input}.
-\begin{figure}[!h]
+\begin{figure}[H]
  \centering
- \includegraphics[width=3cm]{Verbitskaya/pics/input.pdf}
+ \includegraphics[width=8cm]{Verbitskaya/pics/input.pdf}
  \caption{Конечный автомат, задающий регулярную аппроксимацию выражения \emph{expr}}
  \label{input}
 \end{figure}
 
 В результате работы предложенного алгоритма будет получено конечное представление леса разбора SPPF, изображённое на рис.~\ref{sppf}.
-\begin{figure}[!h]
+\begin{figure}[H]
  \centering
  \includegraphics[width=\textwidth]{Verbitskaya/pics/sppf.pdf}
  \caption{Конечное представление леса разбора для выражения \emph{expr}}
@@ -185,11 +185,12 @@
 % \caption{Дерево вывода для выражения $expr="()()"$}
 % \label{sppf2}
 %\end{figure}
-\begin{figure}[!h]
+
+Из SPPF можно извлечь бесконечное количество деревьев, каждое из которых является деревом вывода некоторого выражения из регулярной аппроксимации. Рис.~\ref{sppf3} демонстрирует одно из таких деревьев разбора. 
+
+\begin{figure}[H]
  \centering
  \includegraphics[width=\textwidth]{Verbitskaya/pics/sppf3.pdf}
  \caption{Дерево вывода для выражения $expr="()()()"$}
  \label{sppf3}
 \end{figure}
-
-Из SPPF можно извлечь бесконечное количество деревьев, каждое из которых является деревом вывода некоторого выражения из регулярной аппроксимации. Рис.~\ref{sppf3} демонстрирует одно из таких деревьев разбора. 
