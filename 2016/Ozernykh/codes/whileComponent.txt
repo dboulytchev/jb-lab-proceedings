@@ -1,0 +1,6 @@
+<component name="While" psiComponentClass="PsiWhileStmt">
+    <subtree name="condition" psiGetMethod="Bexpr"
+             hasSeveralElements="false" isRequired="true" />
+    <subtree name="body" psiGetMethod="StmtList"
+             hasSeveralElements="true" isRequired="false" />
+</component>

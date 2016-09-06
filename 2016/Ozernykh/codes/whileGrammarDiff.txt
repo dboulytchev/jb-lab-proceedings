@@ -1,0 +1,11 @@
+{
+    <..>
+    printerPackage="com.intellij.whileLang"
+    factoryClass="com.intellij.whileLang.WhileElementFactory"
+    fileClass="com.intellij.whileLang.WhileFile"
+    fileSubtrees="procList, stmtList"
+    <..>
+}
+<..>
+list param_list  ::= ref_expr? (COMMA ref_expr)*
+<..>

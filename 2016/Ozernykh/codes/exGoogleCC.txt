@@ -1,0 +1,12 @@
+int ClassName::Foo(int k) {
+  if (k <= 0) {
+    Bar();
+  } else {
+    return FooBar(k);
+  }
+  return k;
+}
+ 
+ 
+ 
+ 

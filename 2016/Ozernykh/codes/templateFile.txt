@@ -1,0 +1,13 @@
+<..>
+class @NAME_CC@Component(printer: @LANG@Printer)
+    : @LANG@PsiElementComponent<@COMP_CLASS@, <..>>
+{
+    @DECL_TAGS@
+    @GEN_SUBTREES@
+    @GET_NEW_ELEM@
+    @UPDATE_SUBTREES@
+    @PREPARE_SUBTREES@
+    @GET_TAGS@
+    @IS_TEMPL_SUIT@
+    @GET_TEMPLATE@
+}

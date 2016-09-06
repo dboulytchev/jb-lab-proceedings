@@ -1,0 +1,8 @@
+expr         ::= plus_expr | mul_expr | paren_expr | ref_expr | literal_expr
+plus_expr    ::= expr plus_op expr
+plus_op      ::= '+'|'-'
+mul_expr     ::= expr mul_op expr
+mul_op       ::= '*'|'/'|'%'
+paren_expr   ::= '(' expr ')'
+ref_expr     ::= id
+literal_expr ::= number
