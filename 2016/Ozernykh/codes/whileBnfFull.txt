@@ -1,0 +1,64 @@
+{
+    ...
+}
+
+whileFile   ::= proc_list stmt_list
+stmt_list   ::= stmt*
+proc_list   ::= procedure*
+stmt        ::= skip|assign|if|while|write|read
+skip        ::= 'skip' ';'
+write       ::= 'write' '(' expr ')' ';'
+read        ::= 'read' '(' id ')' ';'
+assign      ::= id ':=' expr ';'
+if          ::= 'if' '(' bexpr ')' 'then' stmt_list ('else' stmt_list)? 'fi' {
+    methods=[
+        thenBranch="/stmt_list[0]"
+        elseBranch="/stmt_list[1]"
+    ]
+}
+while       ::= 'while' '(' bexpr ')' 'do' stmt_list 'od'
+procedure   ::= 'proc' id '(' param_list ')' stmt_list 'endp'
+param_list  ::= ref_expr? (',' ref_expr)*
+
+fake ar_op ::= plus_op|mul_op
+fake binary_expr ::= expr ar_op expr {
+    methods=[
+        left="/expr[0]"
+        right="/expr[1]"
+    ]
+}
+
+expr ::= factor plus_expr *
+left plus_expr ::= plus_op factor
+plus_op ::= '+'|'-'
+private factor ::= primary mul_expr *
+left mul_expr  ::= mul_op primary
+mul_op ::= '*'|'/'|'%'
+private primary ::= literal_expr | ref_expr | paren_expr
+paren_expr ::= '(' expr ')' {pin=1}
+ref_expr ::= id
+literal_expr ::= number
+
+fake bl_op ::= or|and
+fake binary_bexpr ::= bexpr bl_op bexpr {
+    methods=[
+        left="/bexpr[0]"
+        right="/bexpr[1]"
+    ]
+}
+
+bexpr ::= bfactor or_bexpr *
+left or_bexpr ::= 'or' bfactor
+private bfactor ::= bprimary and_bexpr *
+left and_bexpr ::= 'and' bprimary
+private bprimary ::= literal_bexpr | not_bexpr | paren_bexpr | rel_bexpr
+paren_bexpr ::= '(' bexpr ')' {pin=1}
+not_bexpr ::= 'not' bexpr
+literal_bexpr ::= 'true' | 'false'
+rel_bexpr ::= expr rel expr {
+    methods=[
+        left="/expr[0]"
+        right="/expr[1]"
+    ]
+}
+rel ::= '<'|'<='|'='|'>='|'>'

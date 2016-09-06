@@ -1,0 +1,11 @@
+read(a);
+read(b);
+res:=1;
+while (b > 0)
+do
+  if (b % 2 = 1)
+    then res := res * a; fi
+  b := b / 2;
+  a := a * a; od
+write(res);
+ 
