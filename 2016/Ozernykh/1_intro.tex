@@ -29,7 +29,7 @@
 Так, на рис.~\ref{fig:ifTree} приведен пример синтаксического дерева оператора ветвления языка C, а на рис.~\ref{intro:treeToCode} различные текстовые представления этого дерева.
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=.55\textwidth]{images/ifTree.png}
+	\includegraphics[width=.55\textwidth]{Ozernykh/images/ifTree.png}
 	\caption{Представление оператора ветвления в виде дерева разбора}
 	\label{fig:ifTree}
 \end{figure}
@@ -38,12 +38,12 @@
 \begin{figure}[ht]
   \noindent
   \begin{minipage}{.4\textwidth}
-    \lstinputlisting[language=C]{codes/treeToCode1.txt}
+    \lstinputlisting[language=C]{Ozernykh/codes/treeToCode1.txt}
     \caption*{а) }    
   \end{minipage}
   \hfill
   \begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=Java]{codes/treeToCode2.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/treeToCode2.txt}
     \caption*{б)}    
   \end{minipage}
   \caption{Текстовые представления синтаксического дерева с рис.~\ref{fig:ifTree}}
@@ -88,12 +88,12 @@
 \begin{figure}[ht]
   \noindent
   \begin{minipage}{.4\textwidth}
-    \lstinputlisting[language=Java]{codes/ifTemplateIntro.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/ifTemplateIntro.txt}
     \caption*{а) Шаблон для оператора ветвления}    
   \end{minipage}
   \hfill
   \begin{minipage}{.5\textwidth}
-    \lstinputlisting[language=Java]{codes/ifCodeIntro.txt}
+    \lstinputlisting[language=Java]{Ozernykh/codes/ifCodeIntro.txt}
     \caption*{б) Текст, полученный при применении шаблона к дереву разбора}    
   \end{minipage}
   \caption{Оператор ветвления и шаблон для него}    
@@ -117,7 +117,7 @@
 %Входными данными для принтера является репозиторий, форматирование которого необходимо изменить, а так же репозиторий-образец, в котором хранится код с целевым форматированием.
 \begin{figure}
     \centering
-    \includegraphics[width=.8\textwidth]{images/ppusage2.png}
+    \includegraphics[width=.8\textwidth]{Ozernykh/images/ppusage2.png}
     \caption{Принцип работы принтер-плагина}
     \label{intro:howto}
 
@@ -143,7 +143,7 @@
 %Чтобы получить принтер нового целевого языка, необходимо вручную реализовать языкозависимую прослойку между ядром платформы и представлением синтаксического дерева, полученного в результате работы анализатора.
 %Существующее решение для реализации такой прослойки ~--- создание языконезависимого описания (рис.~\ref{intro:whileComponent}) \emph{компонент принтера} (классов, описывающих, как форматировать соответствующие элементы синтаксического дерева) с последующей генерацией этих компонент \cite{paper:while}.
 \begin{figure}[h]
-    \lstinputlisting[language=XML]{codes/whileComponent.txt}
+    \lstinputlisting[language=XML]{Ozernykh/codes/whileComponent.txt}
     \caption{Описание компоненты принтера, форматирующей циклы с предусловием}
     \label{intro:whileComponent}
 \end{figure}

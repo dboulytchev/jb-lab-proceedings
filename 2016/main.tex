@@ -25,6 +25,10 @@
 \usepackage[caption=false]{subfig}
 \usepackage{verbments}
 \usepackage{xcolor}
+%% From Ozernykh
+\usepackage{mathtools}
+\usepackage{minted}
+\usepackage{courier}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{dred}{rgb}{0.545,0,0}
@@ -114,6 +118,21 @@ fontadjust=true,
 escapechar=~
 }
 
+%% From Ozernykh
+%% \lstset{
+%% basicstyle=\normalsize\ttfamily,
+%% columns=fullflexible,
+%% identifierstyle=\ttfamily,
+%% keywordstyle=\bfseries,
+%% commentstyle=\scriptsize\rmfamily,
+%% basewidth={0.5em,0.5em},
+%% fontadjust=true,
+%% escapechar=~,
+%% language=haskell
+%% }
+
+
+
 \begin{document}
 
 \newcommand{\Issue}[0]{4}
@@ -168,7 +187,7 @@ escapechar=~
 %\include{Pozdin/main}
 %\include{Makulov/main}
 %\include{Korovyansky/main}
-%\include{Ozernykh/main}
+\include{Ozernykh/main}
 %\include{Aliev/main}
 
 \end{document}
