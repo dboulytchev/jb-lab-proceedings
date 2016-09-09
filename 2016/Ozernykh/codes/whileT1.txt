@@ -6,5 +6,4 @@ do
       then a := a - b;  
       else b := b - a; fi od
 write(a);
- 
- 
+
