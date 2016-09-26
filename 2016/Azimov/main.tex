@@ -1,0 +1,135 @@
+\title{Диагностика синтаксических ошибок в динамически формируемом коде}
+
+\titlerunning{Диагностика синтаксических ошибок в динамически формируемом коде}
+
+\author{Азимов Рустам Шухратуллович}
+
+\authorrunning{Р.Ш.Азимов}
+
+\tocauthor{Р.Ш.Азимов}
+\institute{Санкт-Петербургский государственный университет\\
+\email{rustam.azimov19021995@gmail.com}}
+
+\maketitle             
+
+\begin{abstract}
+Использование встроенных языков затрудняет статическую диагностику ошибок, что снижает надёжность целевых систем. В рамках проекта YaccConstructor разрабатывается платформа для статического анализа динамически формируемого кода, алгоритм синтаксического анализа которой строит лес разбора для всех корректных цепочек, но игнорирует синтаксические ошибки. По этой причине её практическая применимость ограничена. В данной работе представлен алгоритм синтаксического анализа динамически формируемого кода, расширенный механизмом обнаружения ошибок. Задача обнаружения всех синтаксических ошибок в рамках данного алгоритма является неразрешимой, поэтому предложенный механизм выделяет аппроксимацию сверху множества всех синтаксических ошибок. Также в данной работе доказана корректность модифицированного алгоритма и выполнена его реализация в проекте YaccConstructor.
+\end{abstract}
+             
+\input{Azimov/introduction}
+\input{Azimov/statement}
+\input{Azimov/relatedworks}
+\input{Azimov/syntaxerror}
+\input{Azimov/algorithm}
+\input{Azimov/correctness}
+\input{Azimov/evaluation}
+\input{Azimov/conclusion}
+
+\begin{thebibliography}{99}
+
+\bibitem{JSA}
+  Christensen A. S., Møller A., Schwartzbach M. I. 
+  Precise Analysis of String Expressions. 
+  Proc. 10th International Static Analysis Symposium (SAS). –– Vol. 2694 of LNCS. –– Springer-Verlag, 2003. –– P. 1–18.
+
+\bibitem{JSAUrl}
+  Java String Analyzer.
+  \url{ http://www.brics.dk/JSA/ }.
+  urldate      = "18.05.2016"
+                            
+\bibitem{PHPSA}
+  Minamide Y. 
+  Static Approximation of Dynamically Generated Web Pages.
+  Proceedings of the 14th International Conference on World Wide Web. –– WWW’05. –– New York, NY, USA : ACM, 2005. –– P. 432–441.
+
+\bibitem{Alvor1}
+  A. Annamaa, A. Breslav, J. Kabanov, V. Vene.
+  An Interactive Tool for Analyzing Embedded SQL Queries.
+  Proceedings of the 8th Asian Conference on Programming Languages and Systems. –– APLAS’10. –– Berlin, Heidelberg : Springer-Verlag, 2010. –– P. 131–138.
+
+\bibitem{Alvor2}
+  Annamaa A., Breslav A., Vene V.
+  Using Abstract Lexical Analysis and Parsing to Detect Errors in String-Embedded DSL Statements.
+  Proceedings of the 22nd Nordic Workshop on Programming Theory. –– 2010. –– P. 20–22.
+
+\bibitem{AlvorUrl}
+  Alvor.
+  \url{ https://bitbucket.org/plas/alvor }
+  urldate = "18.05.2016"
+
+\bibitem{IntelliLang}
+  IntelliLang.
+  \url{ https://www.jetbrains.com/idea/help/intellilang.html }
+  urldate = "18.05.2016"
+
+\bibitem{PHPStorm}
+  PHPStorm IDE.
+  \url{ https://www.jetbrains.com/phpstorm/ }.
+  urldate = "18.05.2016"
+
+\bibitem{Varis}
+  Nguyen H. V., K{\"a}stner C. and Nguyen T. N.
+  Varis: IDE Support for Embedded Client Code in PHP Web Applications.
+  Proceedings of the 37th International Conference on Software Engineering (ICSE). –– New York, NY : ACM Press, 2015. –– Formal Demonstration paper.
+
+\bibitem{FSharp}
+  Syme, Don and Granicz, Adam and Cisternino, Antonio.
+  Expert F\# (Expert's Voice in .Net).
+  ISBN: 1590598504, 9781590598504.
+
+\bibitem{YC}
+  Kirilenko I., Grigorev S., Avdiukhin D. 
+  Syntax Analyzers Development in Automated Reengineering of Informational System.
+  St. Petersburg State Polytechnical University Journal. Computer Science. Telecommunications and Control Systems. –– 2013. –– Vol. 174, no. 3. –– P. 94–98.
+
+\bibitem{ARNGLR}
+  Verbitskaia E., Grigorev S., Avdyukhin D. 
+  Relaxed Parsing of Regular Approximations of String-Embedded Languages. 
+  Preliminary Proceedings of the PSI 2015: 10th International Andrei Ershov Memorial Conference. –– PSI’15. –– 2015. –– P. 1–12.
+
+\bibitem{YCregapprox}
+  Khabibullin M., Ivanov A., Grigorev S.
+  On Development of Static Analysis Tools for String-Embedded Languages.
+  \url{https://github.com/YaccConstructor/articles/blob/master/2015/SECR/paper/Main.pdf}
+  urldate="18.05.2016"
+                      
+\bibitem{LangInclusion}
+  Asveld P. R. J., Nijholt A.
+  The Inclusion Problem for Some Subclasses of Contextfree Languages. 
+  Vol. 230. –– Essex, UK : Elsevier Science Publishers Ltd., 1999. –– December. –– P. 247–256.
+
+\bibitem{Tomita}
+  Tomita M.
+  An Efficient Context-free Parsing Algorithm for Natural Languages.
+  Proceedings of the 9th International Joint Conference on Artificial Intelligence -- Volume 2. –– IJCAI’85. –– San Francisco, CA, USA : Morgan Kaufmann Publishers Inc., 1985. –– P. 756–764.
+
+\bibitem{SPPF}
+  Rekers J.
+  Parser Generation for Interactive Environments. 
+  1992.
+
+\bibitem{RNGLR}
+  Scott E., Johnstone A. 
+  Right Nulled GLR Parsers.
+  ACM Trans. Program. Lang. Syst. –– 2006. –– Vol. 28, no. 4. –– P. 577–618.
+
+\bibitem{SemonPHD}
+  Григорьев C. В.
+  Синтаксический анализ динамически формируемых программ : Дисс… кандидата наук.
+  Санкт-Петербургский государственный университет. –– 2015 
+
+\bibitem{EkaterinaMaster}
+  Вербицкая Е. А. 
+  Синтаксический анализ регулярных множеств.
+  Санкт-Петербургский государственный университет. –– 2015.
+
+\bibitem{Grune}
+  Dick G., Ceriel H. 
+  Parsing Techniques: A Practical Guide.
+  Upper Saddle River, NJ, USA : Ellis Horwood, 1990. –– ISBN: 0-13-651431-6.
+
+\bibitem{RegOverApprox}
+  F. Yu, M. Alkhalaf, T. Bultan, O. H. Ibarra.
+  Automata-based Symbolic String Analysis for Vulnerability Detection. 
+  Form. Methods Syst. Des. –– 2014. –– Vol. 44, no. 1. –– P. 44–70.
+\end{thebibliography}
