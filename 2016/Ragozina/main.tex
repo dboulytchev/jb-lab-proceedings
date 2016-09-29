@@ -1,0 +1,265 @@
+\title{Ослабленный синтаксический анализ динамически формируемых выражений на основе алгоритма GLL}
+
+\titlerunning{Ослабленный синтаксический анализ динамически формируемых выражений на основе алгоритма GLL}
+
+\author{Рагозина Анастасия Константиновна}
+
+\authorrunning{А.К.Рагозина}
+
+\tocauthor{А.К.Рагозина}
+\institute{Санкт-Петербургский государственный университет\\
+\email{ragozina.anastasiya@gmail.com }}
+
+\maketitle             
+
+\begin{abstract}
+!!!!!!
+\end{abstract}
+
+\input{Ragozina/1_intro}
+\input{Ragozina/2_problem}
+\input{Ragozina/3_overview}
+\input{Ragozina/4_algorithm}
+\input{Ragozina/5_implementation}
+\input{Ragozina/6_approbation}
+\input{Ragozina/7_conclusion}
+
+\begin{thebibliography}{99}
+
+\bibitem{LrAbstract1}
+  Doh K. G., Kim H., Schmidt D. A. 
+  Abstract Parsing: Static Analysis of Dynamically Generated String Output Using LR-Parsing Technology. 
+  Proceedings of the 16th International Symposium on Static Analysis. –– SAS ’09. –– Berlin, Heidelberg : Springer-Verlag, 2009. –– P. 256–272.
+
+\bibitem{LrAbstract2}
+  Doh K. G., Kim H., Schmidt D. A. 
+  Abstract LR-parsing. 
+  Formal Modeling. Ed. by Gul Agha, José Meseguer, Olivier Danvy. –– Berlin, Heidelberg : Springer-Verlag, 2011. –– P. 90–109.
+
+\bibitem{LRAbstractParsingSema}
+  Doh K. G., Kim H., Schmidt D. A. 
+  Static Validation of Dynamically Generated HTML Documents Based on Abstract Parsing and Semantic Processing.
+  Static Analysis. –– Springer Berlin Heidelberg, 2013. –– Vol. 7935 of Lecture Notes in Computer Science. –– P. 194–214.
+                                                                                                                         
+\bibitem{Anderson}
+  Anderson J. Nov{\'a}k {\'A}. Sükösd Z. 
+  Quantifying variances in comparative RNA secondary structure prediction.
+  BMC Bioinformatics. –– 2013. –– P. 14–149. 
+
+\bibitem{SELforIDE}
+  S. Grigorev, E. Verbitskaia, A. Ivanov et al.
+  String-embedded Language Support in Integrated Development Environment.
+  Proceedings of the 10th Central and Eastern European Software Engineering Conference in Russia. –– CEE-SECR ’14. –– New York, NY, USA : ACM, 2014. –– P. 21:1–21:11.
+
+\bibitem{RNGLR}
+  E. Scott, A. Johnstone.
+  Right Nulled GLR Parsers. 
+  ACM Trans. Program. Lang. Syst. — 2006. — Vol. 28, no. 4. — P. 577–618.
+                                                                                                                                                          
+\bibitem{FSharp}
+  Syme D., Granicz A., Cisternino A. 
+  Expert F\#.
+  (Expert’s Voice in .Net). –– ISBN: 1590598504, 9781590598504.
+
+\bibitem{Afroozeh2015}
+  A. Afroozeh, A. Izmaylova.
+  Faster, Practical GLL Parsing.
+  Compiler Construction. Springer. — 2015. — P. 89–108.                                                                                                   
+
+\bibitem{Alvor1} 
+  A. Annamaa, A. Breslav, J. Kabanov, V. Vene.
+  An Interactive Tool for Analyzing Embedded SQL Queries.
+  Proceedings of the 8th Asian Conference on Programming Languages and Systems. –– APLAS’10. –– Berlin, Heidelberg : Springer-Verlag, 2010. –– P. 131–138.
+
+\bibitem{AbstractInterpretation}
+  Cousot P., Cousot R. 
+  Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by Construction or Approximation of Fixpoints.
+  Proceedings of the 4th ACM SIGACT-SIGPLAN Symposium on Principles of Programming Languages. –– POPL ’77. –– New York, NY, USA : ACM, 1977. –– P. 238–252. 
+
+\bibitem{Tomita}
+  Tomita M.
+  An Efficient Context-free Parsing Algorithm for Natural Languages.
+  Proceedings of the 9th International Joint Conference on Artificial Intelligence - Volume 2. –– IJCAI’85. –– San Francisco, CA, USA : Morgan Kaufmann Publishers Inc., 1985. –– P. 756–764. 
+
+\bibitem{SPPF}
+  Rekers J. G. 
+  Parser Generation for Interactive Environments: Ph. D. thesis. 
+  J. G. Rekers ; Universiteit van Amsterdam. –– 1992.
+
+\bibitem{GrigorievPhd}
+  С. Григорьев. 
+  Синтаксический анализ динамически формируемых программ: Ph. D. thesis.
+  Санкт-Петербургский государственный университет. –– 2016.
+
+\bibitem{GLL} 
+  Scott E., Johnstone A. 
+  GLL Parsing. 
+  Electron. Notes Theor. Comput. Sci. –– 2010. –– Vol. 253, no. 7. –– P. 177–189.
+
+\bibitem{BRNGLR} 
+  Scott E., Johnstone A., Economopoulos R. 
+  BRNGLR: A Cubic Tomitastyle GLR Parsing Algorithm. 
+  Acta Inf. –– 2007. –– Vol. 44, no. 6. –– P. 427–461.
+
+\bibitem{RIGLR} 
+  Scott E., Johnstone A. 
+  Generalized Bottom Up Parsers With Reduced Stack Activity.
+  Comput. J. –– 2005. –– Vol. 48, no. 5. –– P. 565–587.
+
+\bibitem{Alvor2} 
+  Annamaa A., Breslav A., Vene V. 
+  Using Abstract Lexical Analysis and Parsing to Detect Errors in String-Embedded DSL Statements. 
+  Proceedings of the 22nd Nordic Workshop on Programming Theory. –– 2010. –– P. 20–22.
+               
+\bibitem{Varis}
+  Nguyen H., K{\"a}stner C., Nguyen T. Varis.
+  IDE Support for Embedded Client Code in PHP Web Applications.
+  Proceedings of the 37th International Conference on Software Engineering (ICSE). –– New York, NY : ACM Press, 2015. –– Formal Demonstration paper.
+
+\bibitem{Johnstone201564}
+  Johnstone A., Scott E.
+  Principled software microengineering.
+  Science of Computer Programming. –– 2015. –– Vol. 97, Part 1. –– P. 64 – 68. –– Special Issue on New Ideas and Emerging Results in Understanding Software. 
+
+\bibitem{Johnstone2011}
+  Johnstone A., Scott E.
+  Modelling GLL Parser Implementations.
+  Software Language Engineering: Third International Conference, SLE 2010, Eindhoven, The Netherlands, October 12-13, 2010, Revised Selected Papers / Ed. by Brian Malloy, Steffen Staab, Mark van den Brand. –– Berlin, Heidelberg : Springer Berlin Heidelberg, 2011. –– P. 42–61. –– ISBN: 978-3-642-19440-5.
+
+\bibitem{reago}
+  C. Yuan, J. Lei, J. Cole, Y. Sun.
+  Reconstructing 16S rRNA genes in metagenomic data.
+  Bioinformatics. –– 2015. –– Vol. 31, no. 12. –– P. i35–i43.
+    
+\bibitem{Infernal}
+  Nawrocki E., Eddy S. 
+  Infernal 1.1: 100-fold faster RNA homology searches.
+  Bioinformatics. –– 2013. –– Vol. 29, no. 22. –– P. 2933–2935.
+
+\bibitem{Emirge}
+  Miller C. Baker B. Thomas B. Singer S. Banfield J.
+  EMIRGE: reconstruction of full-length ribosomal genes from microbial community short read sequencing data.
+  Genome Biology. –– 2011. –– Vol. 12, no. 5. –– P. 1–14.
+
+\bibitem{Wang2015}
+  Qiong Wang, Jordan A. Fish, Mariah Gilman et al.
+  Xander: employing a novel method for efficient gene-targeted metagenomic assembly.
+  Microbiome. –– 2015. –– Vol. 3, no. 1. –– P. 1–13.
+                                                     
+\bibitem{antlr}
+  ANTLR [Электронный ресурс].
+  \url{http://www.antlr.org/ }
+  urldate = {11.05.2016}
+
+\bibitem{AlvorUrl}
+  Alvor [Электронный ресурс].
+  \url{ http://code.google.com/p/alvor/ }
+  urldate = {11.05.2016}
+
+
+\bibitem{FsharpX}
+  Репозиторий FSharpx.Collections [Электронный ресурс].
+  \url{ https://github.com/fsprojects/FSharpx.Collections/ }
+  urldate = {13.05.2016}
+
+\bibitem{PHPSAUrl}
+  PHP String Analyzer [Электронный ресурс].
+  \url{ http://www.score.cs.tsukuba.ac.jp/~minamide/phpsa/ }
+  urldate = {11.05.2016}
+
+\bibitem{JSAUrl}
+  Java String Analyzer [Электронный ресурс].
+  \url{ http://www.brics.dk/JSA/ }
+  urldate = {11.05.2016}
+
+\bibitem{MONAUrl}
+  "MONA [Электронный ресурс]"
+  \url{ http://www.brics.dk/mona/ }
+  urldate = {11.05.2016}
+
+\bibitem{YCUrl}
+  "YaccConstructor [Электронный ресурс]"
+  \url{https://github.com/YaccConstructor/ }
+  urldate = {11.05.2015}
+
+\bibitem{hmmer}
+  HMMER [Электронный ресурс]
+  \url{http://hmmer.org/ }
+  urldate = {14.05.2016}
+
+\bibitem{ReSharper}
+  ReSharper [Электронный ресурс].
+  \url{https://www.jetbrains.com/resharper/ }
+  urldate = {11.05.2016}
+
+\bibitem{ReSharperSDK}
+  Документация проекта ReSharper SDK [Электронный ресурс]
+  \url{ https://www.jetbrains.com/resharper/devguide/README.html }
+  urldate = {11.05.2016}
+
+\bibitem{QuickGraph}
+  QuickGraph [Электронный ресурс].
+  \url{ https://quickgraph.codeplex.com/ }
+  urldate = {11.05.2016},
+
+\bibitem{Graphviz}
+  Сайт проекта Graphviz [Электронный ресурс]
+  \url{ http://www.graphviz.org/ }
+  urldate = {11.05.2016}
+    
+\bibitem{IntelliLang}
+  IntelliLang [Электронный ресурс]
+  \url{ https://www.jetbrains.com/idea/help/intellilang.html }
+  urldate = {11.05.2016}
+                        
+\bibitem{PHPStorm}
+  PHPStorm IDE [Электронный ресурс]
+  \url{ https://www.jetbrains.com/phpstorm/ }
+  urldate = {11.05.2016}
+                                             
+\bibitem{JSA}
+  Christensen A. S., M{\o}ller A., Schwartzbach M. I.
+  Precise Analysis of String Expressions.
+   Proc. 10th International Static Analysis Symposium (SAS). –– Vol. 2694 of LNCS. –– Springer-Verlag, 2003. –– P. 1–18.
+
+\bibitem{PHPSA} 
+  Minamide Y. 
+  Static Approximation of Dynamically Generated Web Pages.
+  Proceedings of the 14th International Conference on World Wide Web. –– WWW ’05. –– New York, NY, USA : ACM, 2005. –– P. 432–441.
+                                         
+\bibitem{polubelova}
+  Полубелова М. 
+  Лексический анализ динамически формируемых строковых выражений.
+  Санкт-Петербургский государственный университет. –– 2015.
+  
+\bibitem{IDEA}
+  IntelliJ IDEA IDE [Электронный ресурс].
+  \url{https://www.jetbrains.com/idea/}
+  urldate = {29.04.2016}
+
+\bibitem{YCZOO}
+  Репозиторий проекта YaccConstructor, содержащий набор различных грамматик [Электронный ресурс].
+  \url{https://github.com/YaccConstructor/YC.GrammarZOO}
+  urldate = {29.04.2016}
+
+\bibitem{RelaxedARNGLR} 
+  Verbitskaia E., Grigorev S., Avdyukhin D. 
+  Relaxed Parsing of Regular Approximations of String-Embedded Languages.
+  Preliminary Proceedings of the PSI 2015: 10th International Andrei Ershov Memorial Conference. –– PSI’15. –– 2015. –– P. 1–12.
+
+\bibitem{durbin}
+  R. Durbin, S. Eddy, A. Krogh, G. Mitchison.
+  Biological sequence analysis: probabilistic models of proteins and nucleic acids.
+  Cambridge university press, 1998.
+
+\bibitem{EddyComputationalRNA}
+  Nawrocki E., Eddy S.
+  Computational identification of functional RNA homologs in metagenomic data.
+  RNA biology. –– 2013. –– Vol. 10, no. 7. –– P. 1170–1179.
+
+\bibitem{Bruijn}
+  Compeau P., Pevzner P., Tesler G. 
+  How to apply de Bruijn graphs to genome assembly.
+   Nature biotechnology. –– 2011. –– Vol. 29, no. 11. –– P. 987–991.
+
+\end{thebibliography}
