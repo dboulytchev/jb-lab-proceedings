@@ -40,11 +40,12 @@
 \begin{algorithmic}[1]
 \caption{Алгоритм ослабленного синтаксического анализа регулярной аппроксимации динамически формируемого выражения}
 \label{parsing}
-\Function{parse}{$grammar, automaton$}
-  \State{$inputGraph \gets$ construct inner graph representation of $automaton$}
+\Function{parse}{$grammar, fsa$}
+  \State{$inputGraph \gets$ construct inner graph representation of $fsa$}
   \State{$parserSource \gets$ generate RNGLR parse tables for $grammar$}
   \If{$inputGraph$ contains no edges}
-    \If{$parserSource$ accepts empty input} {report success}
+    \If{$parserSource$ accepts empty input} 
+    {report success}
     \Else { report failure}
     \EndIf
   \Else
@@ -56,7 +57,8 @@
       \State{\Call{push}{$v$}}
       \State{\Call{applyPassingReductions}{$v$}}
     \EndWhile
-    \If{$\exists v_f: v_f.level = q_f$ and $v_f.state$ is accepting} {report success}
+    \If{$\exists v_f: v_f.level = q_f$ and $v_f.state$ is accepting}
+    \State {report success}
     \Else { report failure}
     \EndIf
   \EndIf
@@ -74,7 +76,7 @@
   \State{clear $innerGraphV.unprocessed$}
   \ForAll{$v_{h}$ in $\mathcal{U}$}  
     \ForAll{$e$ in outgoing edges of $innerGraphV$}
-      \State{$push \gets$ calculate next state by $v_{h}.state$ and the token on $e$}
+      \State{$push \gets$ calculate next state by $v_{h}.state$ and token on $e$}
       \State{\Call{addEdge}{$v_{h}, e.Head, push, false$}}
       \State{add $v_{h}$ in $innerGraphV.processed$}
     \EndFor
@@ -89,19 +91,19 @@
     \State{add $(startV, N, l-i)$ in $v.passingReductions$,}
     \State{    where $v$ is an $i$-th vertex of the path}
     \ForAll{$v_{h}$ in $\mathcal{X}$}
-      \State{$state_{t} \gets$ calculate new state by $v_{h}.state$ and nonterminal $N$}
+      \State{$state_{t} \gets$ calculate state by $v_{h}.state$ and nonterminal $N$}
       \State{\Call{addEdge}{$v_{h}, startV, state_{t}, (l=0)$}}
     \EndFor
   \EndWhile
 \EndFunction
 
 \Function{applyPassingReductions}{$innerGraphV$}
-  \ForAll{$(v, edge)$ in $innerGraphV.passingReductionsToHandle$}
+  \ForAll{$(v, e)$ in $innerGraphV.passingReductionsToHandle$}
     \ForAll{$(startV, N, l) \gets v.passingReductions.Dequeue()$}
       \State{find the set of vertices $\mathcal{X}$,}
-      \State{    reachable from $edge$ along the path of length ($l-1$)}
+      \State{    reachable from $e$ along the path of length ($l-1$)}
       \ForAll{$v_{h}$ in $\mathcal{X}$}
-        \State{$state_{t} \gets$ calculate new state by $v_{h}.state$ and nonterminal $N$}
+        \State{$state_{t} \gets$ calculate state by $v_{h}.state$ and $N$}
         \State{\Call{addEdge}{$v_{h}, startV, state_{t}, false$}}
       \EndFor
     \EndFor
@@ -124,13 +126,14 @@
     \State{add $v$ in $innerGraphV.unprocessed$}
     \ForAll{$e$ in outgoing edges of $innerGraphV$}
       \State{calculate the set of zero-reductions by $v$}
-      \State{    and the token on $e$ and add them in $innerGraphV.reductions$}
+      \State{    and the token on $e$ and }
+      \State{    add them in $innerGraphV.reductions$}
     \EndFor
     \State{\Return{$(v, true$)}}
   \EndIf
 \EndFunction
 
-\Function{addEdge}{$v_{h}, innerGraphV, state_{t}, isZeroReduction$}
+\Function{addEdge}{$v_{h}, innerGraphV, state_{t}, isZeroRed$}
   \State{$(v_{t}, isNew) \gets$ \Call{addVertex}{$innerGraphV, state_{t}$}}
   \If{GSS does not contain edge from $v_{t}$ to $v_{h}$}
     \State{$edge \gets$ create new edge from $v_{t}$ to $v_{h}$}
@@ -138,10 +141,11 @@
     \If{not $isNew$ and $v_{t}.passingReductions.Count>0$}
       \State{add $(v_{t}, edge)$ in $innerGraphV.passingReductionsToHandle$}
     \EndIf
-    \If{not $isZeroReduction$}
+    \If{not $isZeroRed$}
       \ForAll{$e$ in outgoing edges of $innerGraphV$}
         \State{calculate the set of reductions by $v$}
-        \State{    and the token on $e$ and add them in $innerGraphV.reductions$}
+        \State{    and the token on $e$ and }
+        \State{    add them in $innerGraphV.reductions$}
       \EndFor
     \EndIf
   \EndIf

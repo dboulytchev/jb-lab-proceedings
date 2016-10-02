@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.23)  26 SEP 2016 11:58
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.23)  2 OCT 2016 00:12
 entering extended mode
 **main.tex
 (E:\jb-lab-proceedings\2016\Azimov\main.tex
@@ -14,15 +14,9 @@ ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
 an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
 ishmax, welsh, loaded.
 ! Undefined control sequence.
-l.3 \titlerunning
-                 {Диагностика синтаксических оши...
-
-? 
-! Emergency stop.
-l.3 \titlerunning
-                 {Диагностика синтаксических оши...
-End of file on the terminal!
-
+l.1 \algtext
+            *{EndWhile}% Remove "end while" text
+? x
  
 Here is how much of TeX's memory you used:
  7 strings out of 493921
@@ -31,5 +25,10 @@ Here is how much of TeX's memory you used:
  3400 multiletter control sequences out of 15000+200000
  3640 words of font info for 14 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 5i,0n,1p,149b,8s stack positions out of 5000i,500n,10000p,200000b,50000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 5i,0n,1p,58b,8s stack positions out of 5000i,500n,10000p,200000b,50000s
+No pages of output.
+PDF statistics:
+ 0 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

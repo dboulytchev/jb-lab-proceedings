@@ -10,7 +10,7 @@
 \item $E \subseteq Q \times (\Sigma \cup \{\varepsilon\}) \times (\Delta \cup \{\varepsilon\})  \times Q$ — набор переходов. 
 \end{itemize}
 
-Композицией двух конечных преобразователей $T_1~=~\langle Q_1, \Sigma_1, \Delta_1, q_{0_{1}}, \\F_1, E_1 \rangle$ и $T_2~=~\langle Q_2, \Sigma_2, \Delta_2, q_{0_{2}}, F_2, E_2 \rangle$ является конечный преобразователь  $T =\langle Q_1  \times Q_2, \Sigma_1, \Delta_2, \langle q_{0_{1}}, q_{0_{2}} \rangle, F_1 \times F_2, E \cup E_{\varepsilon} \cup E_{i,\varepsilon} \cup E_{o,\varepsilon} \rangle$, где 
+Композицией двух конечных преобразователей $T_1~=~\langle Q_1, \Sigma_1, \Delta_1, q_{0_{1}}, F_1, E_1 \rangle$ и $T_2~=~\langle Q_2, \Sigma_2, \Delta_2, q_{0_{2}}, F_2, E_2 \rangle$ является конечный преобразователь  $T =\langle Q_1  \times Q_2, \Sigma_1, \Delta_2, \\ \langle q_{0_{1}}, q_{0_{2}} \rangle, F_1 \times F_2, E \cup E_{\varepsilon} \cup E_{i,\varepsilon} \cup E_{o,\varepsilon} \rangle$, где 
 
 \begin{itemize}
 \item $E = \{ \langle \langle p, q \rangle, a, b, \langle p', q' \rangle \rangle\ | \exists c \in \Delta_1 \cap \Sigma_2 : \langle p, a, c, p' \rangle \in E_1 \wedge \\\langle q, c, b, q' \rangle \in E_2\}$
@@ -39,7 +39,7 @@
  \caption{Композиция FST}
  \label{pseudocode}
  \begin{algorithmic}[1]
- \Procedure{Compose}{$I_1, I_2$}
+ \Function{Compose}{$I_1, I_2$}
  \State $Q\gets I_1\times I_2$
  \State $K\gets I_1\times I_2$ 
  \While{$K\neq \emptyset$}
@@ -61,7 +61,7 @@
    \EndFor
  \EndWhile  
  \State \textbf{return} $T$
- \EndProcedure
+ \EndFunction
 \end{algorithmic}
 \end{algorithm}
 

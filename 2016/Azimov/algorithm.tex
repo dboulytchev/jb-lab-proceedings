@@ -31,13 +31,13 @@
 % Сюда бы тоже картинку.
 
 \subsection{Алгоритм построения префиксов}
-Данный алгоритм является модификацией алгоритма ослабленного синтаксического анализа регулярной аппроксимации динамически формируемого выражения. Добавляется ассоциация вершин GSS с коллекцией $prefixes$ --- граф префиксов, порождающий все корректные префиксы внутреннего графа для данной GSS вершины. После создания начальной GSS-вершины в ее графе префиксов создается начальная вершина $EOP$. Добавляется ассоциация нетерминальных ребер GSS с коллекцией $paths$ --- множество путей в GSS, порождаемых рассматриваемым нетерминальным ребром. Функция $addEdge$ модифицируется, добавляется дополнительный параметр $pathsToAdd$ --- множество путей в GSS, которое необходимо добавить к множеству путей в GSS, порождаемых ребром $edge$ из вершины $v_{t}$ в вершину $v_{h}$. Также создается начальная вершина графа префиксов $v_{t}.prefixes$, ассоциированная с ребром $edge$ и соединенная с графом префиксов $v_{h}.prefixes$. Функция $addVertex$ не изменилась.
+Алгоритм модифицирует алгоритм ослабленного синтаксического анализа регулярной аппроксимации динамического выражения. Вершины GSS ассоциируются с коллекцией $prefixes$ --- граф всех корректных префиксов внутреннего графа для вершины. В графе префиксов начальной GSS-вершины создается вершина $EOP$. Нетерминальные ребера GSS ассоциируются с коллекцией $paths$ --- множеством путей в GSS, порождаемых ими. В функцию $addEdge$ добавляется параметр $pToAdd$ --- множество путей в GSS, которое необходимо добавить ко множеству путей, порождаемых ребром $v_{t} \xrightarrow[]{e} v_{h}$. При обработке терминальных или обнуляемых ребер GSS, $pToAdd$ является пустым. Создается начальная вершина графа префиксов $v_{t}.prefixes$, ассоциированная с $e$ и соединенная с $v_{h}.prefixes$. Функция $addVertex$ не изменилась.
 
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
 \caption{Модификация построения GSS}
 \label{addEdge_mod}
-\Function{addEdge}{$v_{h}, innerGraphV, state_{t}, isZeroReduction, pathsToAdd$}
+\Function{addEdge}{$v_{h}, innerGraphV, state_{t}, isZeroRed, pToAdd$}
 
   \State{$(v_{t}, isNew) \gets$ \Call{addVertex}{$innerGraphV, state_{t}$}}
   \If{GSS does not contain edge from $v_{t}$ to $v_{h}$}
@@ -50,9 +50,9 @@
     \If{not $isNew$ and $v_{t}.passingReductions.Count>0$}
       \State{add $(v_{t}, edge)$ in $innerGraphV.passingReductionsToHandle$}
     \EndIf
-    \If{not $isZeroReduction$}
+    \If{not $isZeroRed$}
       \ForAll{$e$ in outgoing edges of $innerGraphV$}
-        \State{calculate the set of reductions by $v$ and the token on $e$}
+        \State{calculate the set of reductions by $v$ and token on $e$}
         \State{     and add them in $innerGraphV.reductions$}
       \EndFor
     \EndIf
@@ -60,15 +60,13 @@
     \State{     associated with $edge$ and connected to $v_{h}.prefixes$}
     \State{add $V$ to initial vertexes of $v_{t}.prefixes$}
   \EndIf
-  \If{pathsToAdd is not empty}
-    \State{$edge \gets$ edge from $v_{t}$ to $v_{h}$}
-    \State{add all paths in $pathsToAdd$ to $edge.paths$}
+  \If{pToAdd is not empty}
+    \State{$e \gets$ edge from $v_{t}$ to $v_{h}$}
+    \State{add all paths in $pToAdd$ to $e.paths$}
   \EndIf
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-
-Параметр $pathsToAdd$ при вызове функции $addEdge$ для терминальных или обнуляемых ребер GSS является пустым множеством.
 
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
@@ -79,7 +77,7 @@
   \State{clear $innerGraphV.unprocessed$}
   \ForAll{$v_{h}$ in $\mathcal{U}$}  
     \ForAll{$e$ in outgoing edges of $innerGraphV$}
-      \State{$push \gets$ calculate next state by $v_{h}.state$ and the token on $e$}
+      \State{$push \gets$ calculate next state by $v_{h}.state$ and token on $e$}
       \State{$pathsToAdd \gets$ empty set}
 % * <Екатерина Вербицкая> 14:32:07 13 May 2016 UTC+0300:
 % Обычно в таких листингах новый код выделяется болдом или еще как-то в том же духе. Чтобы повысить читабельность и чтобы сразу было понятно, что конкретно изменилось.
@@ -90,6 +88,8 @@
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+
+После описанных модификаций алгоритм синтаксического анализа регулярной аппроксимации динамически формируемого выражения для каждой вершины GSS дополнительно конструирует все корректные для нее префиксы внутреннего графа.
 
 \begin{algorithm}[H]
 \begin{algorithmic}[1]
@@ -103,36 +103,37 @@
     \State{add $(startV, N, l-i)$ in $v.passingReductions$,}
     \State{    where $v$ is an $i$-th vertex of the path}
     \ForAll{$v_{h}$ in $\mathcal{X}$}
-      \State{$state_{t} \gets$ calculate new state by $v_{h}.state$ and nonterminal $N$}
+      \State{$state_{t} \gets$ calculate state by $v_{h}.state$ and $N$}
       \If{$l > 0$}
-        \State{$pathsToAdd \gets$ all paths, by which $v_{h}$ is reachable}
-        \State{     from $startV$}
-      \Else
-        \State{$pathsToAdd \gets$ empty set}
+        \State{$pToAdd \gets$ paths, by which $v_{h}$ is reachable from $startV$}
+      \Else {     $pToAdd \gets$ empty set}
       \EndIf
-      \State{\Call{addEdge}{$v_{h}, startV, state_{t}, (l=0), pathsToAdd$}}
+      \State{\Call{addEdge}{$v_{h}, startV, state_{t}, (l=0), pToAdd$}}
     \EndFor
   \EndWhile
 \EndFunction
+\end{algorithmic}
+\end{algorithm}
 
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\caption{Модификация обработки проходящих редукций}
+\label{reduce_mod}
 \Function{applyPassingReductions}{$innerGraphV$}
-  \ForAll{$(v, edge)$ in $innerGraphV.passingReductionsToHandle$}
+  \ForAll{$(v, e)$ in $innerGraphV.passingReductionsToHandle$}
     \ForAll{$(startV, N, l) \gets v.passingReductions.Dequeue()$}
       \State{find the set of vertices $\mathcal{X}$,}
-      \State{    reachable from $edge$ along the path of length ($l-1$)}
+      \State{    reachable from $e$ along the path of length ($l-1$)}
       \ForAll{$v_{h}$ in $\mathcal{X}$}
-        \State{$state_{t} \gets$ calculate new state by $v_{h}.state$ and nonterminal $N$}
-        \State{$pathsToAdd \gets$ all paths, by which $v_{h}$ is reachable}
-        \State{     from $startV$}
-        \State{\Call{addEdge}{$v_{h}, startV, state_{t}, false, pathsToAdd$}}
+        \State{$state_{t} \gets$ calculate new state by $v_{h}.state$ and $N$}
+        \State{$pToAdd \gets$ paths, by which $v_{h}$ is reachable from $startV$}
+        \State{\Call{addEdge}{$v_{h}, startV, state_{t}, false, pToAdd$}}
       \EndFor
     \EndFor
   \EndFor
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-
-После описанных модификаций алгоритм синтаксического анализа регулярной аппроксимации динамически формируемого выражения для каждой вершины GSS дополнительно конструирует все корректные для нее префиксы внутреннего графа.
 
 \subsection{Алгоритм диагностики ошибок}
 Данный алгоритм получает на вход внутренний граф с построенными в ходе основного синтаксического анализа структурами (в том числе и префиксами внутреннего графа GSS вершин), а также сгенерированные RNGLR-таблицы. Алгоритм делает обход внутреннего графа и для каждого исходящего из вершины внутреннего графа ребра анализирует множества графов префиксов соседних вершин. 
@@ -157,54 +158,6 @@
         \State{$e \gets \mathcal{F}.Dequeue()$}
         \State{\Call{processEOF}{$e$}}
     \EndWhile
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[H]
-\begin{algorithmic}[1]
-\caption{Анализ неконечных ребер внутреннего графа}
-\label{error_edges}
-\Function{processVertex}{$innerGraphV$}
-    \ForAll{$e$ in outgoing edges of $innerGraphV$}
-        \If{token on $e$ is EOF}
-            \State{$\mathcal{F}.Enqueue(e)$}
-        \Else
-            \If{$e.Head$ was not processed}
-                \State{$\mathcal{Q}.Enqueue(e.Head)$}
-            \EndIf
-            \State{$headPrefixes \gets$ all prefixes graphs}
-            \State{    from all GSS vertexes of $e.Head$;}
-            \State{$pushedPrefixes \gets$ all prefixes graphs, to which connected}
-            \State{    some initial vertex of prefixes graph in $headPrefixes$,}
-            \State{     associated with terminal edge;}
-            \State{$withCycle \gets$ all cyclical prefixes graphs in $pushedPrefixes$}
-            \State{$withoutCycle \gets$ all non-cyclical graphs in $pushedPrefixes$}
-            \State{$notPushedPrefixes \gets$ all prefixes graphs}
-            \State{     from all GSS vertexes of $innerGraphV$,}
-            \State{     without prefixes graphs from $pushedPrefixes$;}
-            \ForAll{$p$ in $notPushedPrefixes$}
-                \If{prefixes graph $p$ has a cycle}
-                    \State{add $e$ to $probErrors$}
-                    \State{add $p$ to $probErrors[e]$}
-                \Else
-                    \ForAll{$prefixPath$ in paths of prefixes graph $p$}
-                        \State{$pathG \gets$ prefixes graph generated by $prefixPath$}
-                        \If{$withoutCycle$ does not have any prefixes graph with
-                            \State{    equivalent to $prefixPath$ path} }
-                            \If{$withCycle$ is not empty}
-                                \State{add $e$ to $probErrors$}
-                                \State{add $pathG$ to $probErrors[e]$}
-                            \Else
-                                \State{add $e$ to $errors$}
-                                \State{add $pathG$ to $errors[e]$}
-                            \EndIf
-                        \EndIf
-                    \EndFor
-                \EndIf
-            \EndFor
-        \EndIf
-    \EndFor
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -238,6 +191,60 @@
                         \State{add $edge$ to $errors$}
                         \State{add $pathG$ to $errors[edge]$}
                     \EndIf
+                \EndIf
+            \EndFor
+        \EndIf
+    \EndFor
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\caption{Анализ неконечных ребер внутреннего графа}
+\label{error_edges}
+\Function{processVertex}{$innerGraphV$}
+    \ForAll{$e$ in outgoing edges of $innerGraphV$}
+        \If{token on $e$ is EOF}
+            \State{$\mathcal{F}.Enqueue(e)$}
+        \Else
+            \If{$e.Head$ was not processed}
+                \State{$\mathcal{Q}.Enqueue(e.Head)$}
+            \EndIf
+            \State{$headPrefixes \gets$ all prefixes graphs}
+            \State{    from all GSS vertexes of $e.Head$;}
+            \State{$pushedPrefixes \gets$}
+            \State{     all prefixes graphs, to which connected}
+            \State{     some initial vertex of prefixes graph in $headPrefixes$,}
+            \State{     associated with terminal edge;}
+            \State{$withCycle \gets$ }
+            \State{     all cyclical prefixes graphs in $pushedPrefixes$}
+            \State{$withoutCycle \gets$ } 
+            \State{     all non-cyclical prefixes graphs in $pushedPrefixes$}
+            \State{$notPushedPrefixes \gets$ }
+            \State{     prefixes graphs from GSS vertexes of $innerGraphV$,}
+            \State{     without prefixes graphs from $pushedPrefixes$;}
+            \ForAll{$p$ in $notPushedPrefixes$}
+                \If{prefixes graph $p$ has a cycle}
+                    \State{add $e$ to $probErrors$}
+                    \State{add $p$ to $probErrors[e]$}
+                \Else
+                    \ForAll{$pPath$ in paths of prefixes graph $p$}
+                        \State{$pathG \gets$ prefixes graph generated by $pPath$}
+                        \If{$withoutCycle$ does not have} 
+                            \State{    any prefixes graph with
+                            \State{    equivalent to $prefixPath$ path} }
+                            \If{$withCycle$ is not empty}
+                                \State{add $e$ to $probErrors$}
+                                \State{add $pathG$ to $probErrors[e]$}
+                            \Else
+                                \State{add $e$ to $errors$}
+                                \State{add $pathG$ to $errors[e]$}
+                            \EndIf
+                        \EndIf
+                    \EndFor
                 \EndIf
             \EndFor
         \EndIf
