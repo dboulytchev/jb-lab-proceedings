@@ -1,0 +1,99 @@
+\title{Библиотека параллельной сборки мусора для С++}
+
+\titlerunning{Библиотека параллельной сборки мусора для С++}
+
+\author{Моисеенко Евгений Александрович}
+
+\authorrunning{Е.А.Моисеенко}
+
+\tocauthor{Е.А.Моисеенко}
+\institute{Санкт-Петербургский государственный университет\\
+\email{evg.moiseenko@mail.ru }}
+
+\maketitle
+
+\newcommand{\code}[1]{\textsf{#1}}
+
+\begin{abstract}
+В работе описывается алгоритм сборки мусора для языка C++, 
+реализованный в виде библиотеки, не требующей поддержки со стороны компилятора. 
+Реализованный сборщик мусора является 
+\emph{точным}, т.е. способным точно идентифицировать указатели на управляемые объекты, 
+\emph{инкрементальным}, 
+\emph{копирующим}, т.е. способным улучшать локальность памяти за счёт перемещения объектов, 
+\emph{потокобезопасным} и \emph{параллельным}. 
+В работе также произведён обзор существующих решений задачи сборки мусора для языка C++, 
+и проведена апробация результата.
+\end{abstract}
+
+\input{Moiseenko/1_intro}
+\input{Moiseenko/2_task}
+\input{Moiseenko/3_overview}
+\input{Moiseenko/4_implementation}
+\input{Moiseenko/5_appr}
+\input{Moiseenko/6_results}
+
+\begin{thebibliography}{99}
+
+\bibitem{book:precisegc_secr}
+    D. Berezun, D. Boulytchev.
+    Precise Garbage Collection for C++ with a Non-cooperative Compiler.
+    Proceedings of the 10th Central and Eastern European Software Engineering Conference 
+    in Russia, 2014.
+
+\bibitem{book:precisegc_berezun}
+    Д. Березун.
+    Реализация основных примитивов библиотеки неконсервативной сборки мусора для C++.
+    Труды лаборатории языковых инструментов JetBrains, выпуск 2, 2014.
+
+\bibitem{book:precisegc_samofalov}
+    А.Самофалов.
+    Библиотека почти точной копирующей сборки мусора для C++.
+    Труды лаборатории языковых инструментов JetBrains, выпуск 3, 2015
+
+\bibitem{book:jones1996garbage}
+    Jones, Richard and Lins, Rafael D.
+    Garbage collection: algorithms for automatic dynamic memory management,
+    \emph{Wiley}, 1996.
+
+\bibitem{book:jones2011garbage}
+    Jones, Richard and Hosking, Antony and Moss, Eliot.
+    The garbage collection handbook: the art of automatic memory management,
+    \emph{Chapman \& Hall/CRC}, 2011.
+
+\bibitem{dijkstra1978fly}
+    Dijkstra, Edsger W and Lamport, Leslie and Martin, Alain J and Scholten, Carel S and 
+    Steffens, Elisabeth FM.
+    On-the-fly garbage collection: An exercise in cooperation, 
+    \emph{Communications of the ACM, vol. 21, num. 11, pp. 996---975}, 1978.
+
+\bibitem{boehm2007transparent}
+    Boehm, Hans-J and Spertus, Michael.
+    Transparent Programmer-Directed Garbage Collection for C+,
+    \emph{URL: http://www.open-std.org/jtc1/sc22/wg21/docs/papers},
+    num. 2310, 2007.
+
+\bibitem{book:os_linux}
+    А.М. Робачевский.
+    Операционная система UNIX, 2 изд.,
+    \emph{БХВ-Петербург}, 2010.
+
+\bibitem{boehm1993space}
+    Boehm, Hans-Juergen. 
+    Space efficient conservative garbage collection, 
+    \emph{ACM SIGPLAN Notices, vol. 28, num. 6, pp. 197--206},
+    1993.
+
+\bibitem{book:cpp_concurrency}
+    Э. Уильямс.
+    Параллельное программирование на C++ в действии. Практика разработки многопоточных программ,
+    \emph{Litres}, 2014.
+
+\bibitem{barabash2005parallel}
+    Barabash, Katherine and Ben-Yitzhak, Ori and Goft, Irit and Kolodner, Elliot K and 
+    Leikehman, Victor and Ossia, Yoav and Owshanko, Avi and Petrank, Erez.
+    A parallel, incremental, mostly concurrent garbage collector for servers,
+    \emph{ACM Transactions on Programming Languages and Systems (TOPLAS),  vol. 27,
+    num. 6, pp. 1097--1146}, 2005.
+
+\end{thebibliography}
