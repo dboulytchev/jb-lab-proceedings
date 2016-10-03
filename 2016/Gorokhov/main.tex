@@ -1,0 +1,108 @@
+\title{Поддержка конъюнктивных грамматик в алгоритме GLL}
+
+\titlerunning{Поддержка конъюнктивных грамматик в алгоритме GLL}
+
+\author{Горохов Артем Владимирович}
+
+\authorrunning{А.В.Горохов}
+
+\tocauthor{А.В.Горохов}
+\institute{Санкт-Петербургский государственный университет\\
+\email{gorohov.art@gmail.com}}
+
+\maketitle             
+
+\begin{abstract}
+Большинство синтаксических анализаторов созданы для распознавания контекстно-свободных языков,
+но для решения некоторых задач их выразительности не достаточно. 
+Так, для решения такой задачи биоинформатики как поиск цепочек РНК в метагеномных сборках необходимо 
+использовать конъюнктивные грамматики для описания искомых структур. 
+В работе представлена модификация реализации алгоритма синтаксического 
+анализа GLL, расширяющая класс распознаваемых анализатором языков до конъюнктивных. 
+\end{abstract}
+
+\input{Gorokhov/1_intro}
+\input{Gorokhov/2_problem}
+\input{Gorokhov/3_overview}
+\input{Gorokhov/5_implementation}
+\input{Gorokhov/6_approbation}
+\input{Gorokhov/7_conclusion}
+
+\begin{thebibliography}{99}
+
+
+\bibitem{SPPF}
+  Rekers J.
+  Parser Generation for Interactive Environments. 
+  1992.
+
+\bibitem{SBP}
+  Megacz Adam. 
+  Scannerless boolean parsing. 
+  Electronic Notes in Theoretical Computer Science. –– 2006. –– Vol. 164, no. 2. –– P. 97–102.
+  
+\bibitem{ConjGrammars}
+  Okhotin Alexander. 
+  Conjunctive grammars. 
+  Journal of Automata, Languages and Combinatorics. –– 2001. –– Vol. 6, no. 4. –– P. 519–535.  
+
+\bibitem{GLL}
+  Scott Elizabeth, Johnstone Adrian. 
+  GLL parsing. 
+  Electronic Notes in Theoretical Computer Science. –– 2010. –– Vol. 253, no. 7. –– P. 177–189.  
+
+\bibitem{YaccConstructorPaper}
+  Кириленко Я.A., Григорьев С.В., Авдюхин Д.А.
+  Разработка синтаксических анализаторов в проектах по автоматизированному реинжинирингу информационных систем
+  Научно-технические ведомости СПбГПУ: информатика, телекоммуникации, управление. –– 2013. –– no. 174. –– P. 94–98.  
+
+\bibitem{YaccConstructorPage}
+  YaccConstructor project.
+  \url{ http://yaccconstructor.github.io }
+  urldate = "24.05.2016"
+
+\bibitem{YARD}
+  Grammar specification language YARD.
+  \url{ http://yaccconstructor.github.io/YaccConstructor/yard.html }
+  urldate = "24.05.2016"
+
+\bibitem{REAGO}
+  Cheng Yuan, Jikai Lei, James Cole, Yanni Sun.
+  Reconstructing 16S rRNA genes in metagenomic data.
+  Bioinformatics. –– 2015. –– Vol. 31, no. 12. –– P. i35–i43.
+
+\bibitem{Xander}
+  Qiong Wang, Jordan A Fish, Mariah Gilman et al. 
+  Xander: employing a novel method for efficient gene-targeted metagenomic assembly. 
+  Microbiome. –– 2015. –– Vol. 3, no. 1. –– P. 1.  
+
+\bibitem{Infernal}
+  Nawrocki Eric P, Eddy Sean R. 
+  Infernal 1.1: 100-fold faster RNA homology searches.
+  Bioinformatics. –– 2013. –– Vol. 29, no. 22. –– P. 2933–2935.  
+
+
+
+
+\bibitem{bioRNA}
+  James WJ Anderson, {\'A}d{\'a}m Nov{\'a}k, Zsuzsanna Sükösd et al.
+  Quantifying variances in comparative RNA secondary structure prediction 
+  BMC bioinformatics. –– 2013. –– Vol. 14, no. 1. –– P. 149.  
+
+\bibitem{GLR}
+  Tomita M.
+  An Efficient Context-free Parsing Algorithm for Natural Languages.
+  Proceedings of the 9th International Joint Conference on Artificial Intelligence -- Volume 2. –– IJCAI’85. –– San Francisco, CA, USA : Morgan Kaufmann Publishers Inc., 1985. –– P. 756–764.
+
+\bibitem{markov}
+  Stamp Mark.
+  A revealing introduction to hidden Markov models.
+  Department of Computer Science San Jose State University.
+
+\bibitem{BNF}
+  Crocker David, Overell Paul. 
+  Augmented BNF for syntax specifications: ABNF. 
+  2005.
+
+\end{thebibliography}
+
