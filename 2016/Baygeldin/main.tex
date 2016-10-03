@@ -1,0 +1,73 @@
+\title{Оптимизация алгоритма лексического анализа динамически формируемого кода}
+
+\titlerunning{Оптимизация алгоритма лексического анализа динамически формируемого кода}
+
+\author{Байгельдин Александр Юрьевич}
+
+\authorrunning{А.Ю.Байгельдин}
+
+\tocauthor{А.Ю.Байгельдин}
+\institute{Санкт-Петербургский государственный университет\\
+\email{a.baygeldin@gmail.com}}
+
+\maketitle             
+
+\begin{abstract}
+При лексическом анализе динамически формируемого кода необходимо обрабатывать нелинейный входной поток.
+Для этого  можно использовать композицию- конечных преобразователей,
+один из которых представляет входной поток, а второй является лексическим анализатором целевого языка.
+Такой подход реализован в проекте YaccConstructor, однако обладает недостаточной производительностью. 
+Целью данной работы является исследование возможности улучшения производительности лексического анализа 
+за счет использования более оптимального алгоритма композиции преобразователей.
+\end{abstract}
+
+\input{Baygeldin/1_intro}
+\input{Baygeldin/2_problem}
+\input{Baygeldin/3_overview}
+\input{Baygeldin/5_implementation}
+\input{Baygeldin/7_conclusion}
+
+\begin{thebibliography}{99}
+
+\bibitem{string_embedded}
+  Semen Grigorev, Ekaterina Verbitskaia, Andrei Ivanov et al.
+  String-embedded language support in integrated development environment.
+  In Proceedings of the 10th Central and Eastern European Software Engineering Conference in Russia (CEE-SECR ’14). –– 2014.
+
+\bibitem{polubelova}
+  Полубелова Марина.
+  Лексический анализ динамически формируемых строковых выражений.
+  Дипломная работа кафедры системного программирования СПбГУ. –– 2015.
+
+\bibitem{handbook_automata}
+  Mohri Mehryar. 
+  Handbook of Weighted Automata.
+  Monographs in Theoretical Computer Science. Springer, 2009. –– P. 213–254. 
+
+\bibitem{yacc_article}
+  Я.А. Кириленко, С.В. Григорьев, Д.А. Авдюхин. 
+  Разработка синтаксических анализаторов в проектах по автоматизированному реинжинирингу информационных систем. 
+  2013. 
+
+\bibitem{yacc_www}
+  Сайт проекта YaccConstructor.
+  \url{http://yaccconstructor.github.io}
+
+\bibitem{yacc_git}
+  Репозиторий проекта YaccConstructor
+  \url{https://github.com/YaccConstructor/YaccConstructor}
+
+\bibitem{fslex}
+  Сайт проекта FsLex
+  \url{http://fsprojects.github.io/FsLexYacc/}
+
+\bibitem{source_text}
+  Репозиторий проекта YC.Utils.SourceText
+  \url{https://github.com/YaccConstructor/YC.Utils.SourceText}
+
+\bibitem{quick_graph}
+  Сайт проекта QuickGraph~\\
+  \url{http://yaccconstructor.github.io/QuickGraph/}
+
+\end{thebibliography}
+

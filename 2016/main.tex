@@ -1,5 +1,5 @@
 \documentclass[runningheads]{jblab}
-
+\usepackage{etex}
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
 \usepackage[T2A]{fontenc}
@@ -29,6 +29,13 @@
 \usepackage{mathtools}
 \usepackage{minted}
 \usepackage{courier}
+ %% From Gorokhov
+\usepackage{tikz}
+\usepackage{pgfplots}
+%% From Ragozina
+\usepackage{graphicx}
+\usepackage{caption}
+\pgfplotsset{compat=1.9}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{dred}{rgb}{0.545,0,0}
@@ -180,15 +187,12 @@ escapechar=~
 \thispagestyle{plain}
 }
 
-
-%\include{Verbitskaya/main}
-%\include{Polubelova/main}
-%\include{Samofalov/main}
-%\include{Pozdin/main}
-%\include{Makulov/main}
-%\include{Korovyansky/main}
 \include{Ozernykh/main}
 \include{Moiseenko/main}
-%\include{Aliev/main}
+\include{Azimov/main}
+\include{Ragozina/main}
+\include{Gorokhov/main}
+\include{Baygeldin/main}
+\include{Gumin/main}
 
 \end{document}
