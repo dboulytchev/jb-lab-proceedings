@@ -1,0 +1,204 @@
+\documentclass[runningheads]{jblab}
+\usepackage{etex}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{indentfirst}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{caption}
+\usepackage{algorithmicx}
+\usepackage{wrapfig}
+\usepackage{supertabular}
+\usepackage{epigraph}
+\usepackage{euscript}
+\usepackage{textcomp}
+\usepackage{cite}
+\usepackage{ucs}
+\usepackage[caption=false]{subfig}
+\usepackage{verbments}
+\usepackage{xcolor}
+%% From Ozernykh
+\usepackage{mathtools}
+\usepackage{minted}
+\usepackage{courier}
+ %% From Gorokhov
+\usepackage{tikz}
+\usepackage{pgfplots}
+%% From Ragozina
+\usepackage{graphicx}
+\usepackage{caption}
+\pgfplotsset{compat=1.9}
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFor}% Remove "end for" text
+\algtext*{EndFunction}% Remove "end function" text
+\algrenewcommand\algorithmicindent{1.0em}%
+
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dred}{rgb}{0.545,0,0}
+\definecolor{dblue}{rgb}{0,0,0.545}
+\definecolor{lgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{minted}
+\usepackage{array}
+
+\newcommand{\cd}[1]{\texttt{#1}}
+
+\pdfpagewidth=14.8cm
+\pdfpageheight=21cm
+
+\textwidth=10cm
+\textheight=15cm
+
+\oddsidemargin=0pt
+\evensidemargin=0pt
+
+\topmargin=0pt
+
+\makeatletter
+\newcommand{\StatexIndent}[1][3]{%
+  \setlength\@tempdima{\algorithmicindent}%
+  \Statex\hskip\dimexpr#1\@tempdima\relax}
+\algdef{S}[IF]{IfNoDo}[1]{\algorithmicif\ #1}%
+\makeatother
+
+\lstdefinelanguage{Haskell}{
+keywords={let, in, where, module, case, of, if, the, else, type, newtype, data, class, instance},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]",
+literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstdefinelanguage{Java}{
+keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
+          break, do, while, switch, case, else, try, catch, finally, if, return, true, false},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]",
+literate={->}{{$\:\:\:\to\:\:\:$}}1 
+%{\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstdefinelanguage{csharp}{
+keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
+          break, do, while, switch, case, else, try, catch, finally, if, return, true, false, for, private, bool, string},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]"
+%literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstset{
+basicstyle=\small,
+identifierstyle=\ttfamily,
+stringstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+escapechar=~
+}
+
+%% From Ozernykh
+%% \lstset{
+%% basicstyle=\normalsize\ttfamily,
+%% columns=fullflexible,
+%% identifierstyle=\ttfamily,
+%% keywordstyle=\bfseries,
+%% commentstyle=\scriptsize\rmfamily,
+%% basewidth={0.5em,0.5em},
+%% fontadjust=true,
+%% escapechar=~,
+%% language=haskell
+%% }
+
+
+
+\begin{document}
+\newcommand{\Issue}[0]{4}
+\newcommand{\Year}[0]{2016}
+\sloppy
+
+\begin{titlepage}
+
+\centering
+
+\includegraphics[width=4cm]{logo_JetBrains_1.png}
+\vskip 1mm
+\mbox{\Large{\textsc{Труды лаборатории}}}
+\vskip 0.5cm
+\mbox{\Large{\textsc{языковых инструментов}}}
+%\vskip 0.5cm
+%<\mbox{\Large{\textsc{компании JetBrains}}}
+\vskip 2.5cm
+\large{Выпуск \Issue}
+\vskip 6cm
+\large{Санкт-Петербург, \Year}
+\end{titlepage}
+
+\thispagestyle{empty}
+\phantom{xx}
+\pagebreak
+
+\chapter*{Предисловие}
+
+Четвертый выпуск сборника трудов лаборатории языковых инструментов JetBrains на 
+математико-механическом факультете СПбГУ продолжает традицию публикации
+курсовых и дипломных работ. Представляемые работы выполнены студентами лаборатории в 
+2015--2016 учебном году и разрабатывают такие темы, как управление памятью, анализ 
+встроенных языков, функциональное программирование. По результатам 
+некоторых из данных работ были подготовлены статьи, принятые для публикации в российских 
+и зарубежных реферируемых журналах и сборниках конференций.
+
+\vskip 2cm
+\begin{flushright}
+\textit{куратор лаборатории Д.Булычев}
+\end{flushright}
+
+{
+\tableofcontents
+\thispagestyle{plain}
+}
+
+\include{Ragozina/main}
+\include{Moiseenko/main}
+\include{Ozernykh/main}
+\include{Azimov/main}
+\include{Gorokhov/main}
+\include{Baygeldin/main}
+\include{Gumin/main}
+
+\end{document}
