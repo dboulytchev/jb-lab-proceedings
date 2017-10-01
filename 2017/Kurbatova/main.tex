@@ -224,15 +224,17 @@ val exprParser: Recognizer<Expr> = fix {
     val op1p = rightAssocp(sp(terminal("^")), corep) {
                     l, op, r -> Expr.Binop(l, op, r) 
             }
-    val op2p = rightAssocp(sp(terminal("*") / terminal("/") / 
-               terminal("percent")), op1p) {
-                    op, e1, e2 ->
-                Expr.Binop(op, e1, e2)
-            }
-    val op3p = assocp(sp(terminal("+") / terminal("-")), op2p) {
-                    op, e1, e2 ->
-                Expr.Binop(op, e1, e2)
-            }
+    val op2p =
+      rightAssocp(sp(terminal("*") / terminal("/") / 
+        terminal("percent")), op1p) {
+          op, e1, e2 ->
+            Expr.Binop(op, e1, e2)
+        }
+    val op3p =
+      assocp(sp(terminal("+") / terminal("-")), op2p) {
+        op, e1, e2 ->
+          Expr.Binop(op, e1, e2)
+      }
     return@fix op3p
 }
   \end{lstlisting}
@@ -255,7 +257,8 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
     override fun invoke(p: Int): CPSResult<Pair<A, B>> {
         val passedByp1: ArrayList<Pair<Int, A>> = ArrayList()
         val passedByp2: ArrayList<Pair<Int, B>> = ArrayList()
-        val executed  : ArrayList<Pair<Int, Pair<A, B>>> = ArrayList()
+        val executed  : ArrayList<Pair<Int, Pair<A, B>>> =
+          ArrayList()
 
         return { k: K<Pair<A, B>> ->
             p1(p)({ pos: Int, res: A ->
@@ -263,7 +266,8 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
                 passedByp1.add(pair1p)
                 passedByp2.forEach { r ->
                     if (pair1p.first == r.first) {
-                        val kpair = Pair(pair1p.second, r.second)
+                        val kpair =
+                          Pair(pair1p.second, r.second)
                         k(pos, kpair)
                         executed.add(Pair(pos, kpair))
                     }
@@ -275,7 +279,8 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
                 passedByp2.add(pair2p)
                 passedByp1.forEach { r ->
                     if (pair2p.first == r.first) {
-                        val kpair = Pair(r.second, pair2p.second)
+                        val kpair =
+                          Pair(r.second, pair2p.second)
                         k(pos, kpair)
                         executed.add(Pair(pos, kpair))
                     }
@@ -307,21 +312,19 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
                val pair2p = Pair(pos, res)
                passedByp2.add(pair2p)
                passedByp1.forEach { r ->
-                   if(passedByp2.find{ it.first == r.first } == null){
+                   val q = passedByp2.find {it.first == r.first}
+                   if(q == null){
                        k(pos, r.second)
                        executed.add(Pair(pos, r.second))
                    }
                 }
             })
-
             p1(p)({ pos: Int, res: A ->
                 val pair1p = Pair(pos, res)
                 passedByp1.add(pair1p)
                  k(pos, res)
             })
-        }
-    }
-}
+        }}}
 \end{lstlisting}
 
 \section{Апробация}
