@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
 \usepackage[T2A]{fontenc}
+%\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
@@ -36,7 +37,12 @@
 \usepackage{graphicx}
 \usepackage{caption}
 %%From Polubelova
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
 \usepackage{stmaryrd}
+
+
 
 \pgfplotsset{compat=1.9}
 \algtext*{EndWhile}% Remove "end while" text
