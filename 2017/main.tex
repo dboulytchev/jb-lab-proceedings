@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
 \usepackage[T2A]{fontenc}
+%\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
@@ -35,6 +36,14 @@
 %% From Ragozina
 \usepackage{graphicx}
 \usepackage{caption}
+%%From Polubelova
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+
+
+
 \pgfplotsset{compat=1.9}
 \algtext*{EndWhile}% Remove "end while" text
 \algtext*{EndIf}% Remove "end if" text
@@ -147,9 +156,20 @@ escapechar=~
 
 
 
+
 \begin{document}
 \newcommand{\Issue}[0]{5}
 \newcommand{\Year}[0]{2017}
+
+%%Polubelova
+\newcommand \bnfdef  {\mathrel{::=}}
+\newcommand \bnfalt  {\mathrel{{|}}}
+\newcommand \lpar  {\mathrel{{[}}}
+\newcommand \rpar  {\mathrel{{]}}}
+\newcommand \llpar  {\mathrel{{\llbracket}}}
+\newcommand \rrpar  {\mathrel{{\rrbracket}}}
+
+
 \sloppy
 
 \begin{titlepage}
