@@ -2,7 +2,7 @@
 \usepackage{etex}
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
-\usepackage[T2A]{fontenc}
+%\usepackage[T2A]{fontenc}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
@@ -25,17 +25,17 @@
 \usepackage[caption=false]{subfig}
 \usepackage{verbments}
 \usepackage{xcolor}
-%% From Ozernykh
-\usepackage{mathtools}
-\usepackage{minted}
-\usepackage{courier}
  %% From Gorokhov
-\usepackage{tikz}
 \usepackage{pgfplots}
-%% From Ragozina
-\usepackage{graphicx}
-\usepackage{caption}
+\usepackage[T1]{fontenc}
+\usepackage{xpatch}
+\xpatchcmd\swappedhead{~}{.~}{}{}
+%\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{url}
 \pgfplotsset{compat=1.9}
+
 \algtext*{EndWhile}% Remove "end while" text
 \algtext*{EndIf}% Remove "end if" text
 \algtext*{EndFor}% Remove "end for" text
@@ -53,7 +53,7 @@
 
 \usepackage{verbatim}
 \usepackage{float}
-\usepackage{minted}
+%\usepackage{minted}
 \usepackage{array}
 
 \newcommand{\cd}[1]{\texttt{#1}}
