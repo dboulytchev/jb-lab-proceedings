@@ -2,7 +2,7 @@
 \usepackage{etex}
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
-%\usepackage[T2A]{fontenc}
+\usepackage[T2A]{fontenc}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
@@ -27,13 +27,17 @@
 \usepackage{xcolor}
  %% From Gorokhov
 \usepackage{pgfplots}
-\usepackage[T1]{fontenc}
-\usepackage{xpatch}
-\xpatchcmd\swappedhead{~}{.~}{}{}
-%\usepackage{amsthm}
 \usepackage{mathtools}
 \usepackage{multirow}
 \usepackage{url}
+%%From Polubelova
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+
+
+
 \pgfplotsset{compat=1.9}
 
 \algtext*{EndWhile}% Remove "end while" text
@@ -53,7 +57,7 @@
 
 \usepackage{verbatim}
 \usepackage{float}
-%\usepackage{minted}
+\usepackage{minted}
 \usepackage{array}
 
 \newcommand{\cd}[1]{\texttt{#1}}
@@ -147,9 +151,35 @@ escapechar=~
 
 
 
+
 \begin{document}
 \newcommand{\Issue}[0]{5}
 \newcommand{\Year}[0]{2017}
+
+%%Polubelova
+\newcommand \bnfdef  {\mathrel{::=}}
+\newcommand \bnfalt  {\mathrel{{|}}}
+\newcommand \lpar  {\mathrel{{[}}}
+\newcommand \rpar  {\mathrel{{]}}}
+\newcommand \llpar  {\mathrel{{\llbracket}}}
+\newcommand \rrpar  {\mathrel{{\rrbracket}}}
+
+
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+% New "environments"
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}
+
+\algtext*{EndSwitch}
+\algtext*{EndCase}
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFor}% Remove "end for" text
+\algtext*{EndFunction}
+
 \sloppy
 
 \begin{titlepage}
