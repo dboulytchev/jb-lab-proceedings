@@ -1,1 +1,203 @@
-% A stub
+
+%\usepackage{graphicx}
+%\usepackage{caption}
+%\usepackage{subcaption}
+
+%\usepackage{amsthm}
+%\usepackage{amssymb}
+%\usepackage{amsmath}
+
+%\usepackage{algpseudocode}
+%\usepackage{algorithm}
+%\usepackage{algorithmicx}
+
+%\theoremstyle{theorem}
+%\newtheorem{theorem}{Теорема}
+%%\newtheorem{coroll}{Следствие}[theorem]
+\theoremstyle{definition}
+\newtheorem{defn}{Определение}
+\theoremstyle{proposition}
+\newtheorem{prop}{Предложение}
+
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+% New "environments"
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}
+
+\algtext*{EndSwitch}
+\algtext*{EndCase}
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFor}% Remove "end for" text
+\algtext*{EndFunction}
+
+\title{Синтаксический анализ данных, представленных в виде контекстно-свободной грамматики}
+
+\titlerunning{Синтаксический анализ контекстно-свободных грамматик}
+
+\author{Ковалев Дмитрий Александрович}
+
+\authorrunning{Д. А. Ковалев}
+
+\tocauthor{Д. А. Ковалев}
+\institute{Санкт-Петербургский государственный университет\\
+\email{lares77@yandex.ru}}
+
+
+\maketitle
+
+\begin{abstract}
+Многие программы в процессе работы формируют из строк исходный код на некотором языке программирования и передают его для исполнения в соответствующее окружение (пример --- dynamic SQL). Для статической проверки корректности динамически формируемого выражения используются различные методы, одним из которых является синтаксический анализ регулярной аппроксимации множества значений такого выражения. Аппроксимация может содержать строки, не принадлежащие исходному множеству значений, в том числе синтаксически некорректные. Анализатор в данном случае сообщит об ошибках, которые на самом деле отсутствуют в выражении, генерируемом программой. В докладе будет описан алгоритм синтаксического анализа более точной, чем регулярная, контекстно-свободной аппроксимации динамически формируемого выражения.
+\end{abstract}
+
+\input{Kovalev/intro}
+\input{Kovalev/statement}
+\input{Kovalev/overview}
+\input{Kovalev/decidability}
+\input{Kovalev/algorithm}
+\input{Kovalev/evaluation}
+\input{Kovalev/conclusion}
+
+%\setmonofont[Mapping=tex-text]{CMU Typewriter Text}
+%\bibliographystyle{ugost2008ls}
+%\bibliography{diploma.bib}
+
+\begin{thebibliography}{10}
+\def\selectlanguageifdefined#1{
+\expandafter\ifx\csname date#1\endcsname\relax
+\else\selectlanguage{#1}\fi}
+\providecommand*{\href}[2]{{\small #2}}
+\providecommand*{\url}[1]{{\small #1}}
+\providecommand*{\BibUrl}[1]{\url{#1}}
+\providecommand{\BibAnnote}[1]{}
+\providecommand*{\BibEmph}[1]{#1}
+\ProvideTextCommandDefault{\cyrdash}{\iflanguage{russian}{\hbox
+  to.8em{--\hss--}}{\textemdash}}
+\providecommand*{\BibDash}{\ifdim\lastskip>0pt\unskip\nobreak\hskip.2em plus
+  0.1em\fi
+\cyrdash\hskip.2em plus 0.1em\ignorespaces}
+\renewcommand{\newblock}{\ignorespaces}
+
+\bibitem{Afroozeh2015gss}
+\selectlanguageifdefined{english}
+\BibEmph{Afroozeh~Ali, Izmaylova~Anastasia}.
+  \href{http://dx.doi.org/10.1007/978-3-662-46663-6\_5}{Faster, Practical GLL
+  Parsing}~// Compiler Construction: 24th International Conference, CC 2015,
+  Held as Part of the European Joint Conferences on Theory and Practice of
+  Software, ETAPS 2015, London, UK, April 11-18, 2015, Proceedings~/ Ed.\ by\
+  Bj{\"o}rn~Franke. \BibDash
+\newblock Berlin, Heidelberg~: Springer Berlin Heidelberg, 2015. \BibDash
+\newblock P.~89--108. \BibDash
+\newblock
+  ISBN:~\href{http://isbndb.com/search-all.html?kw=978-3-662-46663-6}{978-3-662-46663-6}.
+  \BibDash
+\newblock URL: \BibUrl{http://dx.doi.org/10.1007/978-3-662-46663-6\_5}.
+
+\bibitem{Arimura}
+\selectlanguageifdefined{english}
+\BibEmph{Arimura~Mitsuharu}. A grammar-based compression using a variation of
+  Chomsky normal form of context free grammar~// 2016 International Symposium
+  on Information Theory and Its Applications (ISITA). \BibDash
+\newblock 2016.
+
+\bibitem{galle2011dna}
+\selectlanguageifdefined{english}
+\BibEmph{Gall{\'e}~Matthias}. {Searching for Compact Hierarchical Structures in
+  DNA by means of the Smallest Grammar Problem}~: Theses~/ Matthias~Gall{\'e}~;
+  {Universit{\'e} Rennes 1}. \BibDash
+\newblock 2011. \BibDash Feb. \BibDash
+\newblock URL: \BibUrl{https://tel.archives-ouvertes.fr/tel-00595494}.
+
+\bibitem{Gorokhov2017ebnf}
+\selectlanguageifdefined{english}
+\BibEmph{Gorokhov~Artem, Grigorev~Semyon}. Extended Context-Free Grammars
+  Parsing with Generalized LL. \BibDash
+\newblock 2017.
+
+\bibitem{harrison1978empt}
+\selectlanguageifdefined{english}
+\BibEmph{Harrison~M.~A.} Introduction to Formal Language Theory. \BibDash
+\newblock 1st edition. \BibDash
+\newblock Boston, MA, USA~: Addison-Wesley Longman Publishing Co., Inc., 1978.
+  \BibDash
+\newblock
+  ISBN:~\href{http://isbndb.com/search-all.html?kw=0201029553}{0201029553}.
+
+\bibitem{Nederhof}
+\selectlanguageifdefined{english}
+\BibEmph{Nederhof~Mark-Jan, Satta~Giorgio}. The Language Intersection Problem
+  for Non-recursive Context-free Grammars~//
+  \href{http://dx.doi.org/10.1016/j.ic.2004.03.004}{\BibEmph{Inf. Comput.}}
+  \BibDash
+\newblock 2004. \BibDash Aug. \BibDash
+\newblock Vol. 192, no.~2. \BibDash
+\newblock P.~172--184. \BibDash
+\newblock URL: \BibUrl{http://dx.doi.org/10.1016/j.ic.2004.03.004}.
+
+\bibitem{sequitur}
+\selectlanguageifdefined{english}
+\BibEmph{Nevill-Manning~Craig~G., Witten~Ian~H.} Identifying Hierarchical
+  Structure in Sequences: A Linear-time Algorithm~// \BibEmph{J. Artif. Int.
+  Res.} \BibDash
+\newblock 1997. \BibDash Sep. \BibDash
+\newblock Vol.~7, no.~1. \BibDash
+\newblock P.~67--82. \BibDash
+\newblock URL: \BibUrl{http://dl.acm.org/citation.cfm?id=1622776.1622780}.
+
+\bibitem{Anderson2013}
+\selectlanguageifdefined{english}
+Quantifying variances in comparative RNA secondary structure prediction~/
+  James~WJ~Anderson, {\'A}d{\'a}m~Nov{\'a}k, Zsuzsanna~S{\"u}k{\"o}sd et~al.~//
+  \href{http://dx.doi.org/10.1186/1471-2105-14-149}{\BibEmph{BMC
+  Bioinformatics}}. \BibDash
+\newblock 2013. \BibDash
+\newblock Vol.~14, no.~1. \BibDash
+\newblock P.~149. \BibDash
+\newblock URL: \BibUrl{http://dx.doi.org/10.1186/1471-2105-14-149}.
+
+\bibitem{gll}
+\selectlanguageifdefined{english}
+\BibEmph{Scott~Elizabeth, Johnstone~Adrian}. GLL parsing~//
+  \href{http://dx.doi.org/10.1016/j.entcs.2010.08.041}{\BibEmph{Electronic
+  Notes in Theoretical Computer Science}}. \BibDash
+\newblock 2009. \BibDash
+\newblock Vol. 253, no.~7.
+
+\bibitem{sequitur_url}
+\selectlanguageifdefined{russian}
+Sequitur [Электронный ресурс]. \BibDash
+\newblock URL: \BibUrl{https://github.com/craignm/sequitur} (online; accessed:
+  25.05.2017).
+
+\bibitem{tellier2006ra}
+\selectlanguageifdefined{english}
+\BibEmph{Tellier~Isabelle}. Learning recursive automata from positive
+  examples~// \BibEmph{Revue des Sciences et Technologies de
+  l'Information-S{\'e}rie RIA: Revue d'Intelligence Artificielle}. \BibDash
+\newblock 2006. \BibDash
+\newblock Vol.~20, no.~6. \BibDash
+\newblock P.~775--804.
+
+\bibitem{yard_url}
+\selectlanguageifdefined{russian}
+YARD [Электронный ресурс]. \BibDash
+\newblock URL:
+  \BibUrl{http://yaccconstructor.github.io/YaccConstructor/yard.html} (online;
+  accessed: 25.05.2017).
+
+\bibitem{SemyonPhD}
+\selectlanguageifdefined{russian}
+\BibEmph{Григорьев~C.~В.} Синтаксический анализ
+  динамически формируемых программ~:
+  {Дисс\ldots\ кандидата наук}~/ C.~В.~Григорьев~;
+  Санкт-Петербургский государственный
+  университет. \BibDash
+\newblock 2015.
+
+\end{thebibliography}
+
+\input{Kovalev/appendix}
+

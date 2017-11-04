@@ -13,14 +13,18 @@
 \maketitle
 
 \begin{abstract}
-  TODO
+  Булевы грамматики являются расширением контекстно-свободных грамматик, которое позволяет
+  использовать конъюнкцию и отрицание в правилах вывода. В рамках данной работы была
+  разработана принтер-комбинаторная библиотека для разбора булевых грамматик. Для
+  получения приемлимой производительности и поддержки левой рекурсии в библиотеке были
+  использованы техники мемоизации и CPS (continuation-passing style).
 \end{abstract}
 
 \section*{Введение} 
-Языки программирования имеют строгую синтаксическую структуру, которую можно успешно описать с использованием формальных грамматик. Согласно иерархии Н.Хомского \cite{chomsky1956three}, формальные грамматики делятся на 4 вида:  неограниченные, контекстно-свободные, контекстно-зависимые и регулярные. Как известно, с помощью контекстно-свободных грамматик может быть описан весьма узкий класс языков. Существует расширение контекстно-свободных грамматик -- булевы грамматики, предложенное А.Охотиным \cite{okhotin2004boolean}. Булевы грамматики более выразительны, поскольку в правых частях правил вывода появляется возможность использовать конъюнкцию и отрицание.
+Языки программирования имеют строгую синтаксическую структуру, которую можно успешно описать с использованием формальных грамматик. Согласно иерархии Н.Хомского \cite{chomsky1956three}, формальные грамматики делятся на 4 вида:  неограниченные, контекстно-свободные, контекстно-зависимые и регулярные. Как известно, с помощью контекстно-свободных грамматик может быть описан весьма узкий класс языков. Существует расширение контекстно-свободных грамматик -- булевы грамматики, предложенные А.Охотиным \cite{okhotin2004boolean}. Булевы грамматики более выразительны, поскольку позволяют использовать конъюнкцию и отрицание в правых частях правил вывода.
 
 
-Задачу синтаксического анализа можно сформулировать как задачу определения принадлежности слова некоторому языку. Иными словами, синтаксический анализатор принимает на вход строку и определяет, может ли строка порождаться грамматикой задаваемого языка. Одним из популярных подходов к реализации синтаксических анализаторов является парсер-комбинаторная техника: анализаторы представляются функциями высших порядков \cite{hutton1996monadic}. Парсер-комбинаторы -- это функции высшего порядка, принимающие в качестве параметров анализаторы и возвращающие в качестве результата анализатор. Анализатор, в свою очередь, принимает в качестве входа строку и возвращает некоторый результат. При данном подходе определяются базовые комбинаторы, а затем с их помощью определяются более сложные. Например, в качестве базовых комбинаторов можно использовать комбинатор последовательного применения и комбинатор альтернативного применения. 
+Задачу синтаксического анализа можно сформулировать как задачу определения принадлежности слова некоторому языку. Иными словами, синтаксический анализатор принимает на вход строку и определяет, может ли грамматика задаваемого языка порождать введенную строку. Одним из популярных подходов к реализации синтаксических анализаторов является парсер-комбинаторная техника: анализаторы представляются функциями высших порядков \cite{hutton1996monadic}. Парсер-комбинаторы -- это функции высшего порядка, принимающие в качестве параметров анализаторы и возвращающие в качестве результата анализатор. Анализатор, в свою очередь, принимает в качестве входа строку и возвращает некоторый результат. При данном подходе определяются базовые комбинаторы, а затем с их помощью определяются более сложные. Например, в качестве базовых комбинаторов можно использовать комбинатор последовательного применения и комбинатор альтернативного применения. 
 Основной проблемой наивной реализации подхода является невозможность использования левой рекурсии. Существуют различные реализации данной техники, поддерживающие левую рекурсию. Например, в работе \cite{spiewak2010generalized} решение основано на алгоритме обобщенного синтаксического анализа GLL.
 
 
@@ -28,8 +32,8 @@
 
 \section{Постановка задачи}
 
-Целью данной работы является изучение применимости парсер-комби-
-наторной техники для разбора булевых грамматик. Для ее достижения были поставлены следующие задачи:
+Целью данной работы является изучение применимости парсер-комбинаторной техники
+для разбора булевых грамматик. Для ее достижения были поставлены следующие задачи:
 
 \begin{itemize}
     \item реализация эффективной парсер-комбинаторной библиотеки для разбора булевых грамматик с поддержкой левой рекурсии;
@@ -186,7 +190,7 @@ Meerkat\footnote{\url{http://meerkat-parser.github.io/}} - парсер-комб
 
 В данном разделе описана реализация парсер-комбинаторной библиотеки.
 
-В качестве языка для реализации выбран Kotlin\footnote{\url{http://kotlinlang.org/}}. Kotlin - это молодой язык программирования, поддерживающий объектно-ориентированную и функциональную парадигмы, разрабатывается компанией JetBrains\footnote{\url{http://jetbrains.com/}}. Поскольку Kotlin базируется на JVM, на ранних этапах разработки библиотеки была актуальна проблема переполнения стека из-за большого количества функциональных вызовов. Решить проблему удалось, воспользовавшись техникой программирования в стиле передачи продолжений (Continuation Passing Style).
+В качестве языка для реализации выбран Kotlin\footnote{\url{http://kotlinlang.org/}}. Kotlin -- это молодой язык программирования, поддерживающий объектно-ориентированную и функциональную парадигмы, разрабатывается компанией JetBrains\footnote{\url{http://jetbrains.com/}}. Поскольку Kotlin базируется на JVM, на ранних этапах разработки библиотеки была актуальна проблема переполнения стека из-за большого количества функциональных вызовов. Решить проблему удалось, воспользовавшись техникой программирования в стиле передачи продолжений (Continuation Passing Style).
   
     \subsection{Интерфейс библиотеки}
   
@@ -224,15 +228,17 @@ val exprParser: Recognizer<Expr> = fix {
     val op1p = rightAssocp(sp(terminal("^")), corep) {
                     l, op, r -> Expr.Binop(l, op, r) 
             }
-    val op2p = rightAssocp(sp(terminal("*") / terminal("/") / 
-               terminal("percent")), op1p) {
-                    op, e1, e2 ->
-                Expr.Binop(op, e1, e2)
-            }
-    val op3p = assocp(sp(terminal("+") / terminal("-")), op2p) {
-                    op, e1, e2 ->
-                Expr.Binop(op, e1, e2)
-            }
+    val op2p =
+      rightAssocp(sp(terminal("*") / terminal("/") / 
+        terminal("percent")), op1p) {
+          op, e1, e2 ->
+            Expr.Binop(op, e1, e2)
+        }
+    val op3p =
+      assocp(sp(terminal("+") / terminal("-")), op2p) {
+        op, e1, e2 ->
+          Expr.Binop(op, e1, e2)
+      }
     return@fix op3p
 }
   \end{lstlisting}
@@ -255,7 +261,8 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
     override fun invoke(p: Int): CPSResult<Pair<A, B>> {
         val passedByp1: ArrayList<Pair<Int, A>> = ArrayList()
         val passedByp2: ArrayList<Pair<Int, B>> = ArrayList()
-        val executed  : ArrayList<Pair<Int, Pair<A, B>>> = ArrayList()
+        val executed  : ArrayList<Pair<Int, Pair<A, B>>> =
+          ArrayList()
 
         return { k: K<Pair<A, B>> ->
             p1(p)({ pos: Int, res: A ->
@@ -263,7 +270,8 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
                 passedByp1.add(pair1p)
                 passedByp2.forEach { r ->
                     if (pair1p.first == r.first) {
-                        val kpair = Pair(pair1p.second, r.second)
+                        val kpair =
+                          Pair(pair1p.second, r.second)
                         k(pos, kpair)
                         executed.add(Pair(pos, kpair))
                     }
@@ -275,7 +283,8 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
                 passedByp2.add(pair2p)
                 passedByp1.forEach { r ->
                     if (pair2p.first == r.first) {
-                        val kpair = Pair(r.second, pair2p.second)
+                        val kpair =
+                          Pair(r.second, pair2p.second)
                         k(pos, kpair)
                         executed.add(Pair(pos, kpair))
                     }
@@ -307,21 +316,19 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
                val pair2p = Pair(pos, res)
                passedByp2.add(pair2p)
                passedByp1.forEach { r ->
-                   if(passedByp2.find{ it.first == r.first } == null){
+                   val q = passedByp2.find {it.first == r.first}
+                   if(q == null){
                        k(pos, r.second)
                        executed.add(Pair(pos, r.second))
                    }
                 }
             })
-
             p1(p)({ pos: Int, res: A ->
                 val pair1p = Pair(pos, res)
                 passedByp1.add(pair1p)
                  k(pos, res)
             })
-        }
-    }
-}
+        }}}
 \end{lstlisting}
 
 \section{Апробация}
@@ -924,5 +931,98 @@ E -> EcA | EdA | e
 В текущем виде библиотека не готова к промышленному использованию, поскольку необходимы оптимизации, способствующие повышению скорости работы парсер-комбинаторов.
 
 %% \setmonofont[Mapping=tex-text]{CMU Typewriter Text}
-\bibliographystyle{ugost2008ls}
-\bibliography{coursework.bib}
+%% \bibliographystyle{ugost2008ls}
+%% \bibliography{coursework.bib}
+
+\begin{thebibliography}{10}
+\def\selectlanguageifdefined#1{
+\expandafter\ifx\csname date#1\endcsname\relax
+\else\selectlanguage{#1}\fi}
+\providecommand*{\href}[2]{{\small #2}}
+\providecommand*{\url}[1]{{\small #1}}
+\providecommand*{\BibUrl}[1]{\url{#1}}
+\providecommand{\BibAnnote}[1]{}
+\providecommand*{\BibEmph}[1]{#1}
+\ProvideTextCommandDefault{\cyrdash}{\iflanguage{russian}{\hbox
+  to.8em{--\hss--}}{\textemdash}}
+\providecommand*{\BibDash}{\ifdim\lastskip>0pt\unskip\nobreak\hskip.2em plus
+  0.1em\fi
+\cyrdash\hskip.2em plus 0.1em\ignorespaces}
+\renewcommand{\newblock}{\ignorespaces}
+
+\bibitem{okhotin2004boolean}
+\selectlanguageifdefined{english}
+\BibEmph{Alexander~Okhotin}. Boolean grammars~// \BibEmph{Information and
+  Computation}. \BibDash
+\newblock 2004. \BibDash
+\newblock Vol. 194, no.~1. \BibDash
+\newblock P.~19--48.
+
+\bibitem{okhotin2013conjunctive}
+\selectlanguageifdefined{english}
+\BibEmph{Alexander~Okhotin}. Conjunctive and Boolean grammars: the true general
+  case of the context-free grammars~// \BibEmph{Computer Science Review}.
+  \BibDash
+\newblock 2013. \BibDash
+\newblock Vol.~9. \BibDash
+\newblock P.~27--59.
+
+\bibitem{izmaylova2016practical}
+\selectlanguageifdefined{english}
+\BibEmph{Anastasia~Izmaylova, Ali~Afroozeh, Tijs~van der~Storm}. Practical,
+  general parser combinators~// Proceedings of the 2016 ACM SIGPLAN Workshop on
+  Partial Evaluation and Program Manipulation~/ ACM. \BibDash
+\newblock 2016. \BibDash
+\newblock P.~1--12.
+
+\bibitem{spiewak2010generalized}
+\selectlanguageifdefined{english}
+\BibEmph{Daniel~Spiewak}. Generalized Parser Combinators. \BibDash
+\newblock 2010.
+
+\bibitem{hutton1996monadic}
+\selectlanguageifdefined{english}
+\BibEmph{Graham~Hutton, Erik~Meijer}. Monadic parser combinators. \BibDash
+\newblock 1996.
+
+\bibitem{sippl1999biological}
+\selectlanguageifdefined{english}
+\BibEmph{Manfred~J~Sippl}. Biological sequence analysis. Probabilistic models
+  of proteins and nucleic acids, edited by R. Durbin, S. Eddy, A. Krogh, and G.
+  Mitchinson. 1998.~// \BibEmph{Protein Science}. \BibDash
+\newblock 1999. \BibDash
+\newblock Vol.~8, no.~3. \BibDash
+\newblock P.~695--695.
+
+\bibitem{johnson1995memoization}
+\selectlanguageifdefined{english}
+\BibEmph{Mark~Johnson}. Memoization in top-down parsing~//
+  \BibEmph{Computational Linguistics}. \BibDash
+\newblock 1995. \BibDash
+\newblock Vol.~21, no.~3. \BibDash
+\newblock P.~405--417.
+
+\bibitem{chomsky1956three}
+\selectlanguageifdefined{english}
+\BibEmph{Noam~Chomsky}. Three models for the description of language~//
+  \BibEmph{IRE Transactions on information theory}. \BibDash
+\newblock 1956. \BibDash
+\newblock Vol.~2, no.~3. \BibDash
+\newblock P.~113--124.
+
+\bibitem{norvig1991techniques}
+\selectlanguageifdefined{english}
+\BibEmph{Peter~Norvig}. Techniques for automatic memoization with applications
+  to context-free parsing~// \BibEmph{Computational Linguistics}. \BibDash
+\newblock 1991. \BibDash
+\newblock Vol.~17, no.~1. \BibDash
+\newblock P.~91--98.
+
+\bibitem{pc}
+\selectlanguageifdefined{russian}
+parserCombinators [Электронный ресурс]. \BibDash
+\newblock {Режим доступа}:
+  \BibUrl{https://github.com/anlun/parserCombinators/} ({дата
+  обращения}: 19.05.2017).
+
+\end{thebibliography}
