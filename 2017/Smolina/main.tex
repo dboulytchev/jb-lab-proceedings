@@ -1,1 +1,119 @@
-% A stub
+\title{Синтаксический анализ графов с помощью парсер-комбинаторов}
+\titlerunning{Синтаксический анализ графов с помощью парсер-комбинаторов}
+\author{Смолина Софья Константиновна}
+\authorrunning{С.К. Смолина}
+\tocauthor{С.К. Смолина}
+\institute{Санкт-Петербургский государственный электротехнический университет «ЛЭТИ» им. В.И.Ульянова (Ленина)\\
+\email{sofysmol@gmail.com}}
+\maketitle
+
+\begin{abstract}
+Запросы к графовым базам данных могут быть сформулированы как
+задача поиска путей в графе, удовлетворяющих некоторым ограничениям.
+Часто такие ограничения задаются грамматиками. В таком случае задача
+сводится к поиску путей в графе, которые соответствуют строкам в
+некотором языке. Такую задачу назовем синтаксическим анализом графов.
+Существует несколько подходов решения данной проблемы, но все они
+подразумевают использование парсер-генераторов, что не всегда удобно. В
+нашей работе к задаче анализа графов была адаптирована библиотека парсер-комбинаторов Meerkat.
+\end{abstract}
+
+\input{Smolina/1_intro}
+\input{Smolina/2_problem}
+\input{Smolina/3_overview}
+\input{Smolina/4_meerkat}
+\input{Smolina/5_conclusion}
+
+\begin{thebibliography}{99}
+
+\bibitem{GrigRagCFPQuerying}
+  Grigorev S., Ragozina A. Context-Free Path Querying with Structural Representation of Result //arXiv preprint arXiv:1612.08872. – 2016.
+
+\bibitem{Hellings}
+  Hellings J. Conjunctive context-free path queries. – 2014. 
+
+\bibitem{Sevon}
+  Sevon P., Eronen L. Subgraph queries by context-free grammars
+
+\bibitem{SPPF}
+  Scott E., Johnstone A. GLL parse-tree generation //Science of
+Computer Programming. – 2013. – Т. 78. – №. 10. – С. 1828-1844. 
+
+\bibitem{Neo4j}
+Webber J. A programmatic introduction to neo4j //Proceedings of the
+3rd annual conference on Systems, programming, and applications: software
+for humanity. – ACM, 2012. – С. 217-218.
+
+\bibitem{Cypher}
+Team N. Cypher Query Language. – 2013. 
+
+\bibitem{openCypher}
+Frost R. A., Hafiz R., Callaghan P. Parser combinators for
+ambiguous left-recursive grammars //International Symposium on Practical
+Aspects of Declarative Languages. – Springer Berlin Heidelberg, 2008. – С.
+167-181.
+
+\bibitem{Meerkat}
+Izmaylova A., Afroozeh A., Storm T. Practical, general parser
+combinators //Proceedings of the 2016 ACM SIGPLAN Workshop on
+Partial Evaluation and Program Manipulation. – ACM, 2016. – С. 1-12
+
+\bibitem{Scala}
+Odersky M., Spoon L., Venners B. Programming in scala. – Artima
+Inc, 2008. 
+
+\bibitem{GLL}
+Afroozeh A., Izmaylova A. Faster, Practical GLL Parsing //CC. –
+2015. – Т. 15. – С. 89-108. 
+
+\bibitem{RNGLR}
+Verbitskaia E., Grigorev S., Avdyukhin D. Relaxed Parsing of
+Regular Approximations of String-Embedded Languages //International
+Andrei Ershov Memorial Conference on Perspectives of System Informatics.
+– Springer International Publishing, 2015. – С. 291-302. 
+
+\bibitem{IzmCombinator}
+Izmaylova A., Afroozeh A., Storm T. Practical, general parser
+combinators //Proceedings of the 2016 ACM SIGPLAN Workshop on
+Partial Evaluation and Program Manipulation. – ACM, 2016. – С. 1-12.
+
+\bibitem{OrientDB}
+Tesoriero C. Getting Started with OrientDB. – Packt Publishing Ltd,
+2013. 
+
+\bibitem{Sql}
+Date C. J., Darwen H. A Guide to the SQL Standard. – New York :
+Addison-Wesley, 1987. – Т. 3. 
+
+\bibitem{HOFunParsing}
+G. Hutton. Higher-order Functions for Parsing. Journal of Functional
+Programming, 2(3):323–343, July 1992.
+
+\bibitem{Popov}
+Попов Д. Оптимизирующие парсер-комбинаторы // Практика
+функционального программирования. 2010, вып. №05. С. 162-186
+
+\bibitem{Memoization}
+Norvig P. Techniques for automatic memoization with applications to
+context-free parsing //Computational Linguistics. – 1991. – Т. 17. – №. 1. –
+С. 91-98
+
+\bibitem{ParserComb}
+Frost R. A., Hafiz R., Callaghan P. Parser combinators for
+ambiguous left-recursive grammars //International Symposium on Practical
+Aspects of Declarative Languages. – Springer Berlin Heidelberg, 2008. – С.
+167-181.
+
+\bibitem{MemoizationInTopDown}
+Johnson M. Memoization in top-down parsing //Computational
+Linguistics. – 1995. – Т. 21. – №. 3. – С. 405-417.
+
+\bibitem{Graph}
+Scala-graph library documentation [Электронный ресурс]. — URL:
+www.scala-graph.org (дата обращения: 03.05.2016).
+
+\bibitem{Hellings}
+Hellings J. Path results for context-free grammar queries on graphs
+//arXiv preprint arXiv:1502.02242. – 2015.
+
+\end{thebibliography}
