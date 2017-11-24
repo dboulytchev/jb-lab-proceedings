@@ -25,15 +25,16 @@
 \usepackage[caption=false]{subfig}
 \usepackage{verbments}
 \usepackage{xcolor}
- %% From Gorokhov
+
+%% From Gorokhov
 \usepackage{pgfplots}
 \usepackage{graphicx}
 \usepackage{caption}
 
 %% From Smolina
-\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
-\setcounter{secnumdepth}{4}
-\setcounter{tocdepth}{4}
+%\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
+%\setcounter{secnumdepth}{4}
+%\setcounter{tocdepth}{4}
 
 \usepackage{mathtools}
 \usepackage{multirow}
@@ -68,6 +69,56 @@
 
 \newcommand{\cd}[1]{\texttt{#1}}
 
+\lstdefinelanguage{ocanren}{
+keywords={fresh, let, in, match, with, when, class, type,
+object, method, of, rec, repeat, until, while, not, do, done, as, val, inherit,
+new, module, sig, deriving, datatype, struct, if, then, else, open, private, virtual, include, success, failure},
+sensitive=true,
+commentstyle=\small\itshape\ttfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+literate={fun}{{$\lambda$}}1 {->}{{$\to$}}3 {===}{{$\equiv$}}1 {=/=}{{$\not\equiv$}}1 {|>}{{$\triangleright$}}3 {/\\}{{$\wedge$}}2 {\\/}{{$\vee$}}2 {^}{{$\uparrow$}}1,
+morecomment=[s]{(*}{*)}
+}
+
+\lstset{
+mathescape=true,
+basicstyle=\small,
+identifierstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+language=ocanren
+}
+
+\usepackage{letltxmacro}
+\newcommand*{\SavedLstInline}{}
+\LetLtxMacro\SavedLstInline\lstinline
+\DeclareRobustCommand*{\lstinline}{%
+  \ifmmode
+    \let\SavedBGroup\bgroup
+    \def\bgroup{%
+      \let\bgroup\SavedBGroup
+      \hbox\bgroup
+    }%
+  \fi
+  \SavedLstInline
+}
+
+\newcommand{\searchRule}[6] {
+  #1, #2 \vdash (#3, #4) \xRightarrow{#5} #6}
+\newcommand{\extSearchRule}[8] {
+  #1, #2, #3, #4 \vdash (#5, #6) \xRightarrow{#7}_{e} #8}
+\newcommand{\ruleno}[1]{\eqno[\scriptsize\textsc{#1}]}
+
+\let\emptyset\varnothing
+
+%
+
 \pdfpagewidth=14.8cm
 \pdfpageheight=21cm
 
@@ -85,6 +136,23 @@
   \Statex\hskip\dimexpr#1\@tempdima\relax}
 \algdef{S}[IF]{IfNoDo}[1]{\algorithmicif\ #1}%
 \makeatother
+
+\lstdefinelanguage{Scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,\#,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
 
 \lstdefinelanguage{Haskell}{
 keywords={let, in, where, module, case, of, if, the, else, type, newtype, data, class, instance},
