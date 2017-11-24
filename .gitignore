@@ -4,3 +4,7 @@
 *.log
 *.blg
 *.toc
+*.pyg.lst
+*.pyg.sty
+*.pyg.vrb
+*.synctex.gz

@@ -19,21 +19,6 @@
 \theoremstyle{proposition}
 \newtheorem{prop}{Предложение}
 
-\algnewcommand\algorithmicswitch{\textbf{switch}}
-\algnewcommand\algorithmiccase{\textbf{case}}
-\algnewcommand\algorithmicassert{\texttt{assert}}
-\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
-% New "environments"
-\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}
-\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}
-
-\algtext*{EndSwitch}
-\algtext*{EndCase}
-\algtext*{EndWhile}% Remove "end while" text
-\algtext*{EndIf}% Remove "end if" text
-\algtext*{EndFor}% Remove "end for" text
-\algtext*{EndFunction}
-
 \title{Синтаксический анализ данных, представленных в виде контекстно-свободной грамматики}
 
 \titlerunning{Синтаксический анализ контекстно-свободных грамматик}

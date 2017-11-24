@@ -3,7 +3,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
 \usepackage[T2A]{fontenc}
-%\usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{arrows}
@@ -26,16 +25,11 @@
 \usepackage[caption=false]{subfig}
 \usepackage{verbments}
 \usepackage{xcolor}
-%% From Ozernykh
-\usepackage{mathtools}
-\usepackage{minted}
-\usepackage{courier}
  %% From Gorokhov
-\usepackage{tikz}
 \usepackage{pgfplots}
-%% From Ragozina
-\usepackage{graphicx}
-\usepackage{caption}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{url}
 %%From Polubelova
 \let\proof\relax
 \let\endproof\relax
@@ -45,6 +39,7 @@
 
 
 \pgfplotsset{compat=1.9}
+
 \algtext*{EndWhile}% Remove "end while" text
 \algtext*{EndIf}% Remove "end if" text
 \algtext*{EndFor}% Remove "end for" text
@@ -169,6 +164,21 @@ escapechar=~
 \newcommand \llpar  {\mathrel{{\llbracket}}}
 \newcommand \rrpar  {\mathrel{{\rrbracket}}}
 
+
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+% New "environments"
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}
+
+\algtext*{EndSwitch}
+\algtext*{EndCase}
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFor}% Remove "end for" text
+\algtext*{EndFunction}
 
 \sloppy
 
