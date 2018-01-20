@@ -197,7 +197,7 @@ val E: OperatorNonterminal
 Анализатор имеет тип \lstinline[language=Scala]{Recognizer<A>}, принимает на вход позицию во входном потоке и возвращает функцию типа \lstinline[language=Scala]{CPSResult<A>}. Эта функция принимает на вход продолжение типа \lstinline[language=Scala]{K<A>} и возвращает \lstinline[language=Scala]{Unit}. Тип \lstinline[language=Scala]{Unit} эквивалентен типу {\tt void} в других языках программирования. Продолжение представляет собой следующий этап синтаксического анализа. Анализ производится вне зависимости от порядка
     альтернатив, таким образом обеспечивается исчерпывающий поиск. 
     
-  \begin{lstlisting}[language=Scala, frame=top, frame=bottom , tabsize=2, inputencoding=utf8x, label=some-code,caption={Основные типы}, literate={->}{$\rightarrow$}{2}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2}]
+  \begin{lstlisting}[language=Scala, frame=top, frame=bottom , tabsize=2, inputencoding=utf8x, caption={Основные типы}, literate={->}{$\rightarrow$}{2}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2}]
   typealias Recognizer<A> = (Int)    -> CPSResult<A> 
   typealias CPSResult <A> = (K<A>)   -> Unit
   typealias K<A>          = (Int, A) -> Unit
@@ -220,7 +220,7 @@ val E: OperatorNonterminal
    
    Определение анализатора для разбора выражений приведено в листинге 9. Оператор $"/"$ представляет собой синтаксический сахар для комбинатора альтернативного применения. 
   
-  \begin{lstlisting}[language=Scala, frame=top, frame=bottom , basicstyle=\small, numbers=left, tabsize=2, inputencoding=utf8x, label=some-code,caption={Анализатор выражений для языка While}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2} {percent}{$\%$}{2}]
+  \begin{lstlisting}[language=Scala, frame=top, frame=bottom , basicstyle=\small, numbers=left, tabsize=2, inputencoding=utf8x, caption={Анализатор выражений для языка While}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2} {percent}{$\%$}{2}]
 val exprParser: Recognizer<Expr> = fix {
     val corep = (number map { Expr.Con(it) as Expr }) /
                 (symbol map { Expr.Var(it) as Expr }) /
@@ -252,7 +252,7 @@ val exprParser: Recognizer<Expr> = fix {
     \item анализатор сообщает, что строка принадлежит пересечению конъюнктов, если порождается и анализатором \lstinline[language=Scala]{p1}, и анализатором \lstinline[language=Scala]{p2}.
 \end{itemize}
 
-\begin{lstlisting}[language=Scala, frame=top, frame=bottom , basicstyle=\small, numbers=left, tabsize=2, inputencoding=utf8x, label=some-code,caption={Код комбинатора And}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2}]
+\begin{lstlisting}[language=Scala, frame=top, frame=bottom , basicstyle=\small, numbers=left, tabsize=2, inputencoding=utf8x,caption={Код комбинатора And}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2}]
 class And<A, B> (
 val p1: Recognizer<A>, val p2: Recognizer<B>
 ) : Recognizer<Pair<A, B>>() {
@@ -298,7 +298,7 @@ val p1: Recognizer<A>, val p2: Recognizer<B>
     \item если анализатор \lstinline[language=Scala]{p2} не разобрал входную строку до той же позиции, что и анализатор \lstinline[language=Scala]{p1}, то анализ входной строки завершается успешно.
 \end{itemize}
 
-\begin{lstlisting}[language=Scala, frame=top, frame=bottom , basicstyle=\small, numbers=left, tabsize=2, inputencoding=utf8x, label=some-code,caption={Код комбинатора AndNot}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2}]
+\begin{lstlisting}[language=Scala, frame=top, frame=bottom , basicstyle=\small, numbers=left, tabsize=2, inputencoding=utf8x,caption={Код комбинатора AndNot}, literate={->}{$\rightarrow$}{2} {<-}{$\leftarrow$}{2}]
 class AndNot<A, B> (
 val p1: Recognizer<A>, val p2: Recognizer<B>
 ) : Recognizer<A>() {
