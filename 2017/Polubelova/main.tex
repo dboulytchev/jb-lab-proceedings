@@ -442,7 +442,8 @@ $
 e \in \textbf{Exp}  & \mbox{выражения (expressions)}\\
 x,f \in \textbf{Var} & \mbox{переменные}\\
 c \in \textbf{Const}  & \mbox{константы}\\
-p \in \textbf{Pattern}  & \mbox{выражения для сопоставления с образцом (pattern matching)}\\
+p \in \textbf{Pattern}  & \mbox{выражения для сопоставления}\\ 
+                        & \mbox{с образцом (pattern matching)}
 \end{array}
 $
 \captionsetup{type=lstlisting}
@@ -516,14 +517,14 @@ c & \bnfdef & n & \mbox{числа (number)} \\
   & \bnfalt & null & \mbox{null}\\[1ex]
 
 a & \bnfdef & x & \mbox{переменные} \\
-  & \bnfalt & x_l.f & \mbox{обращение по имени поля к объекту (object)} \\
+  & \bnfalt & x_l.f & \mbox{обращение по имени поля к объекту} \\
   & \bnfalt & x_l[e] & \mbox{обращение по индексу к массиву} \\[1ex]
   
 e & \bnfdef & c & \mbox{константы} \\
   & \bnfalt & x & \mbox{переменные} \\
   & \bnfalt & x.f & \mbox{обращение по имени поля к объекту} \\
   & \bnfalt & x[e] & \mbox{обращение по индексу к массиву} \\
-  & \bnfalt & \{ g_1:e_1, \ldots, g_n:e_n \} & \mbox{объект (object)} \\
+  & \bnfalt & \{ g_1:e_1, \ldots, g_n:e_n \} & \mbox{объект} \\
   & \bnfalt & [e_1, \ldots, e_n] & \mbox{массив} \\
   & \bnfalt & f(x) & \mbox{вызов функции} \\
   & \bnfalt & (x) ~=>~ e & \mbox{стрелочная функция} \\
@@ -560,6 +561,7 @@ $
 \end{center}
 
 \begin{center}
+\small
 $
 \begin{array}{lll}
 \lpar e_{ml} \rpar _{\rho} &=& e_{js} \\
@@ -567,18 +569,19 @@ $
 \lpar name \rpar _{\rho} &=& name\_js \\
 \lpar f~x \rpar _{\rho} &=&  f_{js}(\lpar x \rpar _{\rho}) \\
 \lpar f~x \rpar _{\rho} &=& \lpar f \rpar _{\rho} (\lpar x \rpar _{\rho}) \\
-\lpar (e_1, \ldots, e_n) \rpar _{\rho} &=& \lpar \lpar e_1 \rpar _{\rho}, \ldots, \lpar e_n \rpar _{\rho} \rpar _{\rho} \\
-\lpar (g_1:e_1, \ldots, g_n:e_n) \rpar _{\rho} &=& \{ \_tag: ``Record``, \_g_1: \lpar e_1 \rpar _{\rho}, \ldots, \_g_n: \lpar e_n \rpar _{\rho} \} \\
-\lpar C~e_1 \ldots e_n  \rpar _{\rho} &=& \{ \_tag: ``C``, \_1: \lpar p_1 \rpar _{\rho}, \ldots, \_n: \lpar p_n \rpar _{\rho} \} \\
+\lpar (e_1, \dots, e_n) \rpar _{\rho} &=& \lpar \lpar e_1 \rpar _{\rho}, \ldots, \lpar e_n \rpar _{\rho} \rpar _{\rho} \\
+\lpar (g_1:e_1,\dots,g_n:e_n)\rpar_{\rho}&=&\{\_tag:``Record``,\_g_1:[e_1]_\rho,\dots,\_g_n: [e_n]_\rho\} \\
+\lpar C~e_1 \dots e_n  \rpar _{\rho} &=& \{ \_tag: ``C``, \_1: \lpar p_1 \rpar _{\rho}, \ldots, \_n: \lpar p_n \rpar _{\rho} \} \\
 \lpar e.name \rpar _{\rho} &=& \lpar e \rpar _{\rho}.\_name 
 \end{array}
-$
+$\normalsize
 \captionsetup{type=lstlisting}
 \captionof{lstlisting}{Правила трансляции OCaml-выражений в JavaScript-выражения}
 \label{tbl:tr_expr}
 \end{center}
 
 \begin{center}
+\small
 $
 \begin{array}{lll}
 \llpar e_{ml} \rrpar _{\rho} ~ x_{js} ~ s_{js} &=& s_{js} \\
@@ -589,7 +592,7 @@ $
 \llpar f ~ x \rrpar _{\rho} ~ y ~ s &=& \llpar x \rrpar _{\rho} ~ fv\_x ~ (\llpar f ~ fv\_x \rrpar _{\rho_1} ~ y ~ s) \\
 \llpar \mbox{fun}~ x ~ => ~ e \rrpar _{\rho} ~ f ~ s &=& \mbox{let} ~ f ~=~ (\lpar x \rpar _{\rho}) \\ & & => \{ \llpar e \rrpar _{\rho_1} ~ \_res ~ (return ~\_res)\}; ~ s \\
 \llpar \mbox{match}~ e ~ \mbox{with} ~|~p_i ~->~ e_i \rrpar _{\rho} ~ x ~ s &=& \llpar e \rrpar _{\rho} ~ fv\_e ~ \\
-& & ~ (translate\_match ~ fv\_e ~ lp ~ le ~ x ~ \rho_1); ~ s \\
+& & ~ (translate\_match\,  fv\_e\,  lp\,  le\,  x\,  \rho_1); s \\
 \llpar C~e_1 ~\ldots~ e_n \rrpar _{\rho} ~ x ~ s &=& \mbox{let} ~ x ~=~ \lpar C~e_1 ~\ldots~ e_n\rpar _{\rho}; ~ s  \\
 \llpar C~e_1 ~\ldots~ e_n \rrpar _{\rho} ~ x ~ s &=& \llpar le \rrpar _{\rho} ~ fv\_le ~ (\llpar C ~ fv\_le \rrpar _{\rho _1} ~ x ~ s) \\
 \llpar e_1; \ldots; e_n \rrpar _{\rho} ~ x ~ s &=&  \llpar e_1 \rrpar _{\rho} ~ \_ ~ (\llpar e_2 \rrpar _{\rho_1}~ \_  ~ \\
@@ -603,26 +606,28 @@ $
 & & ~(\mbox{if}(\_cond)\{ \llpar e_1 \rrpar _{\rho} ~ x ~ None \} ~   \\
 & & ~~\mbox{else} ~ \{ \llpar e_2 \rrpar _{\rho} ~ x ~ None \}) ; ~ s \\
 \end{array}
-$
+$\normalsize
 \captionsetup{type=lstlisting}
 \captionof{lstlisting}{Правила трансляции OCaml-выражений в JavaScript-операторы}
 \label{tbl:tr_stmt}
 \end{center}
 
 \begin{center}
+\small
 $
 \begin{array}{ll}
 translate\_match ~ fv\_e ~ lp ~ le ~ x ~ \rho ~=& \llpar p_1 \rrpar _{\rho} ~ fv\_e ~ (\llpar e_1 \rrpar _{\rho_1} ~ x ~ None) \\
 & (\llpar p_2 \rrpar _{\rho} ~ fv\_e ~ (\llpar e_2 \rrpar _{\rho_2} ~ x ~ None) ~ \ldots \\ 
 & (\llpar p_n \rrpar _{\rho} ~ fv\_e ~ (\llpar e_n \rrpar _{\rho_n} ~ x ~ None) ~ \\ & Exception))
 \end{array}
-$
+$\normalsize
 \captionsetup{type=lstlisting}
 \captionof{lstlisting}{Функция $translate\_match$}
 \label{tbl:f_pm}
 \end{center}
 
 \begin{center}
+\small
 $
 \begin{array}{lll}
 \llpar p_{ml} \rrpar _{\rho} ~ e_{js} ~ s_1\_then ~ s_2\_else &=& s_{js} \\
@@ -640,15 +645,16 @@ $
 
 \llpar (p_1, \ldots, p_n)  \rrpar _{\rho} ~ e ~ s_1 ~ s_2 &=& \llpar p_1 \rrpar _{\rho} ~ e[1] ~ (\llpar p_2 \rrpar _{\rho} ~ e[2] ~\\ & & ~(\ldots (\llpar p_n \rrpar _{\rho} ~ e[n] ~ s_1 ~ s_2) ~ s_2)~ s_2 \\
 
-\llpar p ~ \mbox{when} ~ g \rrpar _{\rho} ~ e ~ s_1 ~ s_2 &=& \llpar p \rrpar _{\rho} ~ e ~\\ & & ~ (\llpar g \rrpar _{\rho_1} ~ \_x ~ (\mbox{if} ~ (\_x) ~ \{ s_1 \} ~ \mbox{else} ~ \{ s_2 \})) ~s_2
+\llpar p\, \mbox{when}\, g \rrpar _{\rho} \, e \, s_1 \, s_2 &=& \llpar p \rrpar _{\rho} \, e\,\\ & & \, (\llpar g \rrpar _{\rho_1} \, \_x \, (\mbox{if} \, (\_x) \, \{ s_1 \} \, \mbox{else} , \{ s_2 \})) \,s_2
 \end{array}
-$
+$\normalsize
 \captionsetup{type=lstlisting}
 \captionof{lstlisting}{Правила трансляции сопоставления с образцом}
 \label{tbl:tr_pm}
 \end{center}
  
 \begin{center}
+\small
 $
 \begin{array}{lll}
 \llpar p ~ \mbox{when} ~ g \rrpar _{\rho} ~ e ~ s_1 ~ s_2 &=& \{ \mbox{let} ~ \_valid ~ = ~ true; \\ 
@@ -656,7 +662,7 @@ $
 & & ~(\mbox{if} ~ (\_x) ~ \{ s_1 \} ~ \mbox{else} ~ \\ & & ~\{ \_valid ~=~ false \})) ~ (\_valid ~=~ false) \\
 & & \mbox{if} ~ (!\_valid) \{ s_2 \} \}
 \end{array}
-$
+$\normalsize
 \captionsetup{type=lstlisting}
 \captionof{lstlisting}{Правила трансляции сопоставления с образцом без повторения конструкции $s_2$}
 \label{tbl:tr_wos2}
