@@ -1,0 +1,303 @@
+\documentclass[runningheads]{jblab}
+\usepackage{etex}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{indentfirst}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{caption}
+\usepackage{algorithmicx}
+\usepackage{wrapfig}
+\usepackage{supertabular}
+\usepackage{epigraph}
+\usepackage{euscript}
+\usepackage{textcomp}
+\usepackage{cite}
+\usepackage{ucs}
+\usepackage[caption=false]{subfig}
+\usepackage{verbments}
+\usepackage{xcolor}
+
+%% From Gorokhov
+\usepackage{pgfplots}
+\usepackage{graphicx}
+\usepackage{caption}
+
+%% From Smolina
+%\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
+%\setcounter{secnumdepth}{4}
+%\setcounter{tocdepth}{4}
+
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{url}
+
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+
+\pgfplotsset{compat=1.9}
+
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFor}% Remove "end for" text
+\algtext*{EndFunction}% Remove "end function" text
+\algrenewcommand\algorithmicindent{1.0em}%
+
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dred}{rgb}{0.545,0,0}
+\definecolor{dblue}{rgb}{0,0,0.545}
+\definecolor{lgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{minted}
+\usepackage{array}
+
+\newcommand{\cd}[1]{\texttt{#1}}
+
+\lstdefinelanguage{ocanren}{
+keywords={fresh, let, in, match, with, when, class, type,
+object, method, of, rec, repeat, until, while, not, do, done, as, val, inherit,
+new, module, sig, deriving, datatype, struct, if, then, else, open, private, virtual, include, success, failure},
+sensitive=true,
+commentstyle=\small\itshape\ttfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+literate={fun}{{$\lambda$}}1 {->}{{$\to$}}3 {===}{{$\equiv$}}1 {=/=}{{$\not\equiv$}}1 {|>}{{$\triangleright$}}3 {/\\}{{$\wedge$}}2 {\\/}{{$\vee$}}2 {^}{{$\uparrow$}}1,
+morecomment=[s]{(*}{*)}
+}
+
+\lstset{
+mathescape=true,
+basicstyle=\small,
+identifierstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+language=ocanren
+}
+
+\usepackage{letltxmacro}
+\newcommand*{\SavedLstInline}{}
+\LetLtxMacro\SavedLstInline\lstinline
+\DeclareRobustCommand*{\lstinline}{%
+  \ifmmode
+    \let\SavedBGroup\bgroup
+    \def\bgroup{%
+      \let\bgroup\SavedBGroup
+      \hbox\bgroup
+    }%
+  \fi
+  \SavedLstInline
+}
+
+\newcommand{\searchRule}[6] {
+  #1, #2 \vdash (#3, #4) \xRightarrow{#5} #6}
+\newcommand{\extSearchRule}[8] {
+  #1, #2, #3, #4 \vdash (#5, #6) \xRightarrow{#7}_{e} #8}
+\newcommand{\ruleno}[1]{\eqno[\scriptsize\textsc{#1}]}
+
+\let\emptyset\varnothing
+
+%
+
+\pdfpagewidth=14.8cm
+\pdfpageheight=21cm
+
+\textwidth=10cm
+\textheight=15cm
+
+\oddsidemargin=0pt
+\evensidemargin=0pt
+
+\topmargin=0pt
+
+\makeatletter
+\newcommand{\StatexIndent}[1][3]{%
+  \setlength\@tempdima{\algorithmicindent}%
+  \Statex\hskip\dimexpr#1\@tempdima\relax}
+\algdef{S}[IF]{IfNoDo}[1]{\algorithmicif\ #1}%
+\makeatother
+
+\lstdefinelanguage{Scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,\#,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
+
+\lstdefinelanguage{Haskell}{
+keywords={let, in, where, module, case, of, if, the, else, type, newtype, data, class, instance},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]",
+literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstdefinelanguage{Java}{
+keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
+          break, do, while, switch, case, else, try, catch, finally, if, return, true, false},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]",
+literate={->}{{$\:\:\:\to\:\:\:$}}1 
+%{\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstdefinelanguage{csharp}{
+keywords={import, package, class, interface, implements, extends, abstract, public, static, int, void, new,
+          break, do, while, switch, case, else, try, catch, finally, if, return, true, false, for, private, bool, string},
+sensitive=true,
+basicstyle=\small,
+commentstyle=\scriptsize\rmfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+morestring=[b]"
+%literate={->}{{$\to\:\:$}}1 {\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
+}
+
+\lstset{
+basicstyle=\small,
+identifierstyle=\ttfamily,
+stringstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+escapechar=~
+}
+
+%% From Ozernykh
+%% \lstset{
+%% basicstyle=\normalsize\ttfamily,
+%% columns=fullflexible,
+%% identifierstyle=\ttfamily,
+%% keywordstyle=\bfseries,
+%% commentstyle=\scriptsize\rmfamily,
+%% basewidth={0.5em,0.5em},
+%% fontadjust=true,
+%% escapechar=~,
+%% language=haskell
+%% }
+
+
+\renewcommand\listingscaption{Листинг}
+\renewcommand{\lstlistingname}{Листинг}
+
+
+
+\begin{document}
+\newcommand{\Issue}[0]{6}
+\newcommand{\Year}[0]{2018}
+
+%%Polubelova
+\newcommand \bnfdef  {\mathrel{::=}}
+\newcommand \bnfalt  {\mathrel{{|}}}
+\newcommand \lpar  {\mathrel{{[}}}
+\newcommand \rpar  {\mathrel{{]}}}
+\newcommand \llpar  {\mathrel{{\llbracket}}}
+\newcommand \rrpar  {\mathrel{{\rrbracket}}}
+
+
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+% New "environments"
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}
+
+\algtext*{EndSwitch}
+\algtext*{EndCase}
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFor}% Remove "end for" text
+\algtext*{EndFunction}
+
+\sloppy
+
+\begin{titlepage}
+
+\centering
+
+\includegraphics[width=4cm]{logo_JetBrains_1.png}
+\vskip 1mm
+\mbox{\Large{\textsc{Труды лаборатории}}}
+\vskip 0.5cm
+\mbox{\Large{\textsc{языковых инструментов}}}
+%\vskip 0.5cm
+%<\mbox{\Large{\textsc{компании JetBrains}}}
+\vskip 2.5cm
+\large{Выпуск \Issue}
+\vskip 6cm
+\large{Санкт-Петербург, \Year}
+\end{titlepage}
+
+\thispagestyle{empty}
+\phantom{xx}
+\pagebreak
+
+\chapter*{Предисловие}
+
+Здесь будет предисловие.
+
+\vskip 2cm
+\begin{flushright}
+\textit{куратор лаборатории Д.Булычев}
+\end{flushright}
+
+{
+\tableofcontents
+\thispagestyle{plain}
+}
+
+\include{Azimov/main}
+\include{Moiseenko/main}
+\include{Boxhko/main}
+\include{Kravchenko/main}
+\include{Borovkov/main}
+
+\end{document}
