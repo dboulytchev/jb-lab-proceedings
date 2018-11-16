@@ -1,28 +1,41 @@
-\title{Название}
+\title{Graph parsing by matrix multiplication}
 
-\titlerunning{Название, которое будет отображаться в колонтитуле}
+\titlerunning{Graph parsing by matrix multiplication}
 
-\author{автор}
+\author{Rustam Azimov}
 
-\authorrunning{Автор для колонтитула}
+\authorrunning{Rustam Azimov}
 
-\tocauthor{Автор для оглавления}
-\institute{Санкт-Петербургский государственный университет\\
-	\email{author@mail.com}}
+\tocauthor{Rustam Azimov}
+\institute{St Petersburg State University\\
+	\email{rustam.azimov19021995@gmail.com}}
+
+\graphicspath{{Azimov/}}
+
+\newtheorem{mytheorem}{Theorem}
+\newtheorem{mydef}{Definition}
+
 
 \maketitle
 
 \begin{abstract}
-Аннотация
+Context-free path querying is a technique, which recently gains popularity in many areas, for example, graph databases, bioinformatics, static analysis, etc. The generalization of matrix-based Valiant's context-free language recognition algorithm for graph case is widely considered as a recipe for efficient context-free path querying; however, no progress has been made in this direction so far.
+
+We propose the first generalization of matrix-based Valiant's algorithm for context-free and conjunctive path querying w.r.t relational and single-path query semantics. Our generalization does not deliver a truly sub-cubic worst-case complexity algorithm, whose existence still remains a hard open problem in the area. On the other hand, the utilization of matrix operations in the process of path query evaluation makes it possible to efficiently apply a wide class of optimizations and computing techniques, such as \textit{GPGPU}, parallel processing, sparse matrix representation, distributed-memory computation, etc.
+
 \end{abstract}
 
-\section*{Введение}
-И так далее
+\input{Azimov/introduction}
+\input{Azimov/preliminaries}
+\input{Azimov/related_works}
+\input{Azimov/algorithm}
+\input{Azimov/singlepath}
+\input{Azimov/conjunctive}
+\input{Azimov/evaluation}
+\input{Azimov/conclusion}
 
-\begin{thebibliography}{99}
-
-\bibitem{bib3}
-  Author. Name. Conference.
+%\begin{thebibliography}{99}
+\input{Azimov/diploma_bib}
   
-\end{thebibliography}
+%\end{thebibliography}
   
