@@ -13,7 +13,7 @@
 \usepackage{listings}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
-\usepackage{caption}
+\usepackage[compatibility=false]{caption}
 \usepackage{algorithmicx}
 \usepackage{wrapfig}
 \usepackage{supertabular}
@@ -22,19 +22,10 @@
 \usepackage{textcomp}
 \usepackage{cite}
 \usepackage{ucs}
-\usepackage[caption=false]{subfig}
+%\usepackage[caption=false]{subfig}
 \usepackage{verbments}
 \usepackage{xcolor}
-
-%% From Gorokhov
-\usepackage{pgfplots}
-\usepackage{graphicx}
-\usepackage{caption}
-
-%% From Smolina
-%\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
-%\setcounter{secnumdepth}{4}
-%\setcounter{tocdepth}{4}
+\usepackage{subcaption}
 
 \usepackage{mathtools}
 \usepackage{multirow}
@@ -44,8 +35,10 @@
 \let\endproof\relax
 \usepackage{amsthm}
 \usepackage{stmaryrd}
+\usepackage{placeins}
+\usepackage{changepage}
 
-\pgfplotsset{compat=1.9}
+%\pgfplotsset{compat=1.9}
 
 \algtext*{EndWhile}% Remove "end while" text
 \algtext*{EndIf}% Remove "end if" text
