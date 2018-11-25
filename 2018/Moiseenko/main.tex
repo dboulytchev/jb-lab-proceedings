@@ -1836,41 +1836,42 @@ Memory_{TSO}        & = &   Storage \times (Tid \rightarrow StoreBuffer)
 \label{fig:tso-subsys-def}
 \end{figure}
 
-
-
-\begin{figure}[thb]
+\begin{figure}[!thb]
 
 \small
     
     \begin{center}
-    \AxiomC{$a = R(x, mo, v)$}
+    \AxiomC{$mo \sqsubseteq acq$}
+    \noLine
+    \UnaryInfC{$a = R(x, mo, v)$}
     \AxiomC{$m(x) = v$}
     \noLine
     \UnaryInfC{$get(\beta(i), x) = \bot$}
-    \AxiomC{$mo \sqsubseteq acq$}
     \RightLabel{Read-Memory}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{m, \beta} \xrightarrow[]{i:a} \anglebr{m, \beta}
     $}
     \DisplayProof
     \end{center}
     
     \begin{center}
-    \AxiomC{$a = R(x, mo, v)$}
-    \AxiomC{$get(\beta(i), x) = v$}
     \AxiomC{$mo \sqsubseteq acq$}
+    \noLine
+    \UnaryInfC{$a = R(x, mo, v)$}
+    \AxiomC{$get(\beta(i), x) = v$}
     \RightLabel{Read-Buffered}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{m, \beta} \xrightarrow[]{i:a} \anglebr{m, \beta}
     $}
     \DisplayProof
     \end{center}
 
     \begin{center}
-    \AxiomC{$a = W(x, mo, v)$}
     \AxiomC{$mo \sqsubseteq rel$}
+    \noLine
+    \UnaryInfC{$a = W(x, mo, v)$}
     \RightLabel{Write}
-    \BinaryInfC{$
+    \UnaryInfC{$
         \anglebr{m, \beta}
         \xrightarrow[]{i:a} 
         \anglebr{m, \beta[i \mapsto enq(\beta(i), x, v)]}
@@ -1891,12 +1892,14 @@ Memory_{TSO}        & = &   Storage \times (Tid \rightarrow StoreBuffer)
     
     \begin{center}
     \AxiomC{$a = R(x, sc, v)$}
-    \AxiomC{$\beta(i) = \{(x_i, v_i)\}_{i=1}^n$}
+
     \AxiomC{$m'(x) = v$}
+    \noLine
+    \UnaryInfC{$\beta(i) = \{(x_i, v_i)\}_{i=1}^n$}
     \noLine
     \UnaryInfC{$m' = m[x_1 \mapsto v_1] \dots [x_n \mapsto v_n]$}
     \RightLabel{Read-SC}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{m, \beta} \xrightarrow[]{i:a} \anglebr{m', \beta[i \mapsto \epsilon]}
     $}
     \DisplayProof
@@ -1905,22 +1908,24 @@ Memory_{TSO}        & = &   Storage \times (Tid \rightarrow StoreBuffer)
     \begin{center}
     \AxiomC{$a = W(x, sc, v)$}
     \AxiomC{$\beta(i) = \{(x_i, v_i)\}_{i=1}^n$}
-    \AxiomC{$m' = m[x_1 \mapsto v_1] \dots [x_n \mapsto v_n][x \mapsto v]$}
+    \noLine
+    \UnaryInfC{$m' = m[x_1 \mapsto v_1] \dots [x_n \mapsto v_n][x \mapsto v]$}
     \RightLabel{Write-SC}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{m, \beta} \xrightarrow[]{i:a} \anglebr{m', \beta[i \mapsto \epsilon]}
     $}
     \DisplayProof
     \end{center}
 
     \begin{center}
-    \AxiomC{$a = RMW(x, mo, v_{r}, v_{w})$}
+    \AxiomC{$mo \sqsubseteq sc$}
+    \noLine
+    \UnaryInfC{$a = RMW(x, mo, v_{r}, v_{w})$}
     \AxiomC{$\beta(i) = \epsilon$}
     \noLine
     \UnaryInfC{$m(x) = v_{r}$}
-    \AxiomC{$mo \sqsubseteq sc$}
     \RightLabel{Read-Modify-Write}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{m, \beta} 
         \xrightarrow[]{i:a}
         \anglebr{m[x \mapsto v_w], \beta}
@@ -1944,7 +1949,7 @@ Memory_{TSO}        & = &   Storage \times (Tid \rightarrow StoreBuffer)
 один из потоков должен выполнить \emph{высвобождающею запись} (release-write),
 а другой поток --- \emph{захватывающее чтение} (acquire-read).
 
-\begin{figure}[hbt]
+\begin{figure}[!thb]
 \begin{minipage}{\linewidth}
 
 \[
@@ -1962,66 +1967,63 @@ Memory_{SRA}        & = &   History \times (Tid \rightarrow ThreadFront) \times 
 \label{fig:sra-subsys-def}
 \end{figure}
 
-
-Для определения подсистемы памяти SRA
-мы воспользовались идеями работ~\cite{lahav2016taming, kang2017promising, podkopaev2016operational}.
-
-Состояние модели памяти SRA состоит из трёх компонент:
-набора локальных для потока фронтов видимости, истории
-и глобального фронта последвательной консистентности.
-
-\begin{figure}[thb]
+\begin{figure}
+\begin{minipage}{\linewidth}
 
 \small
     
     \begin{prooftree}
     
+
     \AxiomC{$T = \psi(i)$}
     \noLine
     \UnaryInfC{$\sigma_{seen} = T.cur$}
     \noLine
     \UnaryInfC{$t_{seen} = \sigma_{seen}(x)$}
-    
-    \AxiomC{$t_{seen} \leq t_r$}
     \noLine
-    \UnaryInfC{$\anglebr{x@t_r = (v, \sigma)} \in h$}
-
+    \UnaryInfC{$t_{seen} \leq t_r$}
+    \noLine
+    \UnaryInfC{$a = R(x, rlx, v)$}
     
     \AxiomC{$T'.rel = T.rel$}
     \noLine
     \UnaryInfC{$T'.acq = T.acq \sqcup \sigma$}
     \noLine
     \UnaryInfC{$T'.cur = \sigma_{seen}[x \mapsto t_r]$}
+    \noLine
+    \UnaryInfC{$\anglebr{x@t_r = (v, \sigma)} \in h$}
         
     \RightLabel{Read-Relaxed}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:R(x, rlx, v)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h, \psi[i \mapsto T'], \sigma_{sc}}
     $}
     
     \end{prooftree}
     
     \begin{prooftree}
-    
+
     \AxiomC{$T = \psi(i)$}
     \noLine
     \UnaryInfC{$\sigma = T.rel[x \mapsto t_w]$}
     \noLine
     \UnaryInfC{$t_w = max_{ts}(h, x) + 1$}
-    
-    \AxiomC{$h' = \anglebr{x@t_w = (v, \sigma)} \cup h$}
+    \noLine
+    \UnaryInfC{$a = W(x, rlx, v)$}
     
     \AxiomC{$T'.rel = \sigma$}
     \noLine
     \UnaryInfC{$T'.acq = T.acq$}
     \noLine
     \UnaryInfC{$T'.cur = T.cur[x \mapsto t_w]$}
+    \noLine
+    \UnaryInfC{$h' = \anglebr{x@t_w = (v, \sigma)} \cup h$}
         
     \RightLabel{Write-Relaxed}
-    \TrinaryInfC{$
+    \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:W(x, rlx, v)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h', \psi[i \mapsto T'], \sigma_{sc}}
     $}
     
@@ -2029,14 +2031,16 @@ Memory_{SRA}        & = &   History \times (Tid \rightarrow ThreadFront) \times 
     
     \begin{prooftree}
     
-    \AxiomC{$\sigma_{seen} = T.cur \sqcup T.acq$}
+    \AxiomC{$a = R(x, acq, v)$}
+    \noLine
+    \UnaryInfC{$\sigma_{seen} = T.cur \sqcup T.acq$}
     
     \AxiomC{$\dots$}
         
     \RightLabel{Read-Acquire}
     \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:R(x, acq, v)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h, \psi[i \mapsto T'], \sigma_{sc}}
     $}
     \end{prooftree}
@@ -2044,14 +2048,16 @@ Memory_{SRA}        & = &   History \times (Tid \rightarrow ThreadFront) \times 
     
     \begin{prooftree}
     
-    \AxiomC{$\sigma = T.cur \sqcup T.rel[x \mapsto t_w]$}
+    \AxiomC{$a = W(x, rel, v)$}
+    \noLine
+    \UnaryInfC{$\sigma = T.cur \sqcup T.rel[x \mapsto t_w]$}
     
     \AxiomC{$\dots$}
         
     \RightLabel{Write-Release}
     \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:W(x, rel, v)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h', \psi[i \mapsto T'], \sigma_{sc}}
     $}
     
@@ -2060,26 +2066,30 @@ Memory_{SRA}        & = &   History \times (Tid \rightarrow ThreadFront) \times 
     \begin{prooftree}
     
     \AxiomC{$\sigma_{sc}(x) \leq t_r$}
+    \noLine
+    \UnaryInfC{$a = R(x, sc, v)$}
     
     \AxiomC{$\dots$}
         
     \RightLabel{Read-SC}
     \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:W(x, sc, v)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h', \psi[i \mapsto T'], \sigma_{sc}}
     $}
     
     \end{prooftree}
     
     \begin{prooftree}
+
+    \AxiomC{$a = W(x, sc, v)$}
     
     \AxiomC{$\dots$}
         
     \RightLabel{Write-SC}
-    \UnaryInfC{$
+    \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:W(x, sc, v)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h', \psi[i \mapsto T'], \sigma_{sc}[x \mapsto t_w]}
     $}
     
@@ -2088,22 +2098,32 @@ Memory_{SRA}        & = &   History \times (Tid \rightarrow ThreadFront) \times 
     \begin{prooftree}
     
     \AxiomC{$t_r = max_{ts}(h, x)$}
+    \noLine
+    \UnaryInfC{$a = RMW(x, mo, v_r, v_w)$}
     
     \AxiomC{$\dots$}
         
     \RightLabel{Read-Modify-Write}
     \BinaryInfC{$
         \anglebr{h, \psi, \sigma_{sc}} 
-        \xrightarrow[]{i:RMW(x, mo, v_r, v_w)} 
+        \xrightarrow[]{i:a} 
         \anglebr{h', \psi[i \mapsto T'], \sigma_{sc}'}
     $}
     
     \end{prooftree}
     
-    
-    \caption{Отношение перехода для подсистемы памяти SRA}
-    \label{fig:sra-subsys-rules}
+\end{minipage}
+\caption{Отношение перехода для подсистемы памяти SRA}
+\label{fig:sra-subsys-rules}
 \end{figure}
+
+
+Для определения подсистемы памяти SRA
+мы воспользовались идеями работ~\cite{lahav2016taming, kang2017promising, podkopaev2016operational}.
+
+Состояние модели памяти SRA состоит из трёх компонент:
+набора локальных для потока фронтов видимости, истории
+и глобального фронта последвательной консистентности.
 
 История состоит из множества сообщений, 
 т.е. четвёрок вида $(x, t, v, \sigma)$,
@@ -2217,273 +2237,285 @@ Cледующая операция чтения \texttt{r$_2$ := $[$x$]_{rlx}$}
 Листинги лакмусовых тестов вместе с проверяемой спецификацией 
 приведены в таблице~\ref{tab:litmus}.
 
-% \begin{table}[h!]
+\begin{table}
 
-% \footnotesize
+\footnotesize
 
-%     \bgroup
-%     \def\arraystretch{2}
+    \bgroup
+    \def\arraystretch{2}
     
-%     \begin{tabular}{|C{0.4\textwidth}|C{0.15\textwidth}|C{0.15\textwidth}|C{0.15\textwidth}|}
+    \begin{tabular}{|C{0.4\textwidth}|C{0.15\textwidth}|C{0.15\textwidth}|C{0.15\textwidth}|}
     
-%     \hline
+    \hline
     
-%     Название теста  & \multicolumn{3}{c|}{Спецификация поведения}    \\ \hline
-%                     & SC & TSO & SRA                                 \\ \hline
+    Название теста  & \multicolumn{3}{c|}{Спецификация поведения}    \\ \hline
+                    & SC & TSO & SRA                                 \\ \hline
                     
     
-%     \multicolumn{4}{|l|}{Store Buffering}  \\ \hline
+    \multicolumn{4}{|l|}{Store Buffering}  \\ \hline
     
     
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]$ := 1;
-%     r$_1$ := $[$y$]$;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     $[$y$]$ := 1;
-%     r$_2$ := $[$x$]$;
-%     \end{lstlisting}
-%     \end{tabular}
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]$ := 1;
+    r$_1$ := $[$y$]$;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    $[$y$]$ := 1;
+    r$_2$ := $[$x$]$;
+    \end{lstlisting}
+    \end{tabular}
     
-%     & 
+    & 
     
-%     $\forall. r_1 \neq 0 \vee r_2 \neq 0 $
+    $\begin{aligned}
+       \forall. \\ r_1 \neq 0 \vee \\ \vee r_2 \neq 0 
+     \end{aligned}$
     
-%     & 
+    & 
     
-%     \multicolumn{2}{C{0.4\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \exists. r_1 = 0 \wedge r_2 = 0
-%         \end{aligned}
-%     }
+    \multicolumn{2}{C{0.4\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \exists. r_1 = 0 \wedge r_2 = 0
+        \end{aligned}
+    $}
     
-%     \\ \hline
+    \\ \hline
     
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]_{sc}$ := 1;
-%     r$_1$ := $[$y$]_{sc}$;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     $[$y$]_{sc}$ := 1;
-%     r$_2$ := $[$x$]_{sc}$;
-%     \end{lstlisting}
-%     \end{tabular}
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]_{sc}$ := 1;
+    r$_1$ := $[$y$]_{sc}$;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    $[$y$]_{sc}$ := 1;
+    r$_2$ := $[$x$]_{sc}$;
+    \end{lstlisting}
+    \end{tabular}
     
-%     & 
+    & 
     
-%     \multicolumn{3}{C{0.6\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. r_1 \neq 0 \vee r_2 \neq 0 
-%         \end{aligned}
-%     }
+    \multicolumn{3}{C{0.6\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. r_1 \neq 0 \vee r_2 \neq 0 
+        \end{aligned}
+    $}
     
-%     \\ \hline
+    \\ \hline
     
-%     \multicolumn{4}{|l|}{Load Buffering}  \\ \hline
+    \multicolumn{4}{|l|}{Load Buffering}  \\ \hline
     
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     r$_1$ := $[$x$]$;
-%     $[$y$]$ := 1;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_2$ := $[$y$]$;
-%     $[$x$]$ := 1;
-%     \end{lstlisting}
-%     \end{tabular}
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    r$_1$ := $[$x$]$;
+    $[$y$]$ := 1;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    r$_2$ := $[$y$]$;
+    $[$x$]$ := 1;
+    \end{lstlisting}
+    \end{tabular}
     
-%     &
+    &
     
-%     \multicolumn{3}{C{0.6\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. r_1 \neq 1 \vee r_2 \neq 1
-%         \end{aligned}
-%     }
+    \multicolumn{3}{C{0.6\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. r_1 \neq 1 \vee r_2 \neq 1
+        \end{aligned}
+    $}
     
-%     \\ \hline
+    \\ \hline
     
-%     \multicolumn{4}{|l|}{Message Passing}  \\ \hline
+    \multicolumn{4}{|l|}{Message Passing}  \\ \hline
     
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]$ := 1;
-%     $[$f$]$ := 1;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_1$ := $[$f$]$;
-%     r$_2$ := $[$x$]$;
-%     \end{lstlisting}
-%     \end{tabular}
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]$ := 1;
+    $[$f$]$ := 1;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    r$_1$ := $[$f$]$;
+    r$_2$ := $[$x$]$;
+    \end{lstlisting}
+    \end{tabular}
     
-%     & 
+    & 
     
-%     \multicolumn{2}{C{0.4\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. \neg(r_1 = 1 \wedge r_2 = 0)
-%         \end{aligned}
-%     }
+    \multicolumn{2}{C{0.4\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. \neg(r_1 = 1 \wedge r_2 = 0)
+        \end{aligned}
+    $}
     
-%     &
+    &
     
-%     $\exists. r_1 = 1 \wedge r_2 = 0 $
+    $\begin{aligned}
+       \exists. \\ r_1 = 1 \wedge \\ \wedge r_2 = 0
+     \end{aligned}$
     
-%     \\ \hline
+    \\ \hline
     
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]$ := 1;
-%     $[$f$]_{rel}$ := 1;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_1$ := $[$f$]_{acq}$;
-%     r$_2$ := $[$x$]$;
-%     \end{lstlisting}
-%     \end{tabular}
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]$ := 1;
+    $[$f$]_{rel}$ := 1;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    r$_1$ := $[$f$]_{acq}$;
+    r$_2$ := $[$x$]$;
+    \end{lstlisting}
+    \end{tabular}
     
-%     & 
+    & 
     
-%     \multicolumn{3}{C{0.6\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. \neg(r_1 = 1 \wedge r_2 = 0)
-%         \end{aligned}
-%     }
-    
-    
-%     \\ \hline
-    
-%     \multicolumn{4}{|l|}{Coherence of Read-Read}  \\ \hline
-    
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]$ := 1;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     $[$x$]$ := 2;
-%     \end{lstlisting}
-%     \end{tabular}
-    
-%     \vspace{5pt}
-    
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     r$_1$ := $[$x$]$;
-%     r$_2$ := $[$x$]$;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_3$ := $[$x$]$;
-%     r$_4$ := $[$x$]$;
-%     \end{lstlisting}
-%     \end{tabular}
-    
-%     & 
-    
-%     \multicolumn{3}{C{0.6\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. \neg(
-%            (r_1 = 1 \wedge r_2 = 2 \wedge r_3 = 2 \wedge r_4 = 1) \vee \\
-%            (r_1 = 2 \wedge r_2 = 1 \wedge r_3 = 1 \wedge r_4 = 2)
-%         )
-%         \end{aligned}
-%     }
-    
-%     \\ \hline
-    
-%     \multicolumn{4}{|l|}{Independent Reads of Independent Writes}  \\ \hline
-    
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]$ := 1;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     $[$y$]$ := 1;
-%     \end{lstlisting}
-%     \end{tabular}
-    
-%     \vspace{5pt}
-    
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     r$_1$ := $[$x$]$;
-%     r$_2$ := $[$y$]$;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_3$ := $[$y$]$;
-%     r$_4$ := $[$x$]$;
-%     \end{lstlisting}
-%     \end{tabular}
-    
-%     &
-    
-%     \multicolumn{2}{C{0.4\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. \neg(r_1 = 1 \wedge r_2 = 0 \wedge r_3 = 1 \wedge r_4 = 0)
-%         \end{aligned}
-%     }
-    
-%     &
-    
-%     $\exists. r_1 = 1 \wedge r_2 = 0 \wedge r_3 = 1 \wedge r_4 = 0 $
-    
-%     \\ \hline
-    
-%     \multicolumn{4}{|l|}{Write-to-Read Causality}  \\ \hline
+    \multicolumn{3}{C{0.6\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. \neg(r_1 = 1 \wedge r_2 = 0)
+        \end{aligned}
+    $}
     
     
-%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
-%     \begin{lstlisting}
-%     $[$x$]$ := 1;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_1$ := $[$x$]$;
-%     $[$y$]$ := r$_1$;
-%     \end{lstlisting}
-%     &
-%     \begin{lstlisting}
-%     r$_2$ := $[$y$]$;
-%     r$_3$ := $[$x$]$;
-%     \end{lstlisting}
-%     \end{tabular}
+    \\ \hline
     
-%     &
+    \multicolumn{4}{|l|}{Coherence of Read-Read}  \\ \hline
     
-%     \multicolumn{2}{C{0.4\textwidth}|}{
-%         \begin{aligned}
-%         ~ \\
-%         \forall. \neg(r_2 = 1 \wedge r_3 = 0)
-%         \end{aligned}
-%     }
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]$ := 1;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    $[$x$]$ := 2;
+    \end{lstlisting}
+    \end{tabular}
     
-%     &
+    \vspace{5pt}
     
-%     $\exists. r_2 = 1 \wedge r_3 = 0 $
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    r$_1$ := $[$x$]$;
+    r$_2$ := $[$x$]$;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    r$_3$ := $[$x$]$;
+    r$_4$ := $[$x$]$;
+    \end{lstlisting}
+    \end{tabular}
     
-%     \\ \hline
+    & 
     
-%     \end{tabular}
-%     \egroup
+    \multicolumn{3}{C{0.6\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. \neg(
+           (r_1 = 1 \wedge r_2 = 2 \wedge r_3 = 2 \wedge r_4 = 1) \vee \\
+           (r_1 = 2 \wedge r_2 = 1 \wedge r_3 = 1 \wedge r_4 = 2)
+        )
+        \end{aligned}
+    $}
     
-% \caption{Лакмусовые тесты}
-% \label{tab:litmus}
-% \end{table}
+    \\ \hline
+    
+    \multicolumn{4}{|l|}{Independent Reads of Independent Writes}  \\ \hline
+    
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]$ := 1;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    $[$y$]$ := 1;
+    \end{lstlisting}
+    \end{tabular}
+    
+    \vspace{5pt}
+    
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    r$_1$ := $[$x$]$;
+    r$_2$ := $[$y$]$;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    r$_3$ := $[$y$]$;
+    r$_4$ := $[$x$]$;
+    \end{lstlisting}
+    \end{tabular}
+    
+    &
+    
+    \multicolumn{2}{C{0.4\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. \neg(r_1 = 1 \wedge r_2 = 0 \wedge \\ \wedge r_3 = 1 \wedge r_4 = 0)
+        \end{aligned}
+    $}
+    
+    &
+    
+    $\begin{aligned}
+      \exists. \\ r_1 = 1 \wedge \\ 
+        \wedge r_2 = 0 \wedge \\ \wedge r_3 = 1 \wedge \\ \wedge r_4 = 0 
+    \end{aligned}$
+    
+    \\ \hline
+    
+    \multicolumn{4}{|l|}{Write-to-Read Causality}  \\ \hline
+    
+    \begin{tabular}{@{\hskip -15pt}l @{\hskip 5pt} @{\hskip -15pt}l}
+    \begin{lstlisting}
+    $[$x$]$ := 1;
+    \end{lstlisting}
+    &
+
+    \end{tabular}
+    
+    \vspace{5pt}
+    
+    \begin{tabular}{@{\hskip -15pt}l|@{\hskip 5pt}|@{\hskip -15pt}l}
+    \begin{lstlisting}
+    r$_1$ := $[$x$]$;
+    $[$y$]$ := r$_1$;
+    \end{lstlisting}
+    &
+    \begin{lstlisting}
+    r$_2$ := $[$y$]$;
+    r$_3$ := $[$x$]$;
+    \end{lstlisting}
+    \end{tabular}  
+    
+    &
+    
+    \multicolumn{2}{C{0.4\textwidth}|}{$
+        \begin{aligned}
+        ~ \\
+        \forall. \neg(r_2 = 1 \wedge r_3 = 0)
+        \end{aligned}
+    $}
+    
+    &
+    
+    $\exists. r_2 = 1 \wedge r_3 = 0 $
+    
+    \\ \hline
+    
+    \end{tabular}
+    \egroup
+    
+\caption{Лакмусовые тесты}
+\label{tab:litmus}
+\end{table}
 
 Реляционный интерпретатор также был применен для верификации 
 и синтеза кода синхронизции нескольких классических многопоточных алгоритмов.
@@ -2505,8 +2537,6 @@ Cледующая операция чтения \texttt{r$_2$ := $[$x$]_{rlx}$}
 алгоритм взаимного исключения Коэна, 
 алгоритм барьера.
 Для каждого алгоритма был также предоставлен проверяемый инвариант.
-Листинги алгоритмов вместе с проверяемым инвариантом 
-приведены в приложении~\ref{apdx:algos}.
 Результаты замеров приведены для задач верификации приведены в таблице~\ref{tab:verification},
 а для задач синтеза в таблице~\ref{tab:synthesis}.
 В таблицах указано среднее время работы в секундах~\footnote{
@@ -2520,43 +2550,43 @@ Intel® Core™ i5-6300HQ CPU 2.30GHz × 4; 8GB RAM; Ubuntu 17.10 x64.
 Это означает, что данный тест не завершился по причине 
 исчерпания виртуальной памяти.
 
-% \begin{table}
-% \bgroup
-% \def\arraystretch{2}
-% \begin{center}
-% \begin{tabular}{| l | c | c | c | c | c | c |}
-%   \hline
-%   Название теста & SC & TSO & SRA                                                       \\ \hline
-%   Message Passing                       & 0.01\pm0.01 & 0.02\pm0.00 & 0.02\pm0.01       \\ \hline
-%   Barrier                               & 0.08\pm0.01 & 0.14\pm0.01 & 0.12\pm0.00       \\ \hline
-%   Cohen Lock                            & 0.11\pm0.00 & 0.35\pm0.00 & 0.21\pm0.01       \\ \hline
-%   Dekker Lock                           & 0.11\pm0.01 & 1.08\pm0.01 & 0.21\pm0.01       \\ \hline
-%   Peterson Lock                         & 0.26\pm0.01 & 2.91\pm0.01 & 0.48\pm0.01       \\ \hline
-% \end{tabular}
-% \end{center}
-% \caption{Результаты применения интерпретатора для верификации}
-% \label{tab:verification}
-% \egroup
-% \end{table}
+\begin{table}
+\bgroup
+\def\arraystretch{2}
+\begin{center}
+\begin{tabular}{| l | c | c | c | c | c | c |}
+  \hline
+  Название теста & SC & TSO & SRA                                                       \\ \hline
+  Message Passing                       & 0.01$\pm$0.01 & 0.02$\pm$0.00 & 0.02$\pm$0.01       \\ \hline
+  Barrier                               & 0.08$\pm$0.01 & 0.14$\pm$0.01 & 0.12$\pm$0.00       \\ \hline
+  Cohen Lock                            & 0.11$\pm$0.00 & 0.35$\pm$0.00 & 0.21$\pm$0.01       \\ \hline
+  Dekker Lock                           & 0.11$\pm$0.01 & 1.08$\pm$0.01 & 0.21$\pm$0.01       \\ \hline
+  Peterson Lock                         & 0.26$\pm$0.01 & 2.91$\pm$0.01 & 0.48$\pm$0.01       \\ \hline
+\end{tabular}
+\end{center}
+\caption{Результаты применения интерпретатора для верификации}
+\label{tab:verification}
+\egroup
+\end{table}
 
-% \begin{table}
-% \bgroup
-% \def\arraystretch{2}
-% \begin{center}
-% \begin{tabular}{| l | c | c | c | c | c | c |}
-%   \hline
-%   Название теста & TSO & SRA                                                    \\ \hline
-%   Message Passing                       &    0.05\pm0.00  &   0.36\pm0.01       \\ \hline
-%   Barrier                               &    2.39\pm0.04  & 238.67\pm1.79       \\ \hline
-%   Cohen Lock                            &    1.00\pm0.05  &   2.48\pm0.07       \\ \hline
-%   Dekker Lock                           &   76.49\pm0.51  & \texttt{OOM}          \\ \hline
-%   Peterson Lock                         & 5300.51\pm10.09 & \texttt{OOM}          \\ \hline
-% \end{tabular}
-% \end{center}
-% \caption{Результаты применения интерпретатора для синтеза кода синхронизации}
-% \label{tab:synthesis}
-% \egroup
-% \end{table}
+\begin{table}
+\bgroup
+\def\arraystretch{2}
+\begin{center}
+\begin{tabular}{| l | c | c | c | c | c | c |}
+  \hline
+  Название теста & TSO & SRA                                                    \\ \hline
+  Message Passing                       &    0.05$\pm$0.00  &   0.36$\pm$0.01       \\ \hline
+  Barrier                               &    2.39$\pm$0.04  & 238.67$\pm$1.79       \\ \hline
+  Cohen Lock                            &    1.00$\pm$0.05  &   2.48$\pm$0.07       \\ \hline
+  Dekker Lock                           &   76.49$\pm$0.51  & \texttt{OOM}          \\ \hline
+  Peterson Lock                         & 5300.51$\pm$10.09 & \texttt{OOM}          \\ \hline
+\end{tabular}
+\end{center}
+\caption{Результаты применения интерпретатора для синтеза кода синхронизации}
+\label{tab:synthesis}
+\egroup
+\end{table}
 
 По результатам замеров можно видеть, что время работы интерпретатора 
 в слабых моделях выше, чем в модели SC. 
@@ -2581,11 +2611,503 @@ Intel® Core™ i5-6300HQ CPU 2.30GHz × 4; 8GB RAM; Ubuntu 17.10 x64.
 но для применения его к более сложным программам требуется
 усовершенствование подхода.
 
+\section*{Заключение}
+
+В ходе данной работы были достигнуты следующие результаты.
+
+\begin{itemize}
+\item Были реализованы расширения для языка OCanren, 
+    предназначенные построении реляционных интерпретаторов,
+    а именно мемоизация и конструктивное отрицание.
+\item Разработан реляционный интерпретатор для многопоточных программ на языке OCanren.
+\item Была произведена апробация интерпретатора на ряде классических многопоточных алгоритмов.
+\end{itemize}
+
+Исходный код интерпретатора находится в свободном доступе и 
+может быть найден по адресу \url{https://github.com/eucpp/relcppmem} (дата обращения 10.05.2018).
+Версия языка OCanren, дополненная разработанными в рамках данной работы расширениями,
+доступна по адресу \url{https://github.com/eucpp/OCanren} (дата обращения 10.05.2018).
+
+Целью данной работы являлось применение идей реляционного программирования 
+к задаче верификации и синтеза многопоточных программ.
+Наша гипотеза состояла в том, что полезные свойства 
+реляционного программирования, такие как декларативность и гибкость
+помогут в разработке инструментов для решения данной задачи.
+В частности, ожидалось, что возможность ``запуска'' реляционного интерпретатора
+в ``обратную сторону'' (т.е. передав на вход отношению частичную программу с 
+логическими переменными и ожидаемый результат) 
+позволит получить инструмент для синтеза программ. 
+На практике такой подход приводит к необходимости поиска в  
+большом пространства состояний, 
+который не может быть выполнен с помощью полного обхода. 
+
+Таким образом, для масштабирования реляционного интерпретатора 
+необходимо применять более сложные подходы и методы.
+Одним из возможных улучшений может быть интеграция языка OCanren 
+с современными решателями формул в теориях (SMT solvers)
+для улучшения производительности. 
+В частности, может представлять интерес 
+интеграция с решателем Z3, поддерживающим решение систем
+хорновских дизъюнктов~\cite{hoder2012generalized, bjorner2013solving}.
+Наконец, ещё одно перспективное направление --- это применение техник суперкомпиляции и
+частичного исполнения~\cite{jones1993partial, pettorossi1999synthesis}.
+
+% \appendix
+
+% \section{Многопоточные Алгоритмы}
+
+% \label{apdx:algos}
+
+% \subsection{Передача сообщения}
+
+% Инвариант (для терминальных состояний): $r_2 = 1$
+
+% {\centering
+%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -30pt}l}
+%     \begin{lstlisting}
+%       [x] := 1;
+%       [f] := 1
+%     \end{lstlisting}
+%     &
+%     \begin{lstlisting}
+%       repeat
+%         r1 := [f]
+%       until (r1);
+%       r2 := [x]
+%     \end{lstlisting}
+%     \\
+%     \end{tabular}
+% }
+
+% \subsection{Алгоритм Коэна}
+
+% Инвариант (для терминальных состояний): $d = 1$
+
+% {\centering
+%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -30pt}l}
+%     \begin{lstlisting}
+%       r1 := choice(1, 2);
+%       [x] := r1;
+%       repeat 
+%         r2 := y_acq
+%       until (r2);
+%       if (r1 = r2) then
+%         // start of critical section
+%         r3 := [v];
+%         [v] := r3 + 1;
+%         // end of critical section
+%       fi
+%     \end{lstlisting}
+%     &
+%     \begin{lstlisting}
+%       r1 := choice(1, 2);
+%       [y] := r1;
+%       repeat 
+%         r2 := [x] 
+%       until (r2);
+%       if (r1 != r2) then
+%         // start of critical section
+%         r3 := [v];
+%         [v] := r3 + 1;
+%         // end of critical section
+%       fi
+%     \end{lstlisting}
+%     \\
+%     \end{tabular}
+% }
+
+% \subsection{Барьер}
+
+% Инвариант (для терминальных состояний): $r_3 = 1 \wedge r_6 = 1$
+
+% {\centering
+%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -30pt}l}
+%     \multicolumn{3}{c}{}
+%         \hfill
+%         \varwidth{\linewidth}
+%         \begin{lstlisting} 
+%           [cnt] := 2; 
+%         \end{lstlisting} 
+%         \endvarwidth
+%         \hfill
+%     \\
+%     \begin{lstlisting}
+%         [x] := 1;
+%         // barrier start
+%         repeat
+%           r1 := [cnt];
+%           r2 := CAS(cnt, r1, r1 - 1)
+%         until (r2);
+%         if (r1 = 1) then
+%           [g] := 1
+%         else
+%           repeat 
+%             r1 := [g] 
+%           until (r1);
+%         fi;
+%         // barrier end
+%         r3 := [y]
+%     \end{lstlisting}
+%     &
+%     \begin{lstlisting}
+%         [y] := 1;
+%         // barrier start
+%         repeat
+%           r4 := [cnt];
+%           r5 := CAS(cnt, r1, r1 - 1)
+%         until (r5);
+%         if (r4 = 1) then
+%           [g] := 1
+%         else
+%           repeat 
+%             r4 := [g]
+%           until (r4);
+%         fi;
+%         // barrier end
+%         r6 := [x]
+%     \end{lstlisting}
+%     \\
+%     \end{tabular}
+% }
+
+% \subsection{Алгоритм Деккера}
+
+% Инвариант (для терминальных состояний): $v = 2$
+
+% {\centering
+%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -30pt}l}
+%     \begin{lstlisting}
+%       [x] := 1;
+%       r1 := [y];
+%       while (r1) do
+%         r2 := [turn];
+%         if (r2 != 0) then
+%           [x] := 0;
+%           repeat 
+%             r2 := [turn] 
+%           until (r2 = 0);
+%           [x] := 1
+%         fi;
+%         r1 := [y]
+%       od;
+%       // start of critical section
+%       r3 := [v];
+%       [v] := r3 + 1;
+%       // end of critical section
+%       [turn] := 1;
+%       [x] := 0
+%     \end{lstlisting}
+%     &
+%     \begin{lstlisting}
+%       [y] := 1;
+%       r1 := [x];
+%       while (r1) do
+%         r2 := [turn];
+%         if (r2 != 1) then
+%           [y] := 0;
+%           repeat 
+%             r2 := [turn] 
+%           until (r2 = 1);
+%           [y] := 1
+%         fi;
+%         r1 := [x]
+%       od;
+%       // start of critical section
+%       r3 := [v];
+%       [v] := r3 + 1;
+%       // end of critical section
+%       [turn] := 0;
+%       [y] := 0
+%     \end{lstlisting}
+%     \\
+%     \end{tabular}
+% }
+
+% \subsection{Алгоритм Петерсона}
+
+% Инвариант (для терминальных состояний): $v = 2$
+
+% {\centering
+%     \begin{tabular}{l|@{\hskip 5pt}|@{\hskip -30pt}l}
+%     \begin{lstlisting}
+%       [x] := 1;
+%       [turn] := 1;
+%       repeat
+%         r1 := [y];
+%         r2 := [turn];
+%       until (
+%         (r1 != 1) || (r2 != 1)
+%       );
+%       // start of critical section
+%       r3 := [v];
+%       [v] := r3 + 1;
+%       // end of critical section
+%       [x] := 0
+%     \end{lstlisting}
+%     &
+%     \begin{lstlisting}
+%       [y] := 1;
+%       [turn] := 0;
+%       repeat
+%         r1 := [x];
+%         r2 := [turn];
+%       until (
+%         (r1 != 1) || (r2 != 0)
+%       );
+%       // start of critical section
+%       r3 := [v];
+%       [v] := r3 + 1;
+%       // end of critical section
+%       [y] := 0
+%     \end{lstlisting}
+%     \\
+%     \end{tabular}
+% }
 
 \begin{thebibliography}{99}
+\def\selectlanguageifdefined#1{
+\expandafter\ifx\csname date#1\endcsname\relax
+\else\selectlanguage{#1}\fi}
+\providecommand*{\href}[2]{{\small #2}}
+\providecommand*{\url}[1]{{\small #1}}
+\providecommand*{\BibUrl}[1]{\url{#1}}
+\providecommand{\BibAnnote}[1]{}
+\providecommand*{\BibEmph}[1]{#1}
+\ProvideTextCommandDefault{\cyrdash}{\iflanguage{russian}{\hbox
+  to.8em{--\hss--}}{\textemdash}}
+\providecommand*{\BibDash}{\ifdim\lastskip>0pt\unskip\nobreak\hskip.2em plus
+  0.1em\fi
+\cyrdash\hskip.2em plus 0.1em\ignorespaces}
+\renewcommand{\newblock}{\ignorespaces}
 
-\bibitem{bib1}
-  Author. Name. Conference.
+\bibitem{baader2001unification}
+\selectlanguageifdefined{english}
+\BibEmph{Baader~Franz, Snyder~Wayne}. Unification theory.~// \BibEmph{Handbook
+  of automated reasoning}. \BibDash
+\newblock 2001. \BibDash
+\newblock Vol.~1. \BibDash
+\newblock P.~445--532.
+
+\bibitem{kiselyov2005backtracking}
+\selectlanguageifdefined{english}
+Backtracking, interleaving, and terminating monad transformers:(functional
+  pearl)~/ Oleg~Kiselyov, Chung-chieh~Shan, Daniel~P~Friedman, Amr~Sabry~//
+  \BibEmph{ACM SIGPLAN Notices}. \BibDash
+\newblock 2005. \BibDash
+\newblock Vol.~40, no.~9. \BibDash
+\newblock P.~192--203.
+
+\bibitem{bjorner2013solving}
+\selectlanguageifdefined{english}
+\BibEmph{Bj{\o}rner~Nikolaj, McMillan~Ken, Rybalchenko~Andrey}. On solving
+  universally quantified horn clauses~// International Static Analysis
+  Symposium~/ Springer. \BibDash
+\newblock 2013. \BibDash
+\newblock P.~105--125.
+
+\bibitem{byrd2009relational}
+\selectlanguageifdefined{english}
+\BibEmph{Byrd~William~E}. Relational programming in minikanren: Techniques,
+  applications, and implementations~: Ph.\,D. thesis~/ William~E~Byrd~;
+  Citeseer. \BibDash
+\newblock 2009.
+
+\bibitem{chan1988constructive}
+\selectlanguageifdefined{english}
+\BibEmph{Chan~David}. Constructive negation based on the completed database~//
+  Proc. of ICLP-88. \BibDash
+\newblock 1988.
+
+\bibitem{clark1978negation}
+\selectlanguageifdefined{english}
+\BibEmph{Clark~Keith~L}. Negation as failure~// Logic and data bases. \BibDash
+\newblock Springer, 1978. \BibDash
+\newblock P.~293--322.
+
+\bibitem{dijkstra1968cooperating}
+\selectlanguageifdefined{english}
+\BibEmph{Dijkstra~Edsger~W}. Cooperating sequential processes~// The origin of
+  concurrent programming. \BibDash
+\newblock Springer, 1968. \BibDash
+\newblock P.~65--138.
+
+\bibitem{friedman2005reasoned}
+\selectlanguageifdefined{english}
+\BibEmph{Friedman~Daniel~P, Byrd~William~E, Kiselyov~Oleg}. The reasoned
+  schemer. \BibDash
+\newblock MIT Press, 2005.
+
+\bibitem{friedmanmukanren}
+\selectlanguageifdefined{english}
+\BibEmph{Friedman~Jason Hemann Daniel~P}. $\mu$Kanren: A Minimal Functional
+  Core for Relational Programming.
+
+\bibitem{hoder2012generalized}
+\selectlanguageifdefined{english}
+\BibEmph{Hoder~Kry{\v{s}}tof, Bj{\o}rner~Nikolaj}. Generalized property
+  directed reachability~// International Conference on Theory and Applications
+  of Satisfiability Testing~/ Springer. \BibDash
+\newblock 2012. \BibDash
+\newblock P.~157--171.
+
+\bibitem{jones1993partial}
+\selectlanguageifdefined{english}
+\BibEmph{Jones~Neil~D, Gomard~Carsten~K, Sestoft~Peter}. Partial evaluation and
+  automatic program generation. \BibDash
+\newblock Peter Sestoft, 1993.
+
+\bibitem{kosarev2016typed}
+\selectlanguageifdefined{english}
+\BibEmph{Kosarev~Dmitry, Boulytchev~Dmitri}. Typed Embedding of a Relational
+  Language in OCaml~// International Workshop on ML. \BibDash
+\newblock 2016.
+
+\bibitem{lahav2016taming}
+\selectlanguageifdefined{english}
+\BibEmph{Lahav~Ori, Giannarakis~Nick, Vafeiadis~Viktor}. Taming release-acquire
+  consistency~// ACM SIGPLAN Notices~/ ACM. \BibDash
+\newblock Vol.~51. \BibDash
+\newblock 2016. \BibDash
+\newblock P.~649--662.
+
+\bibitem{lamport1979make}
+\selectlanguageifdefined{english}
+\BibEmph{Lamport~Leslie}. How to make a multiprocessor computer that correctly
+  executes multiprocess progranm~// \BibEmph{IEEE transactions on computers}.
+  \BibDash
+\newblock 1979. \BibDash
+\newblock no.~9. \BibDash
+\newblock P.~690--691.
+
+\bibitem{liu1999constructive}
+\selectlanguageifdefined{english}
+\BibEmph{Liu~Julie~Yuchih, Adams~Leroy, Chen~Weidong}. Constructive negation
+  under the well-founded semantics~// \BibEmph{The Journal of Logic
+  Programming}. \BibDash
+\newblock 1999. \BibDash
+\newblock Vol.~38, no.~3. \BibDash
+\newblock P.~295--330.
+
+\bibitem{manson2005java}
+\selectlanguageifdefined{english}
+\BibEmph{Manson~Jeremy, Pugh~William, Adve~Sarita~V}. The Java memory model.
+  \BibDash
+\newblock ACM, 2005. \BibDash
+\newblock Vol.~40.
+
+\bibitem{batty2011mathematizing}
+\selectlanguageifdefined{english}
+Mathematizing C++ concurrency~/ Mark~Batty, Scott~Owens, Susmit~Sarkar
+  et~al.~// ACM SIGPLAN Notices~/ ACM. \BibDash
+\newblock Vol.~46. \BibDash
+\newblock 2011. \BibDash
+\newblock P.~55--66.
+
+\bibitem{flur2016modelling}
+\selectlanguageifdefined{english}
+Modelling the ARMv8 architecture, operationally: concurrency and ISA~/
+  Shaked~Flur, Kathryn~E~Gray, Christopher~Pulte et~al.~// ACM SIGPLAN
+  Notices~/ ACM. \BibDash
+\newblock Vol.~51. \BibDash
+\newblock 2016. \BibDash
+\newblock P.~608--621.
+
+\bibitem{nadathur1988overview}
+\selectlanguageifdefined{english}
+\BibEmph{Nadathur~Gopalan, Miller~Dale}. An overview of Lambda-PROLOG. \BibDash
+\newblock 1988.
+
+\bibitem{pettorossi1999synthesis}
+\selectlanguageifdefined{english}
+\BibEmph{Pettorossi~Alberto, Proietti~Maurizio}. Synthesis and transformation
+  of logic programs using unfold/fold proofs~// \BibEmph{The Journal of Logic
+  Programming}. \BibDash
+\newblock 1999. \BibDash
+\newblock Vol.~41, no. 2-3. \BibDash
+\newblock P.~197--230.
+
+\bibitem{podkopaev2016operational}
+\selectlanguageifdefined{english}
+\BibEmph{Podkopaev~Anton, Sergey~Ilya, Nanevski~Aleksandar}. Operational
+  aspects of C/C++ concurrency~// \BibEmph{arXiv preprint arXiv:1606.01400}.
+  \BibDash
+\newblock 2016.
+
+\bibitem{przymusinski1989constructive}
+\selectlanguageifdefined{english}
+\BibEmph{Przymusinski~Teodor~C}. On constructive negation in logic programming.
+  \BibDash
+\newblock MIT Press Cambridge, Massachusetts, 1989.
+
+\bibitem{schrijvers2008tchr}
+\selectlanguageifdefined{english}
+\BibEmph{Schrijvers~Tom, Demoen~Bart, Warren~David~S}. TCHR: a Framework for
+  Tabled CLP~// \BibEmph{Theory and Practice of Logic Programming}. \BibDash
+\newblock 2008. \BibDash
+\newblock Vol.~8, no.~4. \BibDash
+\newblock P.~491--526.
+
+\bibitem{stuckey1991constructive}
+\selectlanguageifdefined{english}
+\BibEmph{Stuckey~Peter~J}. Constructive negation for constraint logic
+  programming~// Logic in Computer Science, 1991. LICS'91., Proceedings of
+  Sixth Annual IEEE Symposium on~/ IEEE. \BibDash
+\newblock 1991. \BibDash
+\newblock P.~328--339.
+
+\bibitem{wielemaker2012swi}
+\selectlanguageifdefined{english}
+Swi-prolog~/ Jan~Wielemaker, Tom~Schrijvers, Markus~Triska,
+  Torbj{\"o}rn~Lager~// \BibEmph{Theory and Practice of Logic Programming}.
+  \BibDash
+\newblock 2012. \BibDash
+\newblock Vol.~12, no. 1-2. \BibDash
+\newblock P.~67--96.
+
+\bibitem{swift2012xsb}
+\selectlanguageifdefined{english}
+\BibEmph{Swift~Terrance, Warren~David~S}. XSB: Extending Prolog with tabled
+  logic programming~// \BibEmph{Theory and Practice of Logic Programming}.
+  \BibDash
+\newblock 2012. \BibDash
+\newblock Vol.~12, no. 1-2. \BibDash
+\newblock P.~157--187.
+
+\bibitem{sarkar2011understanding}
+\selectlanguageifdefined{english}
+Understanding POWER multiprocessors~/ Susmit~Sarkar, Peter~Sewell, Jade~Alglave
+  et~al.~// \BibEmph{ACM SIGPLAN Notices}. \BibDash
+\newblock 2011. \BibDash
+\newblock Vol.~46, no.~6. \BibDash
+\newblock P.~175--186.
+
+\bibitem{kang2017promising}
+\selectlanguageifdefined{english}
+A promising semantics for relaxed-memory concurrency~/ Jeehoon~Kang,
+  Chung-Kil~Hur, Ori~Lahav et~al.~// Proceedings of the 44th ACM SIGPLAN
+  Symposium on Principles of Programming Languages~/ ACM. \BibDash
+\newblock 2017. \BibDash
+\newblock P.~175--189.
+
+\bibitem{byrd2017unified}
+\selectlanguageifdefined{english}
+A unified approach to solving seven programming problems (functional pearl)~/
+  William~E~Byrd, Michael~Ballantyne, Gregory~Rosenblatt, Matthew~Might~//
+  \BibEmph{Proceedings of the ACM on Programming Languages}. \BibDash
+\newblock 2017. \BibDash
+\newblock Vol.~1, no. ICFP. \BibDash
+\newblock P.~8.
+
+\bibitem{sewell2010x86}
+\selectlanguageifdefined{english}
+x86-TSO: a rigorous and usable programmer's model for x86 multiprocessors~/
+  Peter~Sewell, Susmit~Sarkar, Scott~Owens et~al.~// \BibEmph{Communications of
+  the ACM}. \BibDash
+\newblock 2010. \BibDash
+\newblock Vol.~53, no.~7. \BibDash
+\newblock P.~89--97.
+
+
   
 \end{thebibliography}
   
