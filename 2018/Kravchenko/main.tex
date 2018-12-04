@@ -313,14 +313,13 @@ mov %rbx 4(%rbx)
 \newsavebox\boxminustwo
 \begin{lrbox}{\boxminustwo}
 \begin{lstlisting}[xleftmargin = 20pt]
-if is_dynamic(current_cmd)
-    param1 = evaluate(current_cmd.param1)
-    param2 = evaluate(current_cmd.param2)
-    if is_memory(param1)
-        generate_cmd(lea_cmd, param1, current_cmd.param1)
-        generate_cmd(current_cmd.cmd, current_cmd.param1, param2)
+if current command is dynamic then
+    evaluate both parameters of current command
+    if both of them are memory then
+        generate command which put first parameter evaluation result to spare register
+        generate command equal to current command with spare register as first parametr and second parameter evaluation result as second parametr
     else 
-        generate_cmd(current_cmd.cmd, param1, param2)
+        generate command equal to current command with parameters evaluation results as parametrs
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
@@ -349,14 +348,13 @@ if is_dynamic(current_cmd)
 \newsavebox\boxzero
 \begin{lrbox}{\boxzero}
 \begin{lstlisting}[xleftmargin = 20pt]
-while !state_queue.is_empty
-    current_state = state_queue.pop
-    if !already_handled(current_state)
-        current_cmd = read_cmd(current_state.rip)
-        while !(current_cmd == ret_cmd 
-               && current_state.stack.is_empty)
-            handle_cmd(current_cmd)
-            current_cmd = read_cmd(current_state.rip)
+while state queue is not empty do
+    get current state from state queue
+    if  current state is not already handled then
+        read current command from %rip register of current state
+        while current comand is not 'ret' or current state stack is not empty do
+            handle current command
+            read current command from %rip register of current state
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
@@ -374,13 +372,11 @@ while !state_queue.is_empty
 \newsavebox\boxminusone
 \begin{lrbox}{\boxminusone}
 \begin{lstlisting}[xleftmargin = 20pt]
-if is_dynamic(current_cmd.params)
-    generate_instruction(cmd)
-    dynamic_result = evaluate(cmd)
-    update_state(dynamic_result)
+if at lest one of current command parameters is dynamic then
+    generate command equal to current command
+    update state with current command dynamic evaluation result
 else
-    static_result = evaluate(cmd)
-    update_state(static_result)
+    update state with current command static evaluation result
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
@@ -596,7 +592,7 @@ int dict(int len, int* keys, int* values, int key) {
 
 \subsection{Специализация}
 
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{wrapfigure}{R}{0.4\textwidth}
 \begin{lstlisting}[xleftmargin = 20pt]
 Start block 701084
 mov89 %rdx  -48(0) 
@@ -624,13 +620,13 @@ ret
 
 
 \subsection{ Генерация машинного кода}
-
-Во всех предыдущих тестах результатом работы специализатора являлся код, схожий с ассемблером. Однако зачастую подобного кода оказывается недостаточно --- требуется иметь возможность запустить результат специализации. В качестве исходной программы была взята вышеупомянутая программа возведения в степень (рисунок~\ref{fig:int}). В качестве статического показателя степени взята константа $5$. Основание же степени является динамическим. В результате получился машинный код, представленный на рисунке~\ref{fig:pow}.
-\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{wrapfigure}{R}{0.5\textwidth}
 89 7D FC 8B 45 FC 89 C7 89 7D FC 8B 45 FC 89 C7 89 7D FC 8B 45 FC 89 C7 89 7D FC 8B 45 FC 89 C7 89 7D FC 8B 45 FC 89 C7 89 7D FC B8 01 00 00 00 0F AF 45 FC 0F AF 45 FC 0F AF 45 FC 0F AF 45 FC 0F AF 45 FC C3
 \caption{ Сумма двух чисел в машинном коде}
 \label{fig:pow}
 \end{wrapfigure}
+Во всех предыдущих тестах результатом работы специализатора являлся код, схожий с ассемблером. Однако зачастую подобного кода оказывается недостаточно --- требуется иметь возможность запустить результат специализации. В качестве исходной программы была взята вышеупомянутая программа возведения в степень (рисунок~\ref{fig:int}). В качестве статического показателя степени взята константа $5$. Основание же степени является динамическим. В результате получился машинный код, представленный на рисунке~\ref{fig:pow}.
+
 Если данный фрагмент кода исполнить и передать ему в качестве параметра число, в ответе получится переданное число в пятой степени. Такой результат и ожидался, а значит тест пройден. Стоит отметить, что была реализована лишь минимальная функциональность, необходимая для прохождения данного теста. Это связано с тем, что компиляция ассемблера в машинный код является непростой задачей, но не несёт в себе исследовательского интереса. Тем не менее, данный тест показывает, что такая компиляция возможна в рамках данного специализатора.
 
 
@@ -747,7 +743,7 @@ ret
 
 \subsection{ Первая проекция Футамуры}
 
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{wrapfigure}{R}{0.5\textwidth}
 \vspace{-1cm}
 \begin{lstlisting}[xleftmargin = 20pt]
 int add(int a, int b){
