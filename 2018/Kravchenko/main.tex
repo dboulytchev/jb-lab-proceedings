@@ -13,7 +13,6 @@
 }
 \lstset{escapechar=@,style=mycode}
 
-
 \title{Специализация машинного кода}
 
 \titlerunning{Специализация машинного кода}
@@ -313,13 +312,15 @@ mov %rbx 4(%rbx)
 \newsavebox\boxminustwo
 \begin{lrbox}{\boxminustwo}
 \begin{lstlisting}[xleftmargin = 20pt]
-if current command is dynamic then
-    evaluate both parameters of current command
-    if both of them are memory then
-        generate command which put first parameter evaluation result to spare register
-        generate command equal to current command with spare register as first parametr and second parameter evaluation result as second parametr
-    else 
-        generate command equal to current command with parameters evaluation results as parametrs
+@\textbf{\underline{IF}}@   @\emph{current\_command}@ is classified as dynamic
+@\textbf{\underline{THEN}}@
+  evaluate both @\emph{current\_command}@ parameters
+  @\textbf{\underline{IF}}@ both of them are memory
+  @\textbf{\underline{THEN}}@
+      generate command that puts the first parameter evaluation result to a spare register
+      generate command that is the very @\emph{current\_command}@ where the first argument is replaced with the spare register and second argument is the result of evaluation
+  @\textbf{\underline{ELSE}}@
+    generate command that is the very @\emph{current\_command}@ with arguments are being replaced by the corresponding evaluation results
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
@@ -348,17 +349,21 @@ if current command is dynamic then
 \newsavebox\boxzero
 \begin{lrbox}{\boxzero}
 \begin{lstlisting}[xleftmargin = 20pt]
-while state queue is not empty do
-    get current state from state queue
-    if  current state is not already handled then
-        read current command from %rip register of current state
-        while current comand is not 'ret' or current state stack is not empty do
-            handle current command
-            read current command from %rip register of current state
+@\textbf{\underline{WHILE}}@ @\emph{pending\_queue} $\ne \emptyset$@ @\textbf{\underline{DO}}@
+  @\emph{current\_state} $\leftarrow$@ get a state from @\emph{pending\_queue}@
+  @\textbf{\underline{IF}}@ @\emph{current\_state}@ is not already processed
+  @\textbf{\underline{THEN}}@
+  @\emph{current\_command} $\leftarrow$@ read from %rip register
+                      of @\emph{current\_state}@
+    @\textbf{\underline{WHILE}}@ @\emph{current\_command} $\ne$@ 'ret'
+       @\textbf{\underline{OR}}@ @\emph{current\_state}@ stack @$\ne \emptyset$@ @\textbf{\underline{DO}}@
+      process @\emph{current\_command}@
+      @\emph{current\_command} $\leftarrow$@ read from %rip register
+                          of @\emph{current\_state}@
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
-\centering
+\hspace{1cm}
 \subfloat{\usebox\boxzero}
 \caption{Основной цикл специализации\label{fig:cycle}}
 \end{figure}
@@ -372,11 +377,15 @@ while state queue is not empty do
 \newsavebox\boxminusone
 \begin{lrbox}{\boxminusone}
 \begin{lstlisting}[xleftmargin = 20pt]
-if at lest one of current command parameters is dynamic then
-    generate command equal to current command
-    update state with current command dynamic evaluation result
-else
-    update state with current command static evaluation result
+@\textbf{\underline{IF}}@   at lest one of current instruction parameters is dynamic
+@\textbf{\underline{THEN}}@ residualize the instruction
+     @\emph{res} $\leftarrow$@ evaluate dynamic instruction in current
+             static environment
+     update current state with respect to @\emph{res}@
+@\textbf{\underline{ELSE}}@
+     @\emph{res} $\leftarrow$@ evaluate static command in current
+             static environment
+     update current state with respect to @\emph{res}@
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
