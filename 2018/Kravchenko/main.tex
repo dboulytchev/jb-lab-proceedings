@@ -312,15 +312,15 @@ mov %rbx 4(%rbx)
 \newsavebox\boxminustwo
 \begin{lrbox}{\boxminustwo}
 \begin{lstlisting}[xleftmargin = 20pt]
-@\textbf{\underline{IF}}@   @\emph{current\_command}@ is classified as dynamic
+@\textbf{\underline{IF}}@   @\emph{current\_instruction}@ is classified as dynamic
 @\textbf{\underline{THEN}}@
-  evaluate both @\emph{current\_command}@ parameters
+  evaluate both @\emph{current\_instruction}@ arguments
   @\textbf{\underline{IF}}@ both of them are memory
   @\textbf{\underline{THEN}}@
-      generate command that puts the first parameter evaluation result to a spare register
-      generate command that is the very @\emph{current\_command}@ where the first argument is replaced with the spare register and second argument is the result of evaluation
+      generate instruction that puts the first argument evaluation result to a spare register
+      generate instruction that is the very @\emph{current\_instruction}@ where the first argument is replaced with the spare register and second argument is the result of evaluation
   @\textbf{\underline{ELSE}}@
-    generate command that is the very @\emph{current\_command}@ with arguments are being replaced by the corresponding evaluation results
+    generate instruction that is the very @\emph{current\_instruction}@ with arguments are being replaced by the corresponding evaluation results
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
@@ -353,13 +353,13 @@ mov %rbx 4(%rbx)
   @\emph{current\_state} $\leftarrow$@ get a state from @\emph{pending\_queue}@
   @\textbf{\underline{IF}}@ @\emph{current\_state}@ is not already processed
   @\textbf{\underline{THEN}}@
-  @\emph{current\_command} $\leftarrow$@ read from %rip register
-                      of @\emph{current\_state}@
-    @\textbf{\underline{WHILE}}@ @\emph{current\_command} $\ne$@ 'ret'
-       @\textbf{\underline{OR}}@ @\emph{current\_state}@ stack @$\ne \emptyset$@ @\textbf{\underline{DO}}@
-      process @\emph{current\_command}@
-      @\emph{current\_command} $\leftarrow$@ read from %rip register
+  @\emph{current\_instruction} $\leftarrow$@ read from %rip register
                           of @\emph{current\_state}@
+    @\textbf{\underline{WHILE}}@ @\emph{current\_instruction} $\ne$@ 'ret'
+       @\textbf{\underline{OR}}@ @\emph{current\_state}@ stack @$\ne \emptyset$@ @\textbf{\underline{DO}}@
+      process @\emph{current\_instruction}@
+      @\emph{current\_instruction} $\leftarrow$@ read from %rip register
+                              of @\emph{current\_state}@
 \end{lstlisting}
 \end{lrbox}
 \begin{figure}[!t]
@@ -377,22 +377,17 @@ mov %rbx 4(%rbx)
 \newsavebox\boxminusone
 \begin{lrbox}{\boxminusone}
 \begin{lstlisting}[xleftmargin = 20pt]
-@\textbf{\underline{IF}}@   at lest one of current instruction parameters is dynamic
+@\textbf{\underline{IF}}@   at lest one of current instruction arguments is dynamic
 @\textbf{\underline{THEN}}@ residualize the instruction
      @\emph{res} $\leftarrow$@ evaluate dynamic instruction in current
              static environment
      update current state with respect to @\emph{res}@
 @\textbf{\underline{ELSE}}@
-     @\emph{res} $\leftarrow$@ evaluate static command in current
+     @\emph{res} $\leftarrow$@ evaluate static instruction in current
              static environment
      update current state with respect to @\emph{res}@
 \end{lstlisting}
 \end{lrbox}
-\begin{figure}[!t]
-\centering
-\subfloat{\usebox\boxminusone}
-\caption{Общая обработка инструкций\label{fig:handle}}
-\end{figure}
 На данном этапе алгоритма специализации (рисунок~\ref{fig:handle}) остаётся конкретная инструкция, которую необходимо обработать. Для начала, необходимо классифицировать данную инструкцию как статическую или как динамическую.
 В этот момент проявляется следующая особенность специализации машинного кода (см. раздел~\ref{part:4.1}).
 Данная особенность заставляет нас использовать online алгоритм. Таким образом, специализатор вычисляет значения параметров инструкции, проверяет, являются ли они динамическими, и соответственно классифицирует всю инструкцию. Если хотя бы один из параметров является динамическим, инструкция классифицируется как динамическая. Иначе --- как статическая.
@@ -400,6 +395,11 @@ mov %rbx 4(%rbx)
 В случае динамический инструкции специализатору необходимо сгенерировать код, который попадёт в специализарованную программу и называется
 \emph{остаточным} (residual).
 Алгоритм генерации кода был представлен ранее (см. раздел~\ref{part:4.5})
+\begin{figure}[!t]
+\centering
+\subfloat{\usebox\boxminusone}
+\caption{Общая обработка инструкций\label{fig:handle}}
+\end{figure}
 
 \subsection{Специальная обработка инструкций}
 \label{part:5.4}
