@@ -298,12 +298,23 @@ mov %rbx 4(%rbx)
 \end{lstlisting}
 \end{lrbox}
 
-\begin{figure}[!t]
-\subfloat[\label{fig:qfbv1}]{\usebox\boxfour}
-\hfill
-\subfloat[\label{fig:qfbv22}]{\usebox\boxfive}
-\hfill
-\subfloat[\label{fig:qfbv3}]{\usebox\boxsix}
+\begin{figure}[t!]
+	\centering
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+        \usebox\boxfour
+        \caption{\label{fig:qfbv1}}
+    \end{subfigure}
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+        \usebox\boxfive
+        \caption{\label{fig:qfbv22}}
+    \end{subfigure}
+	\begin{subfigure}[b]{0.32\textwidth}
+		\centering
+        \usebox\boxsix
+        \caption{\label{fig:qfbv1}}
+    \end{subfigure}
 \caption{Фрагменты кода: lifted инструкции}
 \end{figure}
 
@@ -325,7 +336,7 @@ mov %rbx 4(%rbx)
 \end{lrbox}
 \begin{figure}[!t]
 \centering
-\subfloat{\usebox\boxminustwo}
+\usebox\boxminustwo
 \caption{Генерация кода динамических инструкций\label{fig:generate}}
 \end{figure}
 
@@ -364,7 +375,7 @@ mov %rbx 4(%rbx)
 \end{lrbox}
 \begin{figure}[!t]
 \hspace{1cm}
-\subfloat{\usebox\boxzero}
+\usebox\boxzero
 \caption{Основной цикл специализации\label{fig:cycle}}
 \end{figure}
 Следующим этапом алгоритма специализации является основной цикл (рисунок~\ref{fig:cycle}).
@@ -397,7 +408,7 @@ mov %rbx 4(%rbx)
 Алгоритм генерации кода был представлен ранее (см. раздел~\ref{part:4.5})
 \begin{figure}[!t]
 \centering
-\subfloat{\usebox\boxminusone}
+\usebox\boxminusone
 \caption{Общая обработка инструкций\label{fig:handle}}
 \end{figure}
 
@@ -471,9 +482,17 @@ ret
 \end{lrbox}
 
 \begin{figure}[!t]
-\subfloat[Код\label{fig:int}]{\usebox\boxseven}
-\hfill
-\subfloat[Результат\label{fig:qfbv2}]{\usebox\boxeight}
+\centering
+	\begin{subfigure}[b]{0.5\textwidth}
+	    \centering
+        \usebox\boxseven
+        \caption{Код\label{fig:int}}
+    \end{subfigure}
+    	\begin{subfigure}[b]{0.5\textwidth}
+	    \centering
+        \usebox\boxeight
+        \caption{Результат\label{fig:qfbv2}}
+    \end{subfigure}
 \caption{Пример специализации: функция возведения в степень}
 \end{figure}
 
@@ -512,8 +531,16 @@ void sort(int len, int* a) {
 
 \begin{figure}[!t]
 \centering
-\subfloat[Код\label{fig:sort}]{\usebox\boxten} \\
-\subfloat[Результат\label{fig:sortres}]{\usebox\boxnine}
+    	\begin{subfigure}[b]{0.5\textwidth}
+	    \centering
+        \usebox\boxten
+        \caption{Код\label{fig:sort}}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+	    \centering
+        \usebox\boxnine
+        \caption{Результат\label{fig:sortres}}
+    \end{subfigure}
 \caption{Пример специализации: сортировка}
 \end{figure}
 
@@ -566,9 +593,17 @@ ret
 \end{lrbox}
 
 \begin{figure}[!t]
-\subfloat[Функция my\_malloc\label{fig:mymalloc}]{\usebox\boxel}
-\hfill
-\subfloat[Результат специализации\label{fig:erares}]{\usebox\boxtw}
+\centering
+    	\begin{subfigure}[b]{0.5\textwidth}
+	    \centering
+        \usebox\boxel
+        \caption{Функция my\_malloc\label{fig:mymalloc}}
+    \end{subfigure}
+    	\begin{subfigure}[b]{0.5\textwidth}
+	    \centering
+        \usebox\boxtw
+        \caption{Результат специализации\label{fig:erares}}
+    \end{subfigure}
 \caption{Функция my\_malloc и результат теста}
 \end{figure}
 
