@@ -1,0 +1,28 @@
+    \begin{lstlisting}
+interface (*\ienumerable*) {}
+interface (*\ienumerable\texttt{<}*)out(*~\xtype\texttt{>}:*)
+    (*\ienumerable*){}
+interface (*\icollectiontype:*) (*\ienumerable*) {}
+interface (*\onector{\icollectiontype}{\xtype}:*)
+    (*\onector{\ienumerable}{\xtype}*) {}
+struct (*\keyvaluepairtype\texttt{<}\xtype, \ytype\texttt{>}*) {}
+interface (*\idictionarytype:*) (*\icollectiontype*) {}
+interface (*\onector{\idictionarytype}{\xtype, \ytype}:*)
+    (*\onector{\icollectiontype}{\onector{\keyvaluepairtype}{\xtype, \ytype}}*) {}
+class (*\onector{\dictionarytype}{\xtype, \ytype}:*)
+    (*\onector{\idictionarytype}{\xtype, \ytype}*),
+    (*\idictionarytype*) {}
+    \end{lstlisting}
+\begin{alignat*}{3}
+    \classtableline{\objecttype}{} \\
+    \classtableline{\valuetype}{\objecttype} \\
+    \classtableline{\ienumerable}{\objecttype} \\
+    \classtableline{\onector{\ienumerable}{+\xtype}}{\ienumerable} \\
+    \classtableline{\icollectiontype}{\ienumerable} \\
+    \classtableline{\onector{\icollectiontype}{\xtype}}{\onector{\ienumerable}{\xtype}} \\
+    \classtableline{\onector{\keyvaluepairtype}{\xtype, \ytype}}{\valuetype} \\
+    \classtableline{\idictionarytype}{\icollectiontype} \\
+    \classtableline{\onector{\idictionarytype}{\xtype, \ytype}}{\onector{\icollectiontype}{\onector{\keyvaluepairtype}{\xtype, \ytype}}} \\
+    \classtableline{\onector{\dictionarytype}{\xtype, \ytype}}{\onector{\idictionarytype}{\xtype, \ytype}} \\
+    \addclasstableline{\idictionarytype}
+\end{alignat*}

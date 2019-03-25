@@ -1,0 +1,504 @@
+\section{\subtypesat{} неразрешима}
+
+\begin{Listing}%
+\pcpct{}
+\caption{Таблица классов \pcpctid{}}
+\label{fig:pcpclasstable}
+\end{Listing}
+
+\begin{Figure}
+\input{Misonizhnik/pcpvariablesgraph.tex}
+\caption{Граф зависимости типовых параметров для \pcpctid{}}
+\label{fig:pcpvariablegraph}
+\end{Figure}
+
+
+Мы докажем неразрешимость задачи \subtypesat{} путём сведения к ней \emph{проблемы соответствий Поста}.
+%
+\begin{paragraph}{Проблема соответствий Поста}
+Пусть $\lbrace (\overline{\pcpuword{1}}, \overline{\pcpvword{1}}), \ldots , (\overline{\pcpuword{n}}, \overline{\pcpvword{n}})\rbrace$ множество пар не пустых слов над конечным алфавитом $\setctor{\pcpfstsym,\ldots,\pcpsndsym}$. Проблема соответствий Поста (\pcp) состоит в том, чтобы определить, существует ли последовательность индексов $i_1, \ldots, i_r$ такая, что $\overline{\pcpuword{i_1}} \ldots \overline{\pcpuword{i_r}}= \overline{\pcpvword{i_1}} \ldots \overline{\pcpvword{i_r}}$.
+\end{paragraph}
+%
+
+
+Известно, что \pcp{} неразрешима~\cite{post1946variant}.
+
+Для сведения зафиксируем таблицу классов~\autoref{fig:pcpclasstable}. Заметим, что она нерасширяющаяся, так как граф зависимости типовых параметров~\autoref{fig:pcpvariablegraph} не имеет циклов. Также таблица классов не содержит контравариантных конструкторов.
+
+Рассмотрим задачу \subtypesat{} для формулы $\psi$ с типовыми параметрами $\pcpxtype, \, \pcpytype, \, \pcpztype, \, \pcpqtype, \, \pcpptype, \, \pcpotype$ и таблицей классов \pcpctid{}, где $\psi$ определяется следующим образом:
+% \[
+%     \pcpinitat\pcpxtype \subtype \pcpxtype \land \pcpendkt\pcpxtype \subtype \pcpxtype \land \pcpinitbt\pcpytype \subtype \pcpytype \land \pcpendlt\pcpytype \subtype \pcpytype \land \pcpinitct\pcpztype \subtype \pcpztype \land \pcpxtype \subtype \pcpztype \land \pcpytype \subtype \pcpztype
+% \]
+\[
+    \begin{array}{l}
+    \phi_{0} \eqdef \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcprestct \subtype \pcpztype \\
+    \phi_{1} \eqdef \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpptype \land \pcpxtype \subtype \pcpqtype \land \pcpxtype \subtype \pcpztype \land \phi_{0} \\
+    \phi_{2} \eqdef \pcprestblt \subtype \pcpytype \land \pcprestbrt \subtype \pcpytype \land \pcpytype \subtype \pcpptype \land \pcpytype \subtype \pcpqtype \land \pcpytype \subtype \pcpztype \land \phi_{0} \\
+    \psi \eqdef \pcpdword \subtype \pcpotype \land \pcpxtype \subtype \pcpotype \land \pcpytype \subtype \pcpotype \land \pcpotype \notsubtype \pcpeconstr \land \phi_{1} \land \phi_{2}
+    \end{array}
+\]
+
+Основная идея сведения в том, чтобы представить слова из $\setctor{\pcpfstsym{},\ldots,\pcpsndsym{}}^{+}$ в виде цепочки ковариантных конструкторов, оканчивающихся $\pcpeconstr$. Например, слова $\overline{\pcpuword{i}}$ и $\overline{\pcpvword{j}}$ представляются как $\overline{\pcpuword{i}}\pcpeconstr$ и $\overline{\pcpvword{j}}\pcpeconstr$. Перечисление потенциальных решений \pcp{} кодируется в \pcpctid{} и $\psi$. Мы покажем недетерминированный процесс, при котором, заменяя типовые переменные на типовые конструкторы, применённые к новым переменным, и упрощая полученную формулу, мы будем последовательно уточнять типовые переменные в формуле $\psi$.
+
+\begin{defn}
+    \emph{Закрытая} подстановка --- это подстановка, у которой в образе лежат только закрытые типы. Подстановка является \emph{полной} для формулы $f$, если её домен в точности является множеством типовых переменных из формулы $f$.
+\end{defn}
+К подстановкам можно применить операцию \emph{композиции}. Например,
+\[
+    \substt{\pcpxtype}{C\pcpxtype'} \circ \substt{\pcpxtype'}{D\pcpxtype''} = \substt{\pcpxtype}{C}{D\pcpxtype''}
+\]
+
+Также определим композицию для \emph{множеств подстановок}:
+\[
+    \setctor{\substname{1}^{left}; \, \ldots; \,  \substname{n}^{left}} \circ \setctor{\substname{1}^{right}; \, \ldots; \,  \substname{k}^{right}} \eqdef
+\]
+\[
+    \bigcup_{\mathclap{1\leq i \leq n, \, 1
+    \leq j \leq k}} \, \setctor{\substname{i}^{left} \circ \substname{k}^{right}}
+\]
+% \end{defn}
+Для упрощения нотации мы будем опускать штрихи при записи новых переменных, позволяя использовать одинаковые имена переменных и в домене, и в образе. Например, вместо $\substt{\pcpxtype}{C\pcpxtype'}$ мы будем писать $\subst{\pcpxtype}{C}$.
+
+Заметим, что $\psi$ является конъюнкцией атомов, а значит выполнимость $\psi$ влечёт выполнимость каждой из подформул. Теперь рассмотрим полные подстановки, которые не обращают формулу $\phi_{0}$ в ложь.
+
+\begin{lem}{\label{lem:pcpconstr}}
+Для формулы
+\[
+    \phi_{0} \eqdef \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcprestct \subtype \pcpztype,
+\]
+только композиция подстановок
+\[
+    \begin{array}{l}
+        \subst{\pcpptype}{\pcprconstr}, \, \substt{\pcpptype}{\pcpeconstr}, \, \substt{\pcpptype}{\pcprconstr_{0}}, \, \\
+        [0.6em] \\
+        \subst{\pcpqtype}{\pcpsconstr}, \, \substt{\pcpqtype}{\pcpeconstr}, \, \substt{\pcpqtype}{\pcpsconstr_{0}}, \, \\
+        [0.6em] \\
+        \substt{\pcpztype}{\pcpwword{i}, \, \substt{\pcpztype}{\pcpeconstr}, \, \subst{\pcpztype}{\pcprestct}}
+    \end{array}
+\] не обращает её в ложь.
+\end{lem}
+\begin{proof*}
+    Типовой конструктор $\pcprconstr_{0}$ имеет только один номинальный надтип с головными конструкторами $\pcprconstr_{0}, \, \pcprconstr$ и $\pcpeconstr$. Следовательно, после применения подстановки отличной от $\setctor{\subst{\pcpptype}{\pcprconstr}; \, \substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcprconstr_{0}}}$ к формуле $\phi_1$, правила \textsc{Var} и \textsc{Super} не могут быть применены к формуле, чтобы упростить её, поэтому $\phi_1$ обращается в ложь. Применение подстановок $\substt{\pcpptype}{\pcpeconstr}$ и $\substt{\pcpptype}{\pcprconstr_{0}}$ превращают в истину атом $\pcprconstr_{0} \subtype \pcpptype$. Применение $\subst{\pcpptype}{\pcprconstr}$ превращает атом в самого себя. Следовательно, только композиция этих подстановок не обращает формулу в ложь.
+    
+    Аналогичные рассуждения можно провести для типовых переменных $\pcpqtype$ и $\pcpztype$.
+\qed\end{proof*}
+%
+\begin{lem}{\label{lem:pcpphi1}}
+Для формулы
+\[
+    \phi_{1} \eqdef \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpptype \land \pcpxtype \subtype \pcpqtype \land \pcpxtype \subtype \pcpztype \land \phi_{0},
+\]
+только композиция полных подстановок
+\[
+    \unionctor{\subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}; \,
+    \subst{\pcpztype}{\pcpwword{i}}; \,
+    \subst{\pcpxtype}{\pcpuword{i}}}
+\]
+\[
+    \unionctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}; \,
+    \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}}
+\] не обращает её в ложь.
+\end{lem}
+\begin{proof*}
+Для доказательства рассмотрим по отдельности все возможные подстановки.
+
+Так как $\phi_{0}$ является подформулой $\phi_1$, \autoref{lem:pcpconstr}~влечёт, что 
+кандидаты на подстановку в $\pcpztype$, которые не будут сразу же обращать формулу $\phi_{1}$ в ложь, содержатся в множестве $\setctor{\subst{\pcpztype}{\pcpwword{i}}; \, \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpztype}{\pcprestct}}$.
+
+\begin{itemize}
+    \item 
+        Рассмотрим подстановку $\substt{\pcpztype}{\pcprestct}$. Её применение к формуле $\phi_{1}$ порождает, в частности, следующую конъюнкцию:
+        \[
+            \pcprestalt \subtype \pcpxtype \land \pcpxtype \subtype \pcprestct
+        \]
+        По транзитивности подтипирования эта конъюнкция влечёт выполнимость атома $\pcprestalt \subtype \pcprestct$, который упрощается в ложь. Следовательно, подстановка содержащая $\substt{\pcpztype}{\pcprestct}$ обращает формулу в $\phi_1$.
+    \item
+        Рассмотрим подстановку $\subst{\pcpztype}{\pcpwword{i}}$. Её применение к $\phi_{1}$ порождает, в частности, следующие конъюнкции:
+        \[
+         \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpwword{i}\pcpztype
+        \]
+        Для того, чтобы эта формулы была выполнима, подстановка должна отобразить $\pcpxtype$ в общий надтип для $\pcprestalt$ и $\pcprestart$, и у него быть номинальный надтип сконструированный головным конструктором $\pcpwword{i}$. Единственными такими подстановками будут $\setctor{\subst{\pcpxtype}{\pcpuword{i}}; \, \subst{\pcpxtype}{\pcpwword{i}}}$.
+        \begin{itemize}
+            \item 
+                Рассмотрим подстановку $\subst{\pcpxtype}{\pcpwword{i}}$. Её применение к $\phi_{1}$ порождает. в частности, следующую конъюнкцию:
+                \[
+                 \pcprconstr_{0} \subtype \pcpptype \land \pcpwword{i}\pcpxtype \subtype \pcpptype
+                \]
+                Эта формула содержит атом $\pcpwword{i}\pcpxtype \subtype \pcpptype$, который не обращается в ложь только при применении подстановки $\subst{\pcpptype}{\pcpwword{i}}$ к типовой переменной $\pcpptype$. Но, по~\autoref{lem:pcpconstr}, кандидатами на подстановку в $\pcpptype$ в $\pcpptype$ являются $\setctor{\subst{\pcpptype}{\pcprconstr}; \, \substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcprconstr_{0}}}$. Следовательно, любая подстановка, содержащая $\unionctor{\subst{\pcpxtype}{\pcpwword{i}}; \, \subst{\pcpztype}{\pcpwword{i}}}$, обращает $\phi_1$ в ложь.
+            \item
+                Рассмотрим подстановку  $\subst{\pcpxtype}{\pcpuword{i}}$. Её применение к  $\phi_{1}$ порождает следующую конъюнкцию:
+                \[
+                 \pcprconstr_{0} \subtype \pcpptype \land \pcpuword{i}\pcpxtype \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcpuword{i}\pcpxtype \subtype \pcpqtype \land \pcpuword{i}\pcpxtype \subtype \pcpwword{i}\pcpztype
+                \]
+                Общий надтип для $\pcprconstr_{0}$ и $\pcpuword{i}$ может иметь только один головной конструктор $\pcprconstr$. Аналогично, общий надтип для  $\pcpsconstr_{0}$ и $\pcpuword{i}$ может быть сконструирован только конструктором $\pcpsconstr$. Следовательно, подстановки $\subst{\pcpptype}{\pcprconstr}$ и $\subst{\pcpqtype}{\pcpsconstr}$ не обращают формулу $\phi_{1}$ в ложь, а подстановки из множества
+                \[
+                    \begin{array}{l}
+                        \unionctor{\subst{\pcpztype}{\pcpwword{i}}; \, \subst{\pcpxtype}{\pcpuword{i}}} \circ \\
+                        [1em]\\
+                        \setctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcprconstr_{0}}} \circ \setctor{\substt{\pcpqtype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpsconstr_{0}}}
+                    \end{array}
+                \] обращают $\phi_1$ в ложь.
+                Из этого следует, что только подстановки
+                \[
+                    \unionctor{\subst{\pcpztype}{\pcpwword{i}}; \, \subst{\pcpxtype}{\pcpuword{i}}; \, \subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}}
+                \] не обращают формулу $\phi_{1}$ в ложь.
+        \end{itemize}
+    \item
+        Рассмотрим подстановку $\substt{\pcpztype}{\pcpeconstr}$. Её применение к формуле $\phi_{1}$ порождает следующую конъюнкцию:
+        \[
+         \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpeconstr
+        \]
+        Для того чтобы формула была выполнима, подстановка должна отобразить $\pcpxtype$ в общий надтип для $\pcprestalt$ и $\pcprestart$, у которого будет надтип $\pcpeconstr$. Единственной подходящий подстановкой будет $\substt{\pcpxtype}{\pcpeconstr}$. Применение подстановки $\unionctor{\substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}}$ к $\phi_{1}$ даст формулу
+        \[
+            \begin{array}{l}
+                \pcprestalt \subtype \pcpeconstr \land \pcprestart \subtype \pcpeconstr \land \pcpeconstr \subtype \pcpptype \land \pcpeconstr \subtype \pcpqtype \land \\[1em]\\ \pcpeconstr \subtype \pcpeconstr \land \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcprestct \subtype \pcpeconstr,
+            \end{array}
+        \] которая упрощается в 
+        \[
+            \pcpeconstr \subtype \pcpptype \land \pcpeconstr \subtype \pcpqtype \land \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype.
+        \]
+        Для того, чтобы эта формула была выполнима, подстановка должна отобразить $\pcpptype$ в общий надтип для $\pcprconstr_{0}$ и $\pcpeconstr$, а $\pcpqtype$ в общий надтип для $\pcpsconstr_{0}$ и $\pcpeconstr$. Единственной подходящей подстановкой будет $\unionctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}}$. Следовательно, подстановка
+        \[
+            \unionctor{\substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}}
+        \] не обращает формулу $\phi_{1}$ в ложь.
+        
+\end{itemize}
+Мы рассмотрели все возможные варианты, среди которых только подстановки
+\[
+    \unionctor{\subst{\pcpztype}{\pcpwword{i}}; \, \subst{\pcpxtype}{\pcpuword{i}}; \, \subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}}
+\]
+\[
+    \unionctor{\substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}}
+\] не обращают формулу в ложь.
+\qed\end{proof*}
+%
+\begin{lem}{\label{lem:pcpphi2}}
+Для формулы
+\[
+    \phi_{2} \eqdef \pcprestblt \subtype \pcpytype \land \pcprestbrt \subtype \pcpytype \land \pcpytype \subtype \pcpptype \land \pcpytype \subtype \pcpqtype \land \pcpytype \subtype \pcpztype \land \phi_{0},
+\]
+Только композиции полных подстановок
+\[
+    \unionctor{\subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}; \,
+    \subst{\pcpztype}{\pcpwword{i}}; \,
+    \subst{\pcpytype}{\pcpvword{i}}}
+\]
+\[
+    \unionctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}; \,
+    \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpytype}{\pcpeconstr}}
+\] не обращают формулу в ложь.
+\end{lem}
+\begin{proof*}
+Аналогично доказательству~\autoref{lem:pcpphi1}.
+\qed\end{proof*}
+\autoref{lem:pcpphi1}~и~\autoref{lem:pcpphi2} влекут, что только композиции подстановок
+\[
+    \unionctor{\subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}; \,
+    \subst{\pcpztype}{\pcpwword{i}}; \,
+    \subst{\pcpxtype}{\pcpuword{i}}; \,
+    \subst{\pcpytype}{\pcpvword{i}}}
+\]
+\[
+    \unionctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}; \,
+    \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}; \,
+    \substt{\pcpytype}{\pcpeconstr}}
+\]
+не обращают формулу $\phi_{1} \land \phi_{2}$ в ложь.
+
+$\phi_{1} \land \phi_{2}$ имеет очень важное свойство: применение к ней подстановки 
+\[
+    \unionctor{\subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}; \,
+    \subst{\pcpztype}{\pcpwword{i}}; \,
+    \subst{\pcpxtype}{\pcpuword{i}}; \,
+    \subst{\pcpytype}{\pcpvword{i}}}
+\]
+и упрощение полученной формулы обращают её в саму себя:
+\[
+    \begin{array}{l}
+    \pcprestalt \subtype \pcpuword{i}\pcpxtype \land
+    \pcprestart \subtype \pcpuword{i}\pcpxtype \land
+    \pcpuword{i}\pcpxtype \subtype \pcprconstr\pcpptype \land \\
+    [0.6em] \\
+    \pcpuword{i}\pcpxtype \subtype \pcpsconstr\pcpqtype \land \pcpuword{i}\pcpxtype \subtype \pcpwword{i}\pcpztype \land \\
+    [0.6em] \\
+    \pcprestblt \subtype \pcpvword{i}\pcpytype \land
+    \pcprestbrt \subtype \pcpvword{i}\pcpytype \land
+    \pcpvword{i}\pcpytype \subtype \pcprconstr\pcpptype \land \\
+    [0.6em] \\
+    \pcpvword{i}\pcpytype \subtype \pcpsconstr\pcpqtype \land \pcpvword{i}\pcpytype \subtype \pcpwword{i}\pcpztype \land \\
+    [0.6em] \\
+    \pcprconstr_{0} \subtype \pcprconstr\pcpptype \land \pcpsconstr_{0} \subtype \pcpsconstr\pcpqtype \land \pcprestct \subtype \pcpwword{i}\pcpztype \\
+    [1em] \\
+    \Leftrightarrow \\
+    [1em] \\
+    \pcpuword{i}\pcprestalt \subtype \pcpuword{i}\pcpxtype \land \pcpuword{i}\pcprestart \subtype \pcpuword{i}\pcpxtype \land \pcprconstr\pcpxtype \subtype \pcprconstr\pcpptype \land \\
+    [0.6em] \\
+    \pcpsconstr\pcpxtype \subtype \pcpsconstr\pcpqtype \land \pcpwword{i}\pcpxtype \subtype \pcpwword{i}\pcpztype \land \\
+    [0.6em] \\
+    \pcpvword{i}\pcprestblt \subtype \pcpvword{i}\pcpytype \land \pcpvword{i}\pcprestbrt \subtype \pcpvword{i}\pcpytype \land \pcprconstr\pcpytype \subtype \pcprconstr\pcpptype \land \\
+    [0.6em] \\
+    \pcpsconstr\pcpytype \subtype \pcpsconstr\pcpqtype \land \pcpwword{i}\pcpytype \subtype \pcpwword{i}\pcpztype \land \\
+    [0.6em] \\
+    \pcprconstr\pcprconstr_{0} \subtype \pcprconstr\pcpptype \land \pcpsconstr\pcpsconstr_{0} \subtype \pcpsconstr\pcpqtype \land \pcpwword{i}\pcprestct \subtype \pcpwword{i}\pcpztype \\
+    [1em] \\
+    \Leftrightarrow \\
+    [1em] \\
+    \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpptype \land \pcpxtype \subtype \pcpqtype \land \pcpxtype \subtype \pcpztype \land \\
+    [0.6em] \\
+    \pcprestblt \subtype \pcpytype \land \pcprestbrt \subtype \pcpytype \land \pcpytype \subtype \pcpptype \land \pcpytype \subtype \pcpqtype \land \pcpytype \subtype \pcpztype \land \\
+    [0.6em] \\
+    \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcprestct \subtype \pcpztype \\
+    [0.6em] \\
+    = \phi_{1} \land \phi_{2}
+    \end{array}
+\]
+Также заметим, что применение подстановки
+\[
+    \unionctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}; \,
+    \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}; \,
+    \substt{\pcpytype}{\pcpeconstr}}
+\]
+и упрощение полученной формулы обращает $\phi_{1} \land \phi_{2}$ в истину.
+
+Пусть  $N=\setctor{1,\ldots,n}$. $\finiteseq{N}$ будет обозначать множество конечных последовательностей из $N$. Для $J \in \finiteseq{N}, \, J = j_1 \ldots j_r$, будем обозначать $\pcpuword{J}T$ цепочку типовых конструкторов $\pcpuword{j_{1}} \ldots \pcpuword{j_{r}}T$. Аналогично определим $\pcpvword{J}T$ и $\pcpwword{J}T$. Иногда мы будем писать $J^r$, чтобы подчеркнуть, что $r$ является длинной $J$.
+\begin{thm}{\label{thm:pcpindices}}
+Формула $\phi_{1} \land \phi_{2}$ имеет множество моделей с интерпретациями $I_{J}$ такими, что
+\[
+    \begin{array}{c}
+        I_{J}(\pcpxtype) = \pcpuword{J}\pcpeconstr, \quad I_{J}(\pcpytype) = \pcpvword{J}\pcpeconstr, \quad I_{J}(\pcpztype) = \pcpwword{J}\pcpeconstr, \\
+        [0.6em] \\
+        I_{J}(\pcpptype) = \pcprconstr^{r}\pcpeconstr, \quad I_{J}(\pcpqtype) = \pcpsconstr^{r}\pcpeconstr
+        
+    \end{array}
+\]
+где $J \in \finiteseq{N}$, и $r$ является длинной $J$.
+\end{thm}
+\begin{proof*}
+Как было показано, только композиции следующих подстановок не обращают формулу $\phi_{1} \land \phi_{2}$ в ложь:
+\[
+\begin{array}{l}
+
+    \substname{i} \eqdef\unionctor{\subst{\pcpptype}{\pcprconstr}; \, \subst{\pcpqtype}{\pcpsconstr}; \,
+    \subst{\pcpztype}{\pcpwword{i}}; \,
+    \subst{\pcpxtype}{\pcpuword{i}}; \,
+    \subst{\pcpytype}{\pcpvword{i}}} \\
+    [0.6em] \\
+    \substname{end} \eqdef \unionctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpeconstr}; \,
+    \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}; \,
+    \substt{\pcpytype}{\pcpeconstr}}
+
+\end{array}
+\]
+Интерпретацию можно рассматривать как закрытую подстановку, применение которой обращает формулу в истину. Так как $\substname{i}$ не изменяет $\phi_{1} \land \phi_{2}$ после применения, а $\substname{end}$ обращает её в истину, подстановка, которая обращает формулу в истину, может быть только композицией конечного числа подстановок вида  $\substname{i}$ оканчивающихся закрытой подстановкой $\substname{end}$, то есть $\substname{j_1} \circ \ldots \circ \substname{j_r} \circ \substname{end}$.
+
+Таким образом, только замкнутые подстановки
+\[
+    \begin{array}{l}
+    I_{J} =
+    \substname{j_1} \circ \ldots \circ \substname{j_r} \circ \substname{end} = \\
+    [0.6em] \\
+    = \unionctor{
+    \substt{\pcpptype}{\pcprconstr^{r}\pcpeconstr}; \, \substt{\pcpqtype}{\pcpsconstr^{r}\pcpeconstr}; \,
+    \substt{\pcpztype}{\pcpwword{J}\pcpeconstr}; \, \substt{\pcpxtype}{\pcpuword{J}\pcpeconstr}; \,
+    \substt{\pcpytype}{\pcpvword{J}\pcpeconstr}}
+    \end{array}
+\]
+обращают формулу $\phi_{1} \land \phi_{2}$ в истину, а значит только они являются её моделями.
+\qed\end{proof*}
+
+\begin{lem}{\label{lem:pcpuletter}}
+    Пусть $\overline{\pcplword{}}$ является цепочкой <<буквенных>> конструкторов, то есть конструкторов из  $\{\pcpfstsym{},\ldots,\pcpsndsym{}\}$, $J^r\in \finiteseq{N}$ с  $r > 0$. Тогда
+\[
+    \pcpuword{J}\pcpeconstr \subtype \overline{\pcplword{}}\pcpeconstr \lor \pcpuword{J}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword
+\]
+выполнима тогда и только тогда, когда
+\[
+     \overline{\pcpuword{j_1}}\ldots\overline{\pcpuword{j_r}}\pcpeconstr = \overline{\pcplword{}}\pcpeconstr
+\]
+\end{lem}
+\begin{proof*}
+Докажем требуемое по индукции по $r$.
+
+\begin{paragraph}{База: $r = 1$}
+\[
+    \pcpuword{j_1}\pcpeconstr \subtype \overline{\pcplword{}}\pcpeconstr \lor \pcpuword{j_1}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword \Leftrightarrow \overline{\pcpuword{j_1}}\pcpeconstr \subtype \overline{\pcplword{}}\pcpeconstr \lor \overline{\pcpuword{j_1}}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword
+\]
+Так как $\overline{\pcpuword{j_1}}\pcpeconstr$, $\overline{\pcplword{}}\pcpeconstr$ и $\overline{\pcplword{}}\pcpdword$ сконструированы ковариантными типовыми конструкторами $\pcpfstsym,\ldots,\pcpsndsym$ без правой части в таблице классов (то есть без строгих номинальных надтипов), мы можем заключить, что
+\[
+    \begin{array}{l}
+        \overline{\pcpuword{j_1}}\pcpeconstr \subtype \overline{\pcplword{}}\pcpeconstr \lor \overline{\pcpuword{j_1}}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword
+        \Leftrightarrow \\
+        [0.6em] \\
+        \overline{\pcpuword{j_1}}\pcpeconstr = \overline{\pcplword{}}\pcpeconstr \lor \overline{\pcpuword{j_1}}\pcpeconstr = \overline{\pcplword{}}\pcpdword
+        \Leftrightarrow \overline{\pcpuword{j_1}}\pcpeconstr = \overline{\pcplword{}}\pcpeconstr
+    \end{array}
+\]
+\end{paragraph}
+
+\begin{paragraph}{Переход}
+Пусть $r = k + 1$, $J = j_1 \cdot J'$, а у $J'$ длина $k$.
+\begin{align*}
+    &\pcpuword{j_1}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}} \pcpeconstr \lor \pcpuword{j_1}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword \Leftrightarrow \\
+     \Leftrightarrow &\overline{\pcpuword{j_1}}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}} \pcpeconstr \lor \overline{\pcpuword{j_1}}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword \Leftrightarrow
+\end{align*}
+%
+
+Так как  $\overline{\pcpuword{j_1}}\pcpeconstr$, $\overline{\pcplword{}}\pcpeconstr$ и $\overline{\pcplword{}}\pcpdword$ сконструированы ковариантными типовыми конструкторами $\pcpfstsym,\ldots,\pcpsndsym$, которые не имеют строгих номинальных надтипов, мы можем требовать $\overline{\pcplword{}}=\overline{\pcpuword{j_1}}\overline{\pcplword{}'}$.
+%\[
+\begin{align*}
+     \Leftrightarrow&\overline{\pcpuword{j_1}}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcpuword{j_1}}\overline{\pcplword{}'}\pcpeconstr \lor \overline{\pcpuword{j_1}}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcpuword{j_1}}\overline{\pcplword{}'}\pcpdword \Leftrightarrow \\
+     \Leftrightarrow&\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}'}\pcpeconstr \lor \pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}'}\pcpdword \Leftrightarrow \textit{\small{(I.H.)}}\\
+     \Leftrightarrow&\overline{\pcpuword{j_2}}\ldots\overline{\pcpuword{j_r}}\pcpeconstr = \overline{\pcplword{}'}\pcpeconstr \Leftrightarrow \overline{\pcpuword{j_1}}\overline{\pcpuword{j_2}}\ldots\overline{\pcpuword{j_r}}\pcpeconstr = \overline{\pcplword{}}\pcpeconstr
+\end{align*}
+%\]
+\end{paragraph}
+%
+\qed\end{proof*}
+
+\begin{lem}{\label{lem:pcpvletter}}
+Пусть $\overline{\pcplword{}}$ является цепочкой конструкторов из $\{\pcpfstsym{},\ldots,\pcpsndsym{}\}$, $J^r\in \finiteseq{N}$ с $r > 0$. Тогда
+\[
+    \pcpvword{J}\pcpeconstr \subtype \overline{\pcplword{}}\pcpeconstr \lor \pcpvword{J}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword
+\]
+выполнима тогда и только тогда, когда
+\[
+     \overline{\pcpvword{j_1}}\ldots\overline{\pcpvword{j_r}}\pcpeconstr = \overline{\pcplword{}}\pcpeconstr
+\]
+\end{lem}
+\begin{proof*}
+Аналогично доказательству~\autoref{lem:pcpuletter}.
+\qed\end{proof*}
+
+\begin{lem}{\label{lem:pcpphij}}
+    Формула
+\[
+    \phi_{J^r} \eqdef \pcpdword \subtype \pcpotype \land \pcpuword{J}\pcpeconstr \subtype \pcpotype \land \pcpvword{J}\pcpeconstr \subtype \pcpotype \land \pcpotype \notsubtype \pcpeconstr
+\]
+выполнима тогда и только тогда, когда $r > 0$ и
+\[
+ \phi'_{J} \eqdef \overline{\pcpvword{j_1}}\ldots\overline{\pcpvword{j_r}}\pcpeconstr = \overline{\pcpuword{j_1}}\ldots\overline{\pcpuword{j_r}}\pcpeconstr
+\] является истиной.
+\end{lem}
+\begin{proof*}
+Пусть $J$ является пустой последовательностью. Тогда $\phi_{J}$ становится
+\[
+    \pcpdword \subtype \pcpotype \land \pcpeconstr \subtype \pcpotype \land \pcpotype \notsubtype \pcpeconstr.
+\]
+$\pcpdword$ и $\pcpeconstr$ имеют только один общий надтип $\pcpeconstr$. Но подстановка $\pcpeconstr$ в $\pcpotype$ обратит формулу в ложь из-за атома $\pcpotype \notsubtype \pcpeconstr$. Следовательно, если $J$ пустая последовательность, то $\phi_{J}$ невыполнима.
+
+Пусть $J$ является непустой последовательностью.
+
+$(\Rightarrow)$
+
+Пусть $\phi_{J}$ выполнима. Тогда $\pcpdword$ и $\pcpuword{J}\pcpeconstr$ должны иметь общий надтип. Это не может быть $\pcpeconstr$, так как для всех $i$, $\pcpeconstr$ не является надтипом для $\pcpuword{i}$. Рассмотрим все остальные надтипы $\pcpdword$. Они являются цепочками конструкторов из $\setctor{\pcpfstsym,\ldots,\pcpsndsym}$, оканчивающимися либо $\pcpdword$, либо $\pcpeconstr$. Другими словами, единственными кандидатами на роль надтипа будут $\overline{\pcplword{}}\pcpdword$ и $\overline{\pcplword{}}\pcpeconstr$, где $\overline{\pcplword{}}$ непустая цепочка конструкторов из $\setctor{\pcpfstsym,\ldots,\pcpsndsym}$.
+
+По~\autoref{lem:pcpuletter}~и~\autoref{lem:pcpvletter}, если $I_{J}$ является интерпретацией для формулы $\phi_{J}$, то
+\[
+I_{J}(\pcpotype) = \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr = \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr
+\]
+Так как $\phi_{J}$ выполнима, значит $\phi_{J}'$ является истиной.
+
+$(\Leftarrow)$
+
+Пусть $\phi'_{J}$ является истиной, тогда
+\[I_{J}(\pcpotype) = \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr = \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr,\] является интерпретацией для $\phi_{J}$:
+\[
+    \begin{array}{l}
+    \interpretation{J}{\phi_{J}} = \\
+    [1em] \\
+    \pcpdword \subtype \interpretation{J}{\pcpotype} \land \pcpuword{J}\pcpeconstr \subtype \interpretation{J}{\pcpotype} \land \pcpvword{J}\pcpeconstr \subtype \interpretation{J}{\pcpotype} \land \interpretation{J}{\pcpotype} \notsubtype \pcpeconstr = \\
+    [1em] \\
+    \pcpdword \subtype \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \land \pcpuword{J}\pcpeconstr \subtype \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \land \\
+    [0.6em] \\
+    \pcpvword{J}\pcpeconstr \subtype \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr \land \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \notsubtype \pcpeconstr \Leftrightarrow \\
+    [1em] \\
+    \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \subtype \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \land
+    \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr \subtype \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr \land \\
+    [0.6em] \\
+    \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \notsubtype \pcpeconstr \Leftrightarrow \top
+    \end{array}
+\]
+\qed\end{proof*}
+\begin{thm}{\label{thm:pcpphi3}}
+   Формула
+\[
+      \phi_{J} \eqdef \pcpdword \subtype \pcpotype \land \pcpuword{J}\pcpeconstr \subtype \pcpotype \land \pcpvword{J}\pcpeconstr \subtype \pcpotype \land \pcpotype \notsubtype \pcpeconstr
+\]
+выполнима тогда и только тогда, когда $J$ является решением \pcp{} с парами слов $\lbrace (\overline{\pcpuword{1}}, \overline{\pcpvword{1}}), \ldots , (\overline{\pcpuword{n}}, \overline{\pcpvword{n}})\rbrace$ над алфавитом $\setctor{\pcpfstsym{},\ldots,\pcpsndsym{}}$, то есть
+\[
+    \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}} = \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}
+\]
+\end{thm}
+\begin{proof*}
+По~\autoref{lem:pcpphij} $\phi_{J}$ выполнима тогда и только тогда, когда $r>0$ и
+\[
+    \phi'_{J} \eqdef \overline{\pcpvword{j_1}}\ldots\overline{\pcpvword{j_r}}\pcpeconstr = \overline{\pcpuword{j_1}}\ldots\overline{\pcpuword{j_r}}\pcpeconstr
+\] является истиной.
+
+$(\Rightarrow)$
+Пусть $\phi'_{J}$ является истиной. Тогда $J$ является такой непустой последовательностью индексов, что конкатенация слов $\overline{\pcpuword{j_1}}, \,\ldots,\,\overline{\pcpuword{j_r}}$ равно конкатенации слов $\overline{\pcpvword{j_1}}, \,\ldots,\,\overline{\pcpvword{j_r}}$. Следовательно $J$ является решением для \pcp.
+
+$(\Leftarrow)$
+
+Пусть $J$ является решением PCP. Это значит, что типы $\overline{\pcpvword{j_1}}\ldots\overline{\pcpvword{j_r}}\pcpeconstr$ и $\overline{\pcpuword{j_1}}\ldots\overline{\pcpuword{j_r}}\pcpeconstr$ равны. Кроме того, так как $J$ является решением \pcp, она не пуста. Из этого сделает истинность $\phi'_{J}$.
+\qed\end{proof*}
+
+\begin{thm}
+Формула
+\[
+\psi \eqdef \pcpdword \subtype \pcpotype \land \pcpxtype \subtype \pcpotype \land \pcpytype \subtype \pcpotype \land \pcpotype \notsubtype \pcpeconstr \land \phi_{1} \land \phi_{2}
+\]
+выполнима тогда и только тогда, когда \pcp{} с парами слов $\lbrace (\overline{\pcpuword{1}}, \overline{\pcpvword{1}}), \ldots , (\overline{\pcpuword{n}}, \overline{\pcpvword{n}})\rbrace$ над алфавитом $\setctor{\pcpfstsym{},\ldots,\pcpsndsym{}}$ имеет решение.
+\end{thm}
+\begin{proof*}
+По~\autoref{thm:pcpindices} формула $\phi_{1} \land \phi_{2}$ имеет множество решений с интерпретациями $\interpretation{J}{I}$ такими, что:
+\[
+    \begin{array}{c}
+        \interpretation{J}{\pcpxtype} = \pcpuword{J}\pcpeconstr, \quad I_{J}(\pcpytype) = \pcpvword{J}\pcpeconstr, \quad \interpretation{J}{\pcpztype} = \pcpwword{J}\pcpeconstr, \\
+        [0.6em] \\
+        \interpretation{J}{\pcpptype} = \pcprconstr^{r}\pcpeconstr, \quad \interpretation{J}{\pcpqtype} = \pcpsconstr^{r}\pcpeconstr
+        
+    \end{array}
+\]
+Следовательно выполнимость формулы $\psi$ эквивалентна выполнимости
+\[
+    \psi' \eqdef \bigvee_{J \in \finiteseq{N}} \interpretation{J}{\psi} =
+\]
+\[
+    \bigvee_{J \in \finiteseq{N}} \pcpdword \subtype \pcpotype \land \pcpuword{J}\pcpeconstr \subtype \pcpotype \land \pcpvword{J}\pcpeconstr \subtype \pcpotype \land \pcpotype \notsubtype \pcpeconstr =
+    \bigvee_{J \in \finiteseq{N}} \phi_{J}
+\]
+По~\autoref{thm:pcpindices}, $\phi_{J}$ выполнима тогда и только тогда, когда $J$ является решением \pcp. Следовательно, $\psi'$ выполнима тогда и только тогда, когда существует последовательность индексов $J$ такая, что она является решением \pcp.
+\qed\end{proof*}
+
+\begin{crlr}
+\subtypesat{} неразрешима.
+\end{crlr}
+
+\begin{crlr}
+\subtypesat{} неразрешима даже для нерасширяющихся таблиц классов без контравариантных конструкторов.
+\end{crlr}
+
+\begin{crlr}
+\subtypesat{} неразрешима даже для нерасширяющихся таблиц классов, содержащих только нульарные и унарные конструкторы.
+\end{crlr}
+
+\begin{crlr}
+\subtypesat{} неразрешима даже для бескванторной конъюнкции атомов.
+\end{crlr}
+
+\begin{crlr}
+\subtypesat{} неразрешима даже для бескванторной конъюнкции положительных атомов.
+\end{crlr}
+\begin{proof*}
+Для доказательства мы просто должны исключить тривиальное решение, при котором все переменные отображаются в $\pcpeconstr{}$, без использования атома $\pcpotype \notsubtype \pcpeconstr$ в $\psi$.
+
+Этого можно достигнуть, например, добавлением в \pcpctid{} новой записи
+\begin{alignat*}{3}
+    \classtableline{\pcpdword_0}{\overline{\pcpuword{1}}\pcpdword,\ldots, \overline{\pcpuword{n}}\pcpdword}
+\end{alignat*}
+и заменой $\psi$ на
+\[
+    \psi \eqdef \pcpdword_0 \subtype \pcpotype \land \pcpxtype \subtype \pcpotype \land \pcpytype \subtype \pcpotype \land \phi_{1} \land \phi_{2}
+\]
+\qed\end{proof*}

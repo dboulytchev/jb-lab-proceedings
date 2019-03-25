@@ -1,0 +1,208 @@
+\newsavebox\CBox
+\newcommand\hcancel[2][0.1pt]{%
+  \ifmmode\sbox\CBox{$#2$}\else\sbox\CBox{#2}\fi%
+  \makebox[0pt][l]{\usebox\CBox}%
+  \textcolor{red}{\rule[0.3\ht\CBox-#1/2]{\wd\CBox}{#1}}}
+
+\newcommand{\vvariance}[0]{v}
+\newcommand{\objecttype}[0]{\texttt{Object}}
+\newcommand{\icomparable}[0]{\texttt{IComparable}}
+\newcommand{\ienumerable}[0]{\texttt{IEnum}}
+\newcommand{\dictionarytype}[0]{\texttt{Dictionary}}
+\newcommand{\idictionarytype}[0]{\texttt{IDictionary}}
+\newcommand{\iserializabletype}[0]{\texttt{ISerializable}}
+\newcommand{\icollectiontype}[0]{\texttt{ICollection}}
+\newcommand{\ideserializationcallbacktype}[0]{\texttt{IDeserializationCallback}}
+\newcommand{\ireadonlydictionarytype}[0]{\texttt{IReadOnlyDictionary}}
+\newcommand{\ireadonlycollectiontype}[0]{\texttt{IReadOnlyCollection}}
+\newcommand{\tkeytype}[0]{\texttt{TKey}}
+\newcommand{\tvaluetype}[0]{\texttt{TValue}}
+\newcommand{\basetype}[0]{\texttt{Base}}
+\newcommand{\derivedtype}[0]{\texttt{Derived}}
+\newcommand{\icloneable}[0]{\texttt{ICloneable}}
+\newcommand{\keyvaluepairtype}[0]{\texttt{Pair}}
+\newcommand{\ttypeparam}[0]{\texttt{T}}
+\newcommand{\clonemethod}[0]{\texttt{Clone}}
+\newcommand{\inttype}[0]{\texttt{Int32}}
+\newcommand{\valuetype}[0]{\texttt{ValueType}}
+\newcommand{\iftype}[0]{\texttt{IComp}}
+\newcommand{\imtype}[0]{\texttt{IBuilder}}
+\newcommand{\intype}[0]{\texttt{IBox}}
+\newcommand{\ptype}[0]{\texttt{Symbol}}
+\newcommand{\dtype}[0]{\texttt{OneRec}}
+\newcommand{\btype}[0]{\texttt{TwoRec}}
+\newcommand{\ftype}[0]{\texttt{Rec}}
+\newcommand{\ctype}[0]{\texttt{Thing}}
+\newcommand{\xtype}[0]{{x}}
+\newcommand{\ytype}[0]{{y}}
+\newcommand{\ztype}[0]{{z}}
+\newcommand{\stype}[0]{\texttt{Line}}
+\newcommand{\ltype}[0]{\texttt{Combo}}
+\newcommand{\edge}[0]{<::}
+\newcommand{\subtype}[0]{<:}
+\newcommand{\notsubtype}{\:\not\!\!{<:}\:}
+\newcommand{\interface}[0]{interface}
+\newcommand{\sealed}[0]{sealed}
+\newcommand{\class}[0]{class}
+\newcommand{\keywordin}[0]{in}
+\newcommand{\keywordout}[0]{out}
+\newcommand{\where}[0]{where}
+\newcommand{\lcm}[1]{lcm(#1)}
+
+%macro for reduction PCP
+
+\newcommand{\pcpxtype}[0]{x}
+\newcommand{\pcpytype}[0]{y}
+\newcommand{\pcpztype}[0]{z}
+\newcommand{\pcpotype}[0]{t}
+\newcommand{\pcpptype}[0]{p}
+\newcommand{\pcpqtype}[0]{q}
+\newcommand{\pcprconstr}[0]{{R}}
+\newcommand{\pcpsconstr}[0]{{S}}
+\newcommand{\pcpeconstr}[0]{{E}}
+\newcommand{\pcpfstsym}[0]{{1}}
+\newcommand{\pcpsndsym}[0]{{M}}
+\newcommand{\pcpuword}[1]{{U}_{#1}}
+\newcommand{\pcpvword}[1]{{V}_{#1}}
+\newcommand{\pcpdword}[0]{D}
+\newcommand{\pcpqword}[1]{{Q}_{#1}}
+\newcommand{\pcpwword}[1]{{W}_{#1}}
+\newcommand{\pcpinitalt}[0]{{U}_{0}^{L}}
+\newcommand{\pcpinitblt}[0]{{V}_{0}^{L}}
+\newcommand{\pcpinitct}[0]{{W}_{0}}
+\newcommand{\pcprestalt}[0]{{U}^{L}}
+\newcommand{\pcprestblt}[0]{{V}^{L}}
+\newcommand{\pcprestct}[0]{{W}}
+\newcommand{\pcpinitart}[0]{{U}_{0}^{R}}
+\newcommand{\pcpinitbrt}[0]{{V}_{0}^{R}}
+\newcommand{\pcprestart}[0]{{U}^{R}}
+\newcommand{\pcprestbrt}[0]{{V}^{R}}
+\newcommand{\pcpendit}[0]{{I}}
+\newcommand{\pcpendkt}[0]{{K}}
+\newcommand{\pcpendlt}[0]{{L}}
+\newcommand{\pcplword}[0]{{L}}
+\newcommand{\pcpinitkt}[0]{{K}}
+\newcommand{\pcpinitlt}[0]{{L}}
+\newcommand{\pcpendmt}[0]{{M}}
+\newcommand{\pcpendnt}[0]{{N}}
+\newcommand{\substt}[2]{#1 \mapsto #2}
+\newcommand{\subst}[2]{\substt{#1}{#2#1}}
+\newcommand{\setctor}[1]{\lbrace \, #1 \, \rbrace}
+\newcommand{\unionctor}[1]{\textrm{[} \, #1 \, \textrm{]}}
+\newcommand{\finiteseq}[1]{#1^{<\omega}}
+\newcommand{\substname}[1]{subst_{#1}}
+\newcommand{\fromindextosubst}[1]{F(#1)}
+\newcommand{\interpretation}[2]{I_{#1}(#2)}
+\newcommand{\interpretationf}[1]{I_{#1}}
+
+
+\newcommand{\typefol}{\mathcal{L}_t}
+\newcommand{\typesignatfs}{\mathcal{F}_t}
+\newcommand{\typesignatps}{\mathcal{P}_t}
+\newcommand{\typesignatvs}{\mathcal{V}}
+\newcommand{\groundtypeset}{\mathcal{GT}}
+\newcommand{\purefol}{\mathcal{L}_m}
+\newcommand{\puresignatfs}{\mathcal{F}_m}
+\newcommand{\puresignatps}{\mathcal{P}_m}
+\newcommand{\puresignatvs}{\mathcal{V}}
+
+\newcommand{\tsealed}[2]{#1^{\scriptsize{~\setlength{\fboxsep}{1pt}\fbox{#2}}}}
+\newcommand{\tinher}[2]{#1^{\scriptsize{~#2}}}
+
+\newcommand{\csharp}{\textsc{C\#}}
+\newcommand{\java}{\textsc{Java}\;}
+\newcommand{\scala}{\textsc{Scala}}
+\newcommand{\dotnet}{\textsc{.NET}}
+\newcommand{\smtlib}{\textsc{SMT-LIB2}}
+\newcommand{\zthree}{\textsc{Z3}}
+\newcommand{\operis}[2]{#1\text{ }is\text{ }#2}
+\newcommand{\ctor}[2]{#1\texttt{<}\overline{#2}\texttt{>}}
+\newcommand{\onector}[2]{#1\texttt{<}#2\texttt{>}}
+\newcommand{\substitution}[2]{[\overline{#1}/\overline{#2}]}
+\newcommand{\supertype}[2]{supertype(#1, \: #2)}
+\newcommand{\hcwp}{hasConstructorWithoutParameter}
+\newcommand{\newvars}{newVars}
+\newcommand{\newvar}{newVar}
+\newcommand{\counts}{count}
+
+\newcommand{\operatoris}{\textbf{is}}
+\newcommand{\operatoras}{\textbf{as}}
+
+\newcommand{\subtypesat}{\texttt{SUBTYPE-SAT}}
+\newcommand{\pcp}{\texttt{PCP}}
+\newcommand{\pcpctid}{\texttt{PCP-CT}}
+
+\newcommand{\generalclasstable}[4]
+{
+    \begin{align*}
+    #1 \, \edge \,\, #2_1, \ldots, #2_{#3}#4
+    \end{align*}
+}
+\newcommand{\classtableline}[2]{
+    &#1 \quad &\edge& \quad #2
+}
+\newcommand{\addclasstableline}[1]
+{
+    & \quad  && \quad #1
+}
+\newcommand{\tvgeneralclasstable}[4]
+{
+    \begin{align}\label{#4}
+    #1 \, \subtype \,\, #2_1, \ldots, #2_{#3}
+    \end{align}
+}
+\newcommand{\tvclasstableline}[2]
+{
+    &\qquad where \,\, #1 \, &\subtype& \,\, #2
+}
+
+\newcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+\lstdefinelanguage{CSharp}
+{
+ morecomment = [l]{//}, 
+ morecomment = [l]{///},
+ morecomment = [s]{/*}{*/},
+ morestring=[b]", 
+ sensitive = true,
+ morekeywords = {abstract,  event,  new,  struct,
+   as,  explicit,  null,  switch,
+   base,  extern,  object,  this,
+   bool,  false,  operator,  throw,
+   break,  finally,  out,  true,
+   byte,  fixed,  override,  try,
+   case,  float,  params,  typeof,
+   catch,  for,  private,  uint,
+   char,  foreach,  protected,  ulong,
+   checked,  goto,  public,  unchecked,
+   class,  if,  readonly,  unsafe,
+   const,  implicit,  ref,  ushort,
+   continue,  in,  return,  using,
+   decimal,  int,  sbyte,  virtual,
+   default,  interface,  sealed,  volatile,
+   delegate,  internal,  short,  void,
+   do,  is,  sizeof,  while, where,
+   double,  lock,  stackalloc,   
+   else,  long,  static,  var, 
+   enum,  namespace,  string}
+}
+
+\lstdefinestyle{sharpc}{language=CSharp,
+    %frame=lr,
+    frame=l,
+    rulecolor=\color{blue!80!black},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{green}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#}
+}
+
+\newcommand{\dima}[1]{$[$\textbf{\textcolor{purple}{Дима}}:~~\emph{\textcolor{darkgray}{#1}}$]$}
+\newcommand{\sasha}[1]{$[$\textbf{\textcolor{blue}{Саша}}:~~\emph{\textcolor{darkgray}{#1}}$]$}
