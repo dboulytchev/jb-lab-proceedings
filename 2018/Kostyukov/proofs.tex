@@ -1,0 +1,118 @@
+\section{Доказательства лемм}\label{apdx:proofs}
+\fontsize{8}{8}
+
+\findisassociativelemma*
+\begin{proof}
+\begin{align*}
+&\finD{\compose{\sigma}{\sigma'}}{x}{\tau}{d}=\\
+&=\Union{\big\{\pair{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{(\compose{\sigma}{\sigma'})(l)}} \mid l\in\dom{\compose{\sigma}{\sigma'}} \big\}\cup\\
+&\qquad\qquad\cup\big\{\pair{\bigwedge_{\mathclap{l\in\dom{\compose{\sigma}{\sigma'}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}\big\}}=\\
+&=\UNION{\Bigg\{\Pair{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{\Union{\big\{\pair{\mg{l}{\fillterm{\sigma}{l'}}}{\fillterm{\sigma}{(\sigma'(l'))}}\mid l'\in\dom{\sigma'}\big\}\cup\\
+	&\quad\cup{\big\{\pair{\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{l}{\fillterm{\sigma}{l'}}}}{\sigma(l)}\big\}}}}}\bigg\vert l\in\dom{\compose{\sigma}{\sigma'}}\Bigg\}\cup\bigg\{\pair{\bigwedge_{\mathclap{l\in\dom{\compose{\sigma}{\sigma'}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}\bigg\}}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-nesting}}\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\mg{\fillterm{\tau}{l}}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}{\fillterm{\tau}{\big(\fillterm{\sigma}{(\sigma'(l'))}\big)}} \\
+    &\qquad\quad\qquad\mid l'\in\dom{\sigma'}, l\in\dom{\compose{\sigma}{\sigma'}}\big\}\cup\\
+	&\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{\fillterm{\tau}{l}}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}}{\fillterm{\tau}{(\sigma(l))}} \mid l\in\dom{\compose{\sigma}{\sigma'}}\big\}\cup\\
+	&\qquad\qquad\cup\big\{\paiR{\bigwedge_{\mathclap{l\in\dom{\compose{\sigma}{\sigma'}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}\big\}}\eqbyref{eq:domain-of-composition}\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\mg{\fillterm{\tau}{l}}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}{\fillterm{\tau}{\big(\fillterm{\sigma}{(\sigma'(l'))}\big)}}\\
+    &\qquad\quad\qquad\mid l'\in\dom{\sigma'}, l\in\dom{\sigma}\cup\fillterm{\sigma}{\dom{\sigma'}}\big\}\cup\\
+	&\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{\fillterm{\tau}{l}}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}}{\fillterm{\tau}{(\sigma(l))}}\\
+	&\qquad\quad\qquad\mid l\in\dom{\sigma}\cup\fillterm{\sigma}{\dom{\sigma'}}\big\}\cup\big\{\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup\fillterm{\sigma}{\dom{\sigma'}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}\big\}}=\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\mg{\fillterm{\tau}{l}}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}{\fillterm{\tau}{\big(\fillterm{\sigma}{(\sigma'(l'))}\big)}}\\
+&\qquad\quad\qquad\mid l'\in\dom{\sigma'}, l\in\fillterm{\sigma}{\dom{\sigma'}}\big\}\cup\\
+	&\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{\fillterm{\tau}{l}}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}}{\fillterm{\tau}{(\sigma(l))}}\\
+	&\qquad\quad\qquad\mid l\in\dom{\sigma}\big\}\cup\big\{\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup\fillterm{\sigma}{\dom{\sigma'}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}\big\}}=\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}{\fillterm{\tau}{\big(\fillterm{\sigma}{(\sigma'(l'))}\big)}} \mid l'\in\dom{\sigma'}\big\}\cup\\
+	&\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{x}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}}{\fillterm{\tau}{(\sigma(l))}} \mid l\in\dom{\sigma} \big\}\\
+	&\qquad\qquad\cup\paiR{\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{x}{\fillterm{\tau}{(\fillterm{\sigma}{l'})}}}\wedge\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}}\eqbyref{eq:find-is-associative-premise}\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{(\compose{\tau}{\sigma})}{l'}}}{\fillterm{(\compose{\tau}{\sigma})}{(\sigma'(l'))}} \mid l'\in\dom{\sigma'}\big\}\cup\\
+	&\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{x}{\fillterm{(\compose{\tau}{\sigma})}{l'}}}}{\fillterm{\tau}{(\sigma(l))}} \mid l\in\dom{\sigma} \big\}\\
+	&\qquad\qquad\cup\paiR{\bigwedge_{\mathclap{l'\in\dom{\sigma'}}}{\nmg{x}{\fillterm{(\compose{\tau}{\sigma})}{l'}}}\wedge\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-nesting}}\\
+&=\cmpbodyext{}{x}{\sigma'}{(\compose{\tau}{\sigma})}{\find{\sigma}{x}{\tau}{d}}{l'}=\\
+&=\finD{\sigma'}{x}{\compose{\tau}{\sigma}}{\find{\sigma}{x}{\tau}{d}}
+\end{align*}
+\end{proof}
+
+\readstoreinvariantlemma*
+\begin{proof}
+\begin{align*}
+&\aunion{\paiR{\mg{x}{y}}{\deref{\sigma}{x}}}=\\
+&=\Union{\paiR{\mg{x}{y}}{\rdbody{x}{\sigma}{\li{x}}}}=\\
+&=\rdbodyext{x}{\sigma}{\li{x}}{\mg{x}{y}\wedge}{l}=\\
+&=\rdbodyext{y}{\sigma}{\li{y}}{\mg{x}{y}\wedge}{l}=\\
+&=\aunion{\paiR{\mg{x}{y}}{\deref{\sigma}{y}}}
+\end{align*}
+\end{proof}
+
+\mergefindlemma*
+\begin{proof}
+Сначала заметим, что для любого предиката $p$ и непересекающихся множеств $A, B$ верно
+\begin{align}\label{eq:merge-find-predicate-prop}
+\bigvee_{u\in A\coprod B}{\Big(p(u)\wedge\bigwedge_{v\in B}{\neg p(v)}\Big)\vee\bigwedge_{u\in A\coprod B}{\neg p(u)}} \iff \bigwedge_{u\in B}{\neg p(v)}
+\end{align}
+Рассмотрим произвольную символьную кучу $\sigma$ и произвольное множество символьных локаций $A$. Можно допустить, что $A$ и $\dom{\sigma}$ не пересекаются, иначе возьмём $A := A\setminus\dom{\sigma}$. Теперь
+\begin{align}\label{eq:merge-find-union-prop}
+&\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{\deref{\sigma}{l}}} \mid l\in\dom{\sigma}\cup A\big\}\cup\notag\\
+	&\qquad\qquad\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup A}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}=\notag\\
+&=\UNION{\Bigg\{\Pair{\mg{x}{\fillterm{\tau}{l}}}{\Union{\big\{\paiR{\mg{\fillterm{\tau}{l}}{\fillterm{\tau}{l'}}}{\fillterm{\tau}{(\sigma(l'))}} \mid l'\in\dom{\sigma} \big\}\cup\notag\\
+&\qquad\qquad\cup\paiR{\bigwedge_{\mathclap{l'\in\dom{\sigma}}}{\nmg{\fillterm{\tau}{l}}{\fillterm{\tau}{l'}}}}{\fillterm{\tau}{\li{l}}}}
+} \Big\vert l\in\dom{\sigma}\cup A\Bigg\}\cup\notag\\
+	&\qquad\qquad\cup\Pair{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup A}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}=\notag\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\mg{\fillterm{\tau}{l}}{\fillterm{\tau}{l'}}}{\fillterm{\tau}{(\sigma(l'))}}\notag\\
+	&\qquad\qquad\quad\mid l\in\dom{\sigma}\cup A, l'\in\dom{\sigma}\big\}\cup\notag\\
+	&\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma}}}{\nmg{\fillterm{\tau}{l}}{\fillterm{\tau}{l'}}}}{\deref{\tau}{\fillterm{\tau}{l}}}\notag\\
+	&\qquad\qquad\quad\mid l\in\dom{\sigma}\cup A \big\}\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup A}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}\eqby{Lm.\ref{thm:read-store-invariant}}\notag\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\mg{x}{\fillterm{\tau}{l'}}}{\fillterm{\tau}{(\sigma(l'))}}\notag\\
+	&\qquad\qquad\quad\mid l\in\dom{\sigma}\cup A, l'\in\dom{\sigma}\big\}\cup\notag\\
+	&\quad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l'}}}}{\deref{\tau}{x}} \mid l\in\dom{\sigma}\cup A \big\}\cup\notag\\
+	&\qquad\qquad\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup A}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-disj}}\notag\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l'}}}{\fillterm{\tau}{(\sigma(l'))}} \mid l'\in\dom{\sigma}\big\}\cup\notag\\
+	&\quad\cup\Pair{\bigvee_{\mathclap{l\in \dom{\sigma}\cup A}}{\Big(\mg{x}{\fillterm{\tau}{l}}\wedge\bigwedge_{\mathclap{l'\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l'}}}\Big)}\vee\bigwedge_{\mathclap{l\in\dom{\sigma}\cup A}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}\eqbyref{eq:merge-find-predicate-prop}\notag\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{(\sigma(l))}} \mid l\in\dom{\sigma}\big\}\cup\notag\\
+	&\qquad\qquad\cup\Pair{\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}=\notag\\
+&=\finD{\sigma}{x}{\tau}{\deref{\tau}{x}}
+\end{align}
+Наконец,
+\begin{align*}
+&\Find{\amerge\paiR{g_i}{\sigma_i}}{x}{\tau}{\deref{\tau}{x}}=\\
+&=\UNION{\Bigg\{\Pair{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{\aunion\paiR{g_i}{\deref{\sigma_i}{l}}}} \Big\vert l\in\bigcup_{j=1}^n{\dom{\sigma_j}}\Bigg\}\cup\\
+	&\qquad\qquad\quad\cup\Pair{\bigwedge_{\mathclap{\,\,\,\,l\in\bigcup_{j=1}^n{\dom{\sigma_j}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}=\\
+&=\aunion\PAIR{\mg{x}{\fillterm{\tau}{g_i}}}{\Union{\Big\{\paiR{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{\deref{\sigma_i}{l}}}\mid l\in\bigcup_{j=1}^n{\dom{\sigma_j}}\Big\}\cup\\
+    &\qquad\qquad\quad\cup\Pair{\bigwedge_{\mathclap{l\in\bigcup_{j=1}^n{\dom{\sigma_j}}}}{\nmg{x}{\fillterm{\tau}{l}}}}{\deref{\tau}{x}}}}\eqbyref{eq:merge-find-union-prop}\\
+&=\aunion\Pair{\fillterm{\tau}{g_i}}{\find{\sigma_i}{x}{\tau}{\deref{\tau}{x}}}
+\end{align*}
+\end{proof}
+
+\mergetermcompositionlemma*
+\begin{proof}
+Доказательство структурной индукцией по~\autoref{def:expression-composition}. Возьмём $G\eqdef g_1\vee\ldots\vee g_n$ и $M\eqdef\amerge\pair{g_i}{\sigma_i}$.
+\begin{enumerate}[label=(\alph*)]
+\item $\aunion\paiR{G}{\fillterm{M}{leaf}}=\aunion\paiR{G}{leaf}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-nesting}}\aunion\paiR{g_i}{leaf}=\aunion\paiR{g_i}{\fillterm{\sigma_i}{leaf}}$
+\item\label{thm:merge-term-composition:item2}
+$\aunion\Pair{G}{\fillterm{M}{op(e_1,\ldots,e_m)}}=\aunion\Pair{G}{op(\fillterm{M}{e_1},\ldots,\fillterm{M}{e_m})}\eqby{I.H.}$\\
+$=\aunion\PAIR{G}{op\Big(\aunion\paiR{g_i}{\fillterm{\sigma_i}{e_1}},\ldots,\aunion\paiR{g_i}{\fillterm{\sigma_i}{e_m}}\Big)}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-nesting},\ref{prop:union-op}}$\\
+$=op\Big(\aunion\paiR{g_i}{\fillterm{\sigma_i}{e_1}},\ldots,\aunion\paiR{g_i}{\fillterm{\sigma_i}{e_m}}\Big)\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-op}}\aunion\paiR{g_i}{\fillterm{\sigma_i}{op(e_1,\ldots,e_m)}}$
+\item Similar to~\ref{thm:merge-term-composition:item2}
+\item $\aunion\Pair{G}{\fillterm{M}{\li{x}}}=\aunion{\Pair{G}{\deref{M}{\fillterm{M}{x}}}}\eqby{Th.\ref{thm:merge-read}}$\\
+$=\aunion{\Pair{G}{\aunion{\paiR{g_i}{\deref{\sigma_i}{\fillterm{M}{x}}}}}}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-nesting}}\aunion{\paiR{g_i}{\deref{\sigma_i}{\fillterm{M}{x}}}}\eqby{I.H.}$\\
+$=\aunion{\Pair{g_i}{\Deref{\sigma_i}{\aunion{\pair{g_j}{\fillterm{\sigma_j}{x}}}}}}\eqby{Lm.\ref{thm:read-union-loc}}\aunion{\Pair{g_i}{\aunion\paiR{g_j}{\Deref{\sigma_i}{\fillterm{\sigma_j}{x}}}}}\eqby{$g_i$ disj.}$\\
+$=\aunion{\paiR{g_i}{\deref{\sigma_i}{\fillterm{\sigma_i}{x}}}}=\aunion{\paiR{g_i}{\fillterm{\sigma_i}{\li{x}}}}$
+\end{enumerate}
+%
+\end{proof}
+
+\findwritelemma*
+\begin{proof}
+\begin{align*}
+&\finD{\mutate{\sigma}{y}{v}}{x}{\tau}{d}=\\
+&=\cmpbody{x}{\mutate{\sigma}{y}{v}}{\tau}{d}=\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}}{\fillterm{\tau}{\ite{\mg{y}{l}}{v}{\sigma(l)}}} \mid l\in\dom{\sigma}\cup\{y\} \big\}\cup\\
+    &\qquad\qquad\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}\cup\{y\}}}{\nmg{x}{\fillterm{\tau}{l}}}}{d}}=\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}}{\Ite{\mg{\fillterm{\tau}{y}}{\fillterm{\tau}{l}}}{\fillterm{\tau}{v}}{\fillterm{\tau}{(\sigma(l))}}} \mid l\in\dom{\sigma} \big\}\cup\\
+	&\qquad\qquad\cup\paiR{\mg{x}{\fillterm{\tau}{y}}}{\fillterm{\tau}{v}}\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l}}}\wedge\nmg{x}{\fillterm{\tau}{y}}}{d}}=\\
+&=\Union{\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\mg{\fillterm{\tau}{y}}{\fillterm{\tau}{l}}}{\fillterm{\tau}{v}} \mid l\in\dom{\sigma} \big\}\cup\\
+    &\qquad\qquad\cup\big\{\paiR{\mg{x}{\fillterm{\tau}{l}}\wedge\nmg{\fillterm{\tau}{y}}{\fillterm{\tau}{l}}}{\fillterm{\tau}{(\sigma(l))}} \mid l\in\dom{\sigma} \big\}\cup\\
+	&\qquad\qquad\cup\paiR{\mg{x}{\fillterm{\tau}{y}}}{\fillterm{\tau}{v}}\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{x}{\fillterm{\tau}{l}}}\wedge\nmg{x}{\fillterm{\tau}{y}}}{d}}=\\
+&=\ITE{\mg{x}{\fillterm{\tau}{y}}}{\fillterm{\tau}{v}}{\cmpbody{x}{\sigma}{\tau}{d}}=\\
+&=\Ite{\mg{x}{\fillterm{\tau}{y}}}{\fillterm{\tau}{v}}{\find{\sigma}{x}{\tau}{d}}
+\end{align*}
+\end{proof}

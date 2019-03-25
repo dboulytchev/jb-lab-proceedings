@@ -1,0 +1,612 @@
+\section{Композициональная символьная память}
+\label{sec:state}
+
+В центре нашего подхода стоит формализм композициональных символьных куч. Концепция \emph{композициональной символьной памяти} (КСП), определяемая в этой секции, вдохновлена идеями \emph{ленивой инстациации}~\cite{khurshid2003generalized,deng2012efficient}. Ленивая инстанциация~--- это техника, позволяющая строить конечные символьные термы для рекурсивных структур данных, таких как связные списки и деревья. Основная идея заключается в том, чтобы инициализировать поля рекурсивных структур данных \emph{по требованию} вместо инициализации всей структуры разом (что потребует заранее заданных ограничений на её размер).
+
+Основная идея КСП состоит в том, чтобы трактовать лениво инициализированные локации как \emph{ячейки}, в которые будут подставлены значения из контекстного состояния. Так, если движок символьного исполнения исследует функцию $g$ в изоляции, т.е. на пустой куче, результатом исследования будет куча, описывающая \emph{эффект} $g$ в контексте произвольного глобального состояния. Если некоторая функция $f$ вызывает функцию $g$, предподсчитанный эффект $g$ может быть воспроизведён поверх текущего состояния $f$. Для этого необходимо заполнить ячейки эффекта $g$ значениями из состояния $f$ и записать содержимое уточнённой кучи в текущее состояние. Данная идея проиллюстрирована на примере ниже.
+\begin{figure}[H]
+\vspace*{-0.4in}
+\begin{minipage}{.37\linewidth}
+\begin{lstlisting}[style=demolang]
+G { x := x + 1; }
+F { x := 42; call G; }
+\end{lstlisting}
+\end{minipage}
+% \hfill
+\begin{minipage}{.62\linewidth}
+\texttt{G}: $\{x \mapsto\encircle{x} + 1\}$\\
+\texttt{F}: $\compose{\{x \mapsto 42\}}{\{x \mapsto\encircle{x} + 1\}}=\{x \mapsto 42 + 1\}$
+\end{minipage}
+\end{figure}
+\vspace*{-0.4in}
+Результатом исполнения функции \texttt{G} является состояние с незаполненной ячейкой $x$. Оно затем заполняется значениями контекстного состояния \texttt{F}, после чего происходит изменение контекстного состояния в соответствии с уточнённой кучей \texttt{G}. Кучу, полученную в результате этого процесса, мы называем \emph{композицией} куч. Заметим, что адаптация этой идеи к программам произвольной сложности требует некоторых дополнительных усилий.
+
+\subsection{Символьные выражения}
+Характерной чертой символьного исполнения является возможность строить символьные выражения. Например, в~\autoref{algo:traditional-se} символьные выражения порождаются функцией \emph{Eval} и функциями для работы с кучей. Далее представлено определение понятия символьных выражений.
+\begin{figure}[ht]
+\begin{align*}
+	term ::=\,\,&arith \mid loc \mid func \mid (term, \ldots, term) \cr
+	arith ::=\,\,&\mathbb{N} \mid arith \pm arith \mid -arith \mid LI^{arith}(loc) \\
+	            \mid\,\,&\aunion^{arith}{(\pair{guard}{arith}^*)} \cr
+	loc ::=\,\,&\text{именованная локация} \mid (\text{конкретный адрес}).\mathbb{N} \mid null \\
+			   \mid\,\,&LI^{loc}(loc).\mathbb{N} \mid \aunion^{loc}{(\pair{guard}{loc}^*)} \cr
+	func ::=\,\,&\text{конкретная функция} \mid LI^{func}(loc) \\
+	            \mid\,\,&\aunion^{func}{(\pair{guard}{func}^*)} \cr
+	guard ::=\,\,&\top \mid \bot \mid \neg guard \mid guard \land guard \mid guard \lor guard \\
+				 \mid\,\,&arith = arith \mid arith < arith \mid loc = loc \cr
+\end{align*}
+\vspace*{-0.6in}
+\end{figure}
+Символьный терм ($term$)~--- это либо арифметическое выражение ($arith$), либо символьный адрес локации в  памяти ($loc$), либо имя функции ($func$), либо кортеж термов. Мы разделяем именованные и неименованные локации в куче. Неименованная локация может быть конкретной или символьной, с идущим за ней индексом элемента кортежа.
+
+Стоит отметить, что в отличие от классических работ по символьному исполнению в данной работе символьные значения записываются как $LI^{*}(x)$, что означает \ruquote{ленивое инстанцирование $x$}. Далее всюду тип символьного значения либо не важен, либо очевиден из контекста, потому мы будем его опускать и писать просто $\li{x}$. Заметим, что локация-источник символьного значения $LI$ может быть также символьной, так что, например, термы вида $LI\big(\li{node}.1\big) + 1$ также допустимы.
+
+$guard$~--- это \emph{ограничение}, логическая формула (условие пути или условие ветвления). Такие формулы \ruquote{защищают} элементы \emph{символьных объединений} (unions). Символьное объединение~--- это обобщение широко используемого символа $ite$. Как и в случае символьных значений, мы опускаем тип символьных объединений и пишем просто ${\union{*}}$. За ними мы закрепляем следующую семантику: $x = \union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}$ т.и т.т. $(g_1 \land x = v_1) \lor \ldots \lor (g_n \land x = v_n)$.
+
+\begin{remk*}
+Мы требуем, чтобы ограничения в объединениях не пересекались, то есть только одно ограничение должно выполняться при подстановке конкретных значений вместо символьных. Однако несколько ограничений могут выполняться одновременно, если они \ruquote{защищают} одно и то же значение. Например, допустимы объединения вида $\Union{\Pair{LI(x)=LI(y)}{LI\big(LI(y).1\big) + 7}, \Pair{LI(x)=LI(z)}{LI\big(LI(z).1\big) + 7}}$.
+
+Мы рассматриваем содержимое объединений как множество пар, потому пишем, например, $\union{\{\pair{g}{v}\}\cup X}$. Чтобы избежать перегрузки синтаксиса лишними скобками, мы опускаем их далее при записи одноэлементных множеств, так пример выше можно записать как $\union{\pair{g}{v}\cup X}$. Также мы опускаем скобки там, где не возникает двусмысленности, например пишем $\aunion\pair{x>5}{42}$ или $\aunion\{\pair{g_i}{v_i}\mid 1 \le i \le n\}$
+\end{remk*}
+
+\emph{Выражение}~--- это либо терм, либо ограничение. \emph{Примитивные} выражения~--- это натуральные числа, именованные локации, конкретные адреса в куче, $null$, идентификаторы функций, $\top$ и $\bot$. \emph{Операциями} являются сложение, вычитание, унарный минус, сравнения, логические связки и взятие элемента кортежа. В случаях, когда вид операции не важен, мы пользуемся общей нотацией $op(e_1, \ldots, e_n)$.
+
+\begin{remk*}
+Равенство символьных термов \emph{семантическое}, то есть, например, $2 * (x + 1) = x + x + 4 - 2$ и $\union{\pair{x+5=y+4}{7},\pair{\bot}{42}}=\aunion{\pair{x+1=y}{7}}$.
+\end{remk*}
+
+\begin{prop}\label{prop:union-properties}
+\begin{enumerate}[label=(\alph*)]
+    \item\label{prop:union-true} $\aunion{\pair{\top}{v}}=v$
+    \item\label{prop:union-false} $\union{\pair{\bot}{v}\cup X} = \union{X}$
+    \item\label{prop:union-nesting} $\Union{\Pair{g}{\union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}}\cup X} =\\
+    		\text{\qquad}=\Union{\big\{\pair{g \land g_1}{v_1},\ldots,\pair{g \land g_n}{v_n}\big\} \cup X}$\\
+    В частности,
+    \begin{itemize}[label={\textbullet}]
+    \item $\union{\pair{g}{\union{\emptyset}} \cup X} = \union{X}$
+    \item $\aunion{\Pair{g_1\vee\ldots\vee g_n}{\union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}}} =\\= \Union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}$
+    \end{itemize}
+    \item\label{prop:union-disj} $\union{\big\{\pair{g_1}{v},\ldots,\pair{g_n}{v}\big\}\cup X} = \union{\pair{g_1 \lor \ldots \lor g_n}{v} \cup X}$ \\
+    В частности, $\union{\big\{\pair{g}{v}, \pair{g \wedge g_1}{v},\ldots,\pair{g \wedge g_n}{v}\big\}\cup X} = \union{\pair{g}{v} \cup X}$
+    \item\label{prop:union-op} $op\Big(\union{\pair{g_1^1}{e_1^1},\ldots,\pair{g_{n_1}^1}{e_{n_1}^1}},\ldots,\\
+    \text{\qquad}\union{\pair{g_1^m}{e_1^m},\ldots,\pair{g_{n_m}^m}{e_{n_m}^m}}\Big)=$\\
+    \quad\mbox{$=\Union{\Big\{\Pair{g_{i_1}^1\wedge\ldots\wedge g_{i_m}^m}{op(e_{i_1}^1,\ldots,e_{i_m}^m)}\mid  1 \le i_j \le n_j\Big\}}$}\\
+	В частности, для непересекающихся ограничений $g_1,\ldots,g_n$,\\
+	$op\Big(\union{\pair{g_1}{e_1^1},\ldots,\pair{g_n}{e_n^1}},\ldots,\\
+	\text{\qquad}\union{\pair{g_1}{e_1^m},\ldots,\pair{g_n}{e_n^m}}\Big)=$\\
+    \quad\mbox{$=\Union{\Pair{g_1}{op(e_1^1,\ldots,e_1^m)},\ldots,\Pair{g_n}{op(e_n^1,\ldots,e_n^m)}}$} 
+\end{enumerate}
+\end{prop}
+
+\subsection{Символьные кучи}
+
+\begin{defn}
+\emph{Символьная куча}~--- это частичная функция $\sigma : \addrset \rightarrow \termset$, удовлетворяющая следующему свойству (которое мы называем \emph{инвариант кучи}):
+\begin{align}\label{eq:store-invariant}
+	\forall x, y \in \dom{\sigma}, \aunion{\pair{\mg{x}{y}}{\sigma(x)}} = \aunion{\pair{\mg{x}{y}}{\sigma(y)}}
+\end{align}
+\end{defn}
+%
+\begin{defn}\label{def:empty-heap}
+Пустая куча $\emptyheap$~--- это частичная функция с областью действия $\dom{\emptyheap}=\emptyset$ (она, очевидно, удовлетворяет~\eqref{eq:store-invariant}).
+\end{defn}
+%
+\begin{defn}\label{def:deref}
+\emph{Чтение} локации $x$ в символьной куче $\sigma$ определяется следующим образом:
+\begin{figure}[H]
+\begin{align}\label{eq:deref-formula}
+	\deref{\sigma}{x}&\notag=\rdbody{x}{\sigma}{\li{x}}
+\end{align}
+\end{figure}
+\vspace*{-0.4in}
+\end{defn}
+%
+Интуитивно, чтение пытается сопоставить (возможно символьную) ссылку $x$ с каждым (возможно символьным) адресом локации в $\sigma$. Если ссылка и некоторый адрес совпали, результатом чтения будет значение, лежащее по этому адресу. Если не было найдено ни одного совпадения, возвращается символьное значение $\li{x}$.
+
+Очевидно, что при $x\in\dom{\sigma}$ $\deref{\sigma}{x}=\sigma(x)$. Одно из ограничений $\mg{x}{l}$ будет выполняться, когда как один из конъюнктов $\bigwedge_{l\in\dom{\sigma}}{\nmg{x}{l}}$ будет, наоборот, невыполним, а значит значение $\li{x}$ получиться не может.
+
+Можно сделать одно важное наблюдение о~\autoref{def:deref}. Технически множество ограничений в~\eqref{eq:deref-formula} может содержать пересечения: в куче могут быть две (или более) символьные локации, которые могут совпадать при некоторых конкретных подстановках. Инвариант кучи~\eqref{eq:store-invariant} позволяет обойти возможную проблему с совпадающими адресами: благодаря нему при совпадении ограничений не будет конфликтов между \ruquote{защищаемыми} значениями.
+%
+\begin{exmp}
+\allowdisplaybreaks
+Пусть $\sigma = \{ \addr{0x1} \mapsto 42; \li{x} \mapsto \aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7}) \}$. Тогда
+\begin{align*}
+&\deref{\sigma}{\addr{0x1}}=\\
+&=\Union{\paiR{\mg{\addr{0x1}}{\addr{0x1}}}{42},\paiR{\nmg{\addr{0x1}}{\addr{0x1}}\wedge\nmg{\li{x}}{\addr{0x1}}}{\li{\addr{0x1}}},\\
+&\qquad\qquad\paiR{\mg{\addr{0x1}}{\li{x}}}{\aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\\
+&\qquad\qquad\qquad\qquad\qquad\qquad\qquad\pair{\nmg{\li{x}}{\addr{0x1}}}{7})}}=\\
+&=\Union{\paiR{\top}{42},\paiR{\bot}{\li{\addr{0x1}}},\\
+&\qquad\qquad\paiR{\mg{\li{x}}{\addr{0x1}}}{\\
+&\qquad\qquad\qquad\aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7})}}=42
+\end{align*}
+% \begin{align*}
+% &\deref{\sigma}{\li{y}}=\\
+% &=\Union{\paiR{\mg{\li{y}}{\addr{0x1}}}{42},\paiR{\mg{\li{y}}{\li{x}}}{\aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7})},\\
+% &\qquad\qquad\paiR{\nmg{\li{y}}{\addr{0x1}}\wedge\nmg{\li{y}}{\li{x}}}{\Li{\li{y}}}}\eqby{Св.\ref{prop:union-properties}}\\
+% &=\Union{\paiR{\mg{\li{y}}{\addr{0x1}}}{42},\paiR{\mg{\li{y}}{\li{x}}\wedge\nmg{\li{x}}{\addr{0x1}}}{7},\paiR{\nmg{\li{y}}{\addr{0x1}}\wedge\nmg{\li{y}}{\li{x}}}{\Li{\li{y}}}}
+% \end{align*}
+\end{exmp}
+%
+\subsection{Композиция символьных куч}
+\begin{defn}\label{def:expression-composition}
+\emph{Уточнение} выражения $e$ в контексте символьной кучи $\sigma : \addrset \rightarrow \termset$ обозначим $\fillterm{\sigma}{e}$ и определим следующим образом:
+\begin{enumerate}
+\item\label{def:expression-composition:leaf-case} Если $e$~--- это примитивное значение, то $\fillterm{\sigma}{e}\eqdef e$
+\item $\fillterm{\sigma}{op(e_1, \ldots, e_n)}\eqdef op(\fillterm{\sigma}{e_1}, \ldots, \fillterm{\sigma}{e_n})$.
+\item\label{def:expression-composition:union-case} $\fillterm{\sigma}{\aunion\{\pair{g_1}{t_1}, \ldots, \pair{g_n}{t_n}\}}\eqdef\\
+\qquad\eqdef\aunion\{\pair{\fillterm{\sigma}{g_1}}{\fillterm{\sigma}{t_1}}, \ldots, \pair{\fillterm{\sigma}{g_n}}{\fillterm{\sigma}{t_n}}\}$
+\item\label{def:expression-composition:li-case} $\fillterm{\sigma}{\li{l}}\eqdef\deref{\sigma}{\fillterm{\sigma}{l}}$
+\end{enumerate}
+\end{defn}
+%
+Интуитивно, $\fillterm{\sigma}{e}$~--- это выражение, получаемое подстановками значений из $\sigma$ в символьные ячейки $e$: первые три пункта определения сохраняют структуру $e$, а~\ref{def:expression-composition:li-case} заполняет ячейку значением из $\sigma$.
+%
+\begin{defn}\label{def:state-composition}
+\emph{Композиция} символьных куч $\sigma$ и $\sigma'$~--- это частичная функция $\compose{\sigma}{\sigma'} : \addrset \rightarrow \termset$, определяемая следующим образом:
+\begin{align}\notag
+	(\compose{\sigma}{&\sigma'})(x)\eqdef\cmpbody{x}{\sigma'}{\sigma}{\sigma(x)}
+\end{align}
+\end{defn}
+$\compose{\sigma}{\sigma'}$ определена на всех локациях, равных $\fillterm{\sigma}{l}$, где $l\in\dom{\sigma'}$, и на всех локациях $\dom{\sigma}$ (здесь запись $\{\fillterm{\sigma}{a} \mid a\in A\}$ мы сокращаем как $\fillterm{\sigma}{A}$):
+\begin{align}\label{eq:domain-of-composition}
+	\dom{\compose{\sigma}{\sigma'}} = \dom{\sigma}\cup\fillterm{\sigma}{\dom{\sigma'}}
+\end{align}
+%
+Композиция символьных куч отражает последовательную композицию в программировании: если $\sigma_1$~--- это эффект фрагмента кода \texttt{A} и $\sigma_2$~--- эффект фрагмента кода \texttt{B}, тогда $\compose{\sigma_1}{\sigma_2}$~--- это эффект \texttt{A;B}. Интуитивно, $\compose{\sigma_1}{\sigma_2}$~--- это символьная куча, полученная заполнениями символьных ячеек из $\sigma_2$ значениями из контекста $\sigma_1$ с последующей их записью в контекст $\sigma_1$.
+
+\begin{exmp}
+Пусть $\sigma=\{ \addr{0x1} \mapsto 42; \addr{0x2} \mapsto 7 \}$ и $\sigma'= \{ \addr{0x2} \mapsto \li{\addr{0x1}} - \li{\addr{0x2}} \}$. Тогда $\compose{\sigma}{\sigma'} = \{ \addr{0x1} \mapsto 42; \addr{0x2} \mapsto 42-7 \}$
+\end{exmp}
+
+Оставшаяся часть этой секции посвящена доказательству корректности введённых определений с точки зрения ожидаемых от них свойств.
+%
+\begin{thm}\label{thm:composition-is-heap}
+Если $\sigma$ и $\sigma'$~--- символьные кучи, то $\compose{\sigma}{\sigma'}$ также символьная куча.
+\end{thm}
+\begin{proof}
+Необходимо показать, что $\compose{\sigma}{\sigma'}$ удовлетворяет инварианту кучи~\eqref{eq:store-invariant}. Рассмотрим $x, y\in\dom{\compose{\sigma}{\sigma'}}$.
+\small
+\begin{align*}\notag
+	&\aunion{\Pair{\mg{x}{y}}{(\compose{\sigma}{\sigma'})(x)}}\eqby{Опр.\ref{def:state-composition} и Св.\ref{prop:union-properties}.\ref{prop:union-nesting}}\\
+	&=\cmpbodyext{\mg{x}{y}\wedge}{x}{\sigma'}{\sigma}{\sigma(x)}{l}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-nesting}}\\
+	&=\cmpbodyext{\mg{x}{y}\wedge}{x}{\sigma'}{\sigma}{\union{\pair{\mg{x}{y}}{\sigma(x)}}}{l}\eqby{\eqref{eq:store-invariant} для $\sigma$}\\
+	&=\cmpbodyext{\mg{x}{y}\wedge}{y}{\sigma'}{\sigma}{\union{\pair{\mg{x}{y}}{\sigma(y)}}}{l}=\\
+	&=\aunion{\Pair{\mg{x}{y}}{(\compose{\sigma}{\sigma'})(y)}}
+\end{align*}
+\end{proof}
+%
+\begin{thm}\label{thm:empty-heap-properties}
+Для произвольных символьных кучи $\sigma$, локации $x$ и выражения $e$,
+\begin{enumerate}[label=(\alph*)]
+\item $\deref{\emptyheap}{x}=\li{x}$\label{item:empty-heap-read}
+\item $\fillterm{\emptyheap}{e}=\li{e}$\label{item:empty-heap-application}
+\item $\compose{\emptyheap}{\sigma}=\sigma$
+\item $\compose{\sigma}{\emptyheap}=\sigma$
+\end{enumerate}
+\end{thm}
+\begin{proof}
+Напомним, что конъюнкция пустого множества формул есть тождественная истина.
+\begin{enumerate}[label=(\emph{\alph*})]
+\item $\deref{\emptyheap}{x}\eqby{Опр.~\ref{def:empty-heap},~\ref{def:deref}}\union{\emptyset\cup\pair{\top}{\li{x}}}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-true}}\li{x}$
+\item Это свойство может быть доказано структурной индукцией по выражению $e$ по~\autoref{def:expression-composition}~и~\ref{item:empty-heap-read}.
+\item Во-первых, $\dom{\compose{\emptyheap}{\sigma}}\eqbyref{eq:domain-of-composition}\emptyset\cup\fillterm{\emptyheap}{\dom{\sigma}}\eqby{\ref{item:empty-heap-application}}\dom{\sigma}$. Рассмотрим $x\in\dom{\sigma}$.
+\begin{align*}
+	(\compose{\emptyheap}{\sigma})(x)\eqby{Опр.\ref{def:state-composition}}&\cmpbody{x}{\sigma}{\emptyheap}{\emptyheap(x)}\eqby{\ref{item:empty-heap-application}}\\
+	=&\,\union{\big\{\pair{\mg{x}{l}}{\sigma(l)} \mid l\in\dom{\sigma}\big\}\cup\pair{\bot}{\emptyheap(x)}}\\
+	&\hspace{-0.65cm}\eqby{Св.\ref{prop:union-properties}.\ref{prop:union-false}}\sigma(x)
+\end{align*}
+\item $\dom{\compose{\sigma}{\emptyheap}}\eqbyref{eq:domain-of-composition}\dom{\sigma}\cup\fillterm{\sigma}{\emptyset}=\dom{\sigma}$. Пусть $x\in\dom{\sigma}$.
+\begin{align*}
+	(\compose{\sigma}{\emptyheap})(x)\eqby{Опр.\ref{def:state-composition}}\union{\emptyset\cup\pair{\bigwedge_{\mathclap{l\in\emptyset}}{\nmg{x}{\fillterm{\sigma}{l}}}}{\sigma(x)}}=\sigma(x)
+\end{align*}
+\end{enumerate}
+\end{proof}
+%
+Стоит отметить, что есть некоторое сходство между~\autoref{def:deref}~и~\autoref{def:state-composition}: объединения осуществляют поиск $x$ среди локаций кучи. Если поиск был успешен, возвращается соответствующее (возможно изменённое) значение, в ином случае~--- значение по умолчанию. Воспользуемся этим сходством для введения следующего вспомогательного определения.
+%
+\begin{defn}\label{def:find-key}
+\begin{align}\notag
+	\find{\sigma}{x}{\tau}{d}&\eqdef\cmpbody{x}{\sigma}{\tau}{d}
+\end{align}
+\end{defn}
+%
+Обобщённая структура $\afind$ позволит доказать некоторые полезные свойства композиции. Этот оператор станет краеугольным камнем в процессе кодирования уравнений над состояниями в ограниченные дизъюнкты Хорна. Третий аргумент $\afind$, $\tau$, мы будем называть \emph{контекстной кучей}. Свойства~\autoref{thm:empty-heap-properties} позволяют компактно выразить $\aderef$ и композицию куч через $\afind$:
+\begin{align}
+	\deref{\sigma}{x}&=\finD{\sigma}{x}{\emptyheap}{\li{x}}&&\text{ и}\label{eq:deref-via-find}\\
+	(\compose{\sigma}{\sigma'})(x)&=\finD{\sigma'}{x}{\sigma}{\sigma(x)}\label{eq:heap-composition-via-find}
+\end{align}
+%
+Докажем фундаментальное свойство $\afind$, которое будет полезно для доказательства важных свойств композиции и уточнения:
+%
+\begin{restatable}{lem}{findisassociativelemma}
+\label{thm:find-is-associative}
+	Для произвольных символьных куч $\sigma$, $\sigma'$, $\tau$ таких что для каждого символьного выражения $e$, 
+\begin{align}\label{eq:find-is-associative-premise}
+	\fillterm{(\compose{\tau}{\sigma})}{e} = \fillterm{\tau}{(\fillterm{\sigma}{e})},
+\end{align}
+и всех символьных выражений $x\in\addrset$, $d\in\termset$,
+\begin{align*}
+	\finD{\compose{\sigma}{\sigma'}}{x}{\tau}{d}=\finD{\sigma'}{x}{\compose{\tau}{\sigma}}{\find{\sigma}{x}{\tau}{d}}
+\end{align*}
+\end{restatable}
+\begin{proof}
+Смотри~\autoref{apdx:proofs}.
+\end{proof}
+%
+\begin{lem}\label{thm:composition-of-find}
+	Для всех символьных куч $\sigma$, $\sigma'$, $\tau$, удовлетворяющих~\eqref{eq:find-is-associative-premise}, и выражений $x\in\addrset$, $d\in\termset$,
+\begin{align}\notag
+	\fillterm{\tau}{\find{\sigma'}{x}{\sigma}{d}}=\find{\sigma'}{\fillterm{\tau}{x}}{\compose{\tau}{\sigma}}{\fillterm{\tau}{d}}
+\end{align}
+\end{lem}
+\begin{proof}
+\begin{align*}
+	&\fillterm{\tau}{\find{\sigma'}{x}{\sigma}{d}}=\\
+	&\fillterm{\tau}{\cmpbody{x}{\sigma'}{\sigma}{d}}\eqby{Опр.\ref{def:expression-composition}}\\
+	&=\Union{\big\{\paiR{\mg{\fillterm{\tau}{x}}{\fillterm{\tau}{(\fillterm{\sigma}{l})}}}{\fillterm{\tau}{\big(\fillterm{\sigma}{(\sigma'(l))}\big)}}\mid l\in \dom{\sigma'}\big\}\\
+	&\qquad\qquad\cup\big\{\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma'}}}{\nmg{\fillterm{\tau}{x}}{\fillterm{\tau}{(\fillterm{\sigma}{l})}}}}{\fillterm{\tau}{d}}\big\}}\eqbyref{eq:find-is-associative-premise}\\
+	&=\Union{\big\{\paiR{\mg{\fillterm{\tau}{x}}{\fillterm{(\compose{\tau}{\sigma})}{l}}}{\fillterm{(\compose{\tau}{\sigma})}{(\sigma'(l))}}\mid l\in \dom{\sigma'}\big\}\\
+	&\qquad\qquad\cup\big\{\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma'}}}{\nmg{\fillterm{\tau}{x}}{\fillterm{(\compose{\tau}{\sigma})}{l}}}}{\fillterm{\tau}{d}}\big\}}=\\
+	&=\find{\sigma'}{\fillterm{\tau}{x}}{\compose{\tau}{\sigma}}{\fillterm{\tau}{d}}
+\end{align*}
+\end{proof}
+%
+\begin{thm}\label{thm:composition-of-read}
+	Для всех символьных куч $\sigma$, $\sigma'$ и символьных локаций $x$,
+\begin{align}\notag
+	\fillterm{\sigma}{\deref{\sigma'}{x}}=\deref{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{x}}
+\end{align}
+\end{thm}
+\begin{proof}
+Заметим, что по свойствам~\autoref{thm:empty-heap-properties},~\eqref{eq:find-is-associative-premise}, выполняющимся для $\sigma=\emptyheap$ и $\tau=\emptyheap$:
+\begin{align*}
+	&\fillterm{\sigma}{\deref{\sigma'}{x}}\eqbyref{eq:deref-via-find}\fillterm{\sigma}{\find{\sigma'}{x}{\emptyheap}{\li{x}}}\eqby{\autoref{thm:composition-of-find}}\\
+	=&\find{\sigma'}{\fillterm{\sigma}{x}}{\compose{\sigma}{\emptyheap}}{\fillterm{\sigma}{\li{x}}}\eqby{Теор.\ref{thm:empty-heap-properties}, Опр.\ref{def:expression-composition}}\\
+	=&\find{\sigma'}{\fillterm{\sigma}{x}}{\sigma}{\deref{\sigma}{\fillterm{\sigma}{x}}}\eqbyref{eq:deref-via-find}\\
+	=&\finD{\sigma'}{\fillterm{\sigma}{x}}{\sigma}{\find{\sigma}{\fillterm{\sigma}{x}}{\emptyheap}{\li{\fillterm{\sigma}{x}}}}\eqby{\autoref{thm:find-is-associative}}\\
+	=&\find{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{x}}{\emptyheap}{\li{\fillterm{\sigma}{l}}}\eqbyref{eq:deref-via-find}\deref{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{x}}
+\end{align*}
+\end{proof}
+%
+\autoref{thm:composition-of-read}~--- это ключевое свойство КСП. Допустим, функция $f$, находясь в состоянии $\sigma$, вызывает функцию $g$ с эффектом $\sigma'$. Из теоремы следует, что исследование $g$ в изоляции с последующим чтением значения локации $x$ и заполнением символьных ячеек $\sigma'$ из контекстного состояния (то есть $\fillterm{\sigma}{\deref{\sigma'}{x}}$) даст тот же результат, что и обычный вызов $g$ с последующим чтением локации (то есть $\deref{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{x}}$). Теорема работает только благодаря тому, что $\emptyheap$ удовлетворяет~\eqref{eq:find-is-associative-premise}. Теперь покажем, что ~\eqref{eq:find-is-associative-premise} выполняется для произвольной пары куч.
+
+\begin{lem}\label{thm:term-composition-is-associative}
+Для всех символьных куч $\sigma$, $\sigma'$ и символьных выражений $e$,
+\begin{align*}
+	\fillterm{(\compose{\sigma}{\sigma'})}{e} = \fillterm{\sigma}{(\fillterm{\sigma'}{e})}
+\end{align*}
+\end{lem}
+\begin{proof}
+Доказательство структурной индукцией по~\autoref{def:expression-composition}. Случаи~\ref{def:expression-composition:leaf-case}---\ref{def:expression-composition:union-case} тривиальны. Единственное, что необходимо показать, это $\fillterm{(\compose{\sigma}{\sigma'})}{\li{x}} = \fillterm{\sigma}{(\fillterm{\sigma'}{\li{x}})}$. Индукционная гипотеза выглядит так:
+\begin{align*}
+	\fillterm{(\compose{\sigma}{\sigma'})}{x} = \fillterm{\sigma}{(\fillterm{\sigma'}{x})}
+\end{align*}
+%
+Теперь
+%
+\begin{align*}
+\fillterm{\sigma}{(\fillterm{\sigma'}{\li{x}})}\eqby{Опр.\ref{def:expression-composition}}&\fillterm{\sigma}{\deref{\sigma'}{\fillterm{\sigma'}{x}}}\eqby{Теор.\ref{thm:composition-of-read}}\\
+=&\Deref{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{(\fillterm{\sigma'}{x})}}\eqby{I.H.}\\
+=\,&\Deref{\compose{\sigma}{\sigma'}}{\fillterm{(\compose{\sigma}{\sigma'})}{x}}\eqby{Опр.\ref{def:expression-composition}}\fillterm{(\compose{\sigma}{\sigma'})}{\li{x}}
+\end{align*}
+\end{proof}
+%
+\begin{lem}\label{thm:read-of-composition}
+Для всех символьных куч $\sigma$, $\sigma'$ и локаций $x$,
+\begin{align}\notag
+	\deref{\compose{\sigma}{\sigma'}}{x} = \finD{\sigma'}{x}{\sigma}{\deref{\sigma}{x}}
+\end{align}
+\end{lem}
+\begin{proof}
+\allowdisplaybreaks
+\begin{align*}
+&\deref{\compose{\sigma}{\sigma'}}{x} = \finD{\compose{\sigma}{\sigma'}}{x}{\emptyheap}{\li{x}} \eqby{Lem.\ref{thm:find-is-associative}}\\
+&=\finD{\sigma'}{x}{\compose{\emptyheap}{\sigma}}{\find{\sigma}{x}{\emptyheap}{\li{x}}}=\\
+&=\finD{\sigma'}{x}{\sigma}{\deref{\sigma}{x}}
+\end{align*}
+\end{proof}
+%
+Рассмотрим ситуацию, когда функция $f$ вызывает $g$, а функция $g$ вызывает $h$. Мы можем вычислить состояние вплоть до вызова $h$ и затем воспроизвести на нём эффект $h$. Также мы можем вычислить эффект $g$ (включающий эффект $h$) и воспроизвести его в контексте состояния $f$. Корректный формализм композициональной памяти не должен зависеть от порядка вычисления и воспроизведения результатов в таких случаях. Следующая теорема показывает, что КСП обладает указанным свойством.
+%
+\begin{thm}\label{thm:state-composition-is-associative}
+Для всех символьных куч $\sigma_1$, $\sigma_2$ и $\sigma_3$
+\begin{align}\notag
+	\compose{(\compose{\sigma_1}{\sigma_2})}{\sigma_3} = \compose{\sigma_1}{(\compose{\sigma_2}{\sigma_3})}
+\end{align}
+\end{thm}
+\begin{proof}
+Для начала покажем равенство их областей действия.
+\begin{align*}
+&\Dom{\compose{(\compose{\sigma_1}{\sigma_2})}{\sigma_3}}\eqbyref{eq:domain-of-composition}\\
+&=\dom{\compose{\sigma_1}{\sigma_2}}\cup\big\{\fillterm{(\compose{\sigma_1}{\sigma_2})}{l_3} \mid l_3\in\dom{\sigma_3} \big\}\eqbyref{eq:domain-of-composition}\\
+&= \dom{\sigma_1}\cup\big\{\fillterm{\sigma_1}{l_2} \mid l_2\in\dom{\sigma_2}\big\}\cup\\
+&\qquad\cup\big\{\fillterm{(\compose{\sigma_1}{\sigma_2})}{l_3} \mid l_3\in\dom{\sigma_3}\big\}\eqby{\autoref{thm:term-composition-is-associative}}\\
+&= \dom{\sigma_1}\cup\big\{\fillterm{\sigma_1}{l_2} \mid l_2\in\dom{\sigma_2}\big\}\cup\\
+&\qquad\cup\big\{\fillterm{\sigma_1}{(\fillterm{\sigma_2}{l_3})} \mid l_3\in\dom{\sigma_3}\big\}=\\
+&= \dom{\sigma_1}\cup\big\{\fillterm{\sigma_1}{l_2} \mid l_2\in\dom{\sigma_2}\big\}\cup\\
+&\qquad\cup\big\{\fillterm{\sigma_1}{l_3'} \mid l_3'\in\fillterm{\sigma_2}{\dom{\sigma_3}}\big\}=\\
+&= \dom{\sigma_1}\cup\big\{\fillterm{\sigma_1}{l_{23}} \mid l_{23}\in\dom{\sigma_2}\cup\fillterm{\sigma_2}{\dom{\sigma_3}}\big\}=\\
+&= \dom{\sigma_1}\cup\big\{\fillterm{\sigma_1}{l_{23}} \mid l_{23}\in\dom{\compose{\sigma_2}{\sigma_3}}\big\}\eqbyref{eq:domain-of-composition}\Dom{\compose{\sigma_1}{(\compose{\sigma_2}{\sigma_3})}}
+\end{align*}
+%
+Рассмотрим произвольное $x\in\Dom{\compose{(\compose{\sigma_1}{\sigma_2})}{\sigma_3}}$,
+%
+\begin{align*}\notag
+&\big(\compose{(\compose{\sigma_1}{\sigma_2})}{\sigma_3}\big)\big(x\big)=\\
+&=\finD{\sigma_3}{x}{\compose{\sigma_1}{\sigma_2}}{\finD{\sigma_2}{x}{\sigma_1}{\sigma_1(x)}}\eqby{\autoref{thm:find-is-associative}}\\
+&=\finD{\compose{\sigma_2}{\sigma_3}}{x}{\sigma_1}{\sigma_1(x)}=(\compose{\sigma_1}{\big(\compose{\sigma_2}{\sigma_3})}\big)\big(x\big)
+\end{align*}
+\end{proof}
+%
+Обозначим за $\heapset$ множество всех символьных куч.
+%
+\begin{thm}
+$(\heapset, \circ)$~--- моноид.
+\end{thm}
+\begin{proof}
+\autoref{thm:composition-is-heap} показывает замкнутость $\heapset$ относительно $\circ$, по~\autoref{thm:empty-heap-properties}, $\emptyheap$~--- нейтральный элемент, и по~\autoref{thm:state-composition-is-associative}, $\circ$ ассоциативна.
+\end{proof}
+%
+Мы показали, что КСП обладает ожидаемыми свойствами композициональной памяти. В следующих двух секциях мы расширим формализм КСП двумя новыми операциями над символьными кучами: объединением и записью.
+
+\subsection{Объединение символьных куч}
+%
+%
+\begin{defn}\label{def:heap-merge}
+\emph{Объединением} $\sigma=\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}$ символьных куч $\sigma_1,\ldots,\sigma_n$ по непересекающимся ограничениям $g_1,\ldots,g_n$ будем называть частичную функцию с $\dom{\sigma}=\bigcup_{i=1}^{n}{\dom{\sigma_i}}$, для которой выполняется
+\begin{align*}
+&\big(\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}\big)\big(x\big)\eqdef\\
+&\eqdef\Union{\pair{g_1}{\deref{\sigma_1}{x}},\ldots,\pair{g_n}{\deref{\sigma_n}{x}}}
+\end{align*}
+\end{defn}
+%
+Для упрощения внешнего вида доказательств, мы сокращаем нотацию $\merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}$ и пишем просто $\amerge{\pair{g_i}{\sigma_i}}$; аналогично вместо $\union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}$ далее будем писать $\aunion{\pair{g_i}{v_i}}$.
+%
+\begin{restatable}{lem}{readstoreinvariantlemma}\label{thm:read-store-invariant}
+Для любой символьной кучи $\sigma$ и символьных локаций $x$, $y$,
+\begin{align*}
+	\union{\paiR{\mg{x}{y}}{\deref{\sigma}{x}}}=\union{\paiR{\mg{x}{y}}{\deref{\sigma}{y}}}
+\end{align*}
+\end{restatable}
+\begin{proof}
+Утверждение следует из инварианта кучи для $\sigma$. Более строгое доказательство смотри в~\autoref{apdx:proofs}.
+\end{proof}
+%
+\begin{thm}
+Для всех символьных куч $\sigma_1,\ldots,\sigma_n$ и непересекающихся ограничений $g_1,\ldots,g_n$,\\
+$\amerge\pair{g_i}{\sigma_i}$~--- символьная куча.
+\end{thm}
+\begin{proof}
+Возьмём $x, y \in \dom{\amerge\pair{g_i}{\sigma_i}}=\bigcup_{i=1}^{n}{\dom{\sigma_i}}$.
+\begin{align*}
+&\aunion{\Pair{\mg{x}{y}}{\amerge\pair{g_i}{\sigma_i}(x)}}=\\
+=&\,\aunion{\Pair{\mg{x}{y}}{\aunion\paiR{g_i}{\deref{\sigma_i}{x}}}}=\\
+=&\,\aunion\Pair{\mg{x}{y}\wedge g_i}{\deref{\sigma_i}{x}}\eqby{\autoref{thm:read-store-invariant}}\\
+=&\,\aunion\Pair{\mg{x}{y}\wedge g_i}{\deref{\sigma_i}{y}}=\\
+=&\,\aunion{\Pair{\mg{x}{y}}{\amerge\pair{g_i}{\sigma_i}(y)}}
+\end{align*}
+\end{proof}
+%
+\begin{restatable}{lem}{mergefindlemma}\label{thm:merge-find}
+Для всех символьных куч $\sigma_1,\ldots,\sigma_n, \tau$, непересекающихся ограничений $g_1,\ldots,g_n$, символьных локаций $x$ и символьных выражений $d$,
+\begin{align*}
+&\Find{\amerge\paiR{g_i}{\sigma_i}}{x}{\tau}{\deref{\tau}{x}}=\\
+&\aunion\Pair{\fillterm{\tau}{g_i}}{\find{\sigma_i}{x}{\tau}{\deref{\tau}{x}}}
+\end{align*}
+\end{restatable}
+\begin{proof}См.~\autoref{apdx:proofs}.
+\end{proof}
+%
+\begin{thm}\label{thm:merge-read}
+Для всех символьных куч $\sigma_1,\ldots,\sigma_n$, непересекающихся ограничений $g_1,\ldots,g_n$ и локаций $x$,
+\begin{align*}
+\DereF{\amerge\paiR{g_i}{\sigma_i}}{x}=\aunion\Pair{g_i}{\deref{\sigma_i}{x}}
+\end{align*}
+\end{thm}
+\begin{proof}
+\begin{align*}
+&\DereF{\amerge\paiR{g_i}{\sigma_i}}{x}=\Find{\amerge\paiR{g_i}{\sigma_i}}{x}{\emptyheap}{\deref{\emptyheap}{x}}=\\
+&\eqby{\autoref{thm:merge-find}}\aunion\Pair{\fillterm{\emptyheap}{g_i}}{\find{\sigma_i}{x}{\emptyheap}{\deref{\emptyheap}{x}}}=\\
+&=\aunion\Pair{g_i}{\deref{\sigma_i}{x}}
+\end{align*}
+\end{proof}
+%
+% \begin{wrapfigure}{c}{0.61\textwidth}
+\vspace{-0.5in}
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{.45\textwidth}
+	\resizebox{\textwidth}{!}{\mergeleftpict}
+\end{minipage}
+%\hspace{1cm}
+\begin{minipage}[t]{.45\textwidth}
+	\resizebox{\textwidth}{!}{\mergerightpict}
+\end{minipage}
+\caption{Композиция объединений куч}
+\label{figure:merge-composition}
+\end{figure}
+\vspace{-0.3in}
+% \end{wrapfigure}
+%
+Теперь покажем, что объединение символьных куч инвариантно относительно стратегий поиска и объединения, выбранных в движке символьного исполнения. То есть вне зависимости от того, в каких точках движок символьного исполнения производит объединение состояний, конечное состояние должно быть тем же самым. Чтобы гарантировать это, необходимо рассмотреть два случая объединений, представленные на~\autoref{figure:merge-composition}.
+% \begin{figure}
+% \centering
+% \begin{minipage}{.3\textwidth}
+% 	\resizebox{\textwidth}{!}{\mergeleftpict}
+% \end{minipage}
+% \hspace{1cm}
+% \begin{minipage}{.3\textwidth}
+% 	\resizebox{\textwidth}{!}{\mergerightpict}
+% \end{minipage}
+% \caption{Compositions of merged heaps}
+% \label{figure:merge-composition}
+% \end{figure}
+
+\begin{thm}\label{thm:merge-right-compose}
+Для любых символьных куч $\sigma,\sigma_1,\ldots,\sigma_n$ и непересекающихся ограничений $g_1,\ldots,g_n$,
+\begin{align*}
+&\compose{\sigma}{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}=\\
+=&\,\Merge{\pair{\fillterm{\sigma}{g_1}}{\compose{\sigma}{\sigma_1}},\ldots,\pair{\fillterm{\sigma}{g_n}}{\compose{\sigma}{\sigma_n}}}
+\end{align*}
+\end{thm}
+\begin{proof}
+\begin{align*}
+&\Dom{\compose{\sigma}{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}}=\\
+&=\Dom{\sigma}\cup\fillterm{\sigma}{\Dom{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}}=\\
+&=\Dom{\sigma}\cup\fillterm{\sigma}{\bigcup_{i=0}^{n}{\dom{\sigma_i}}}=\bigcup_{i=0}^{n}\Big(\dom{\sigma}\cup\fillterm{\sigma}{\dom{\sigma_i}}\Big)=\\
+&=\bigcup_{i=0}^{n}{\dom{\compose{\sigma}{\sigma_i}}}=\\
+&=\Dom{\Merge{\pair{\fillterm{\sigma}{g_1}}{\compose{\sigma}{\sigma_1}},\ldots,\pair{\fillterm{\sigma}{g_n}}{\compose{\sigma}{\sigma_n}}}}
+\end{align*}
+Возьмём $x\in\compose{\sigma}{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}$. Напомним, что для $x\in \dom{\sigma}, \sigma(x)=\deref{\sigma}{x}$.
+\begin{align*}
+&\Big(\compose{\sigma}{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}\Big)(x)=\\
+&=\Deref{\compose{\sigma}{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}}{x}\eqby{\autoref{thm:read-of-composition}}\\
+&=\Find{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}{x}{\sigma}{\deref{\sigma}{x}}\eqby{\autoref{thm:merge-find}}\\
+&=\Union{\paiR{\fillterm{\sigma}{g_1}}{\find{\sigma_1}{x}{\sigma}{\deref{\sigma}{x}}},\ldots,\\
+&\qquad\qquad\paiR{\fillterm{\sigma}{g_n}}{\find{\sigma_n}{x}{\sigma}{\deref{\sigma}{x}}}}\eqby{\autoref{thm:read-of-composition}}\\
+&=\Union{\paiR{\fillterm{\sigma}{g_1}}{\deref{\compose{\sigma}{\sigma_1}}{x}},\ldots,\\
+&\qquad\qquad\paiR{\fillterm{\sigma}{g_n}}{\deref{\compose{\sigma}{\sigma_n}}{x}}}\eqby{\autoref{thm:read-of-composition}}\\
+&=\Big(\Merge{\pair{\fillterm{\sigma}{g_1}}{\compose{\sigma}{\sigma_1}},\ldots,\pair{\fillterm{\sigma}{g_n}}{\compose{\sigma}{\sigma_n}}}\Big)(x)
+\end{align*}
+\end{proof}
+Интересно, что симметричный случай гораздо сложнее. Например, возьмём
+\mbox{$\sigma_1=\{ \addr{0x1} \mapsto 0, \addr{0x2} \mapsto 0, x \mapsto \addr{0x1}\}$}, \mbox{$\sigma_2=\{ \addr{0x1} \mapsto 0, \addr{0x2} \mapsto 0, x \mapsto \addr{0x2}\}$}, \mbox{$\sigma=\{\li{x} \mapsto 42 \}$}.
+Тогда 
+\begin{align*}
+	&\Dom{\compose{\merge{\pair{g}{\sigma_1},\pair{\neg g}{\sigma_2}}}{\sigma}}=\\
+	&=\Dom{\merge{\pair{g}{\sigma_1},\pair{\neg g}{\sigma_2}}}\cup\\
+	&\qquad\cup\fillterm{\merge{\pair{g}{\sigma_1},\pair{\neg g}{\sigma_2}}}{\dom{\sigma}}=\\
+	&=\{ \addr{0x1}, \addr{0x2}, x, \aunion{}(\pair{g}{\addr{0x1}}, \pair{\neg g}{\addr{0x2}}) \}
+\end{align*}
+что не то же самое, что
+\begin{align*}
+	&\Dom{\merge{\pair{g}{\compose{\sigma_1}{\sigma}},\pair{\neg g}{\compose{\sigma_2}{\sigma}}}}=\\
+	&=\dom{\compose{\sigma_1}{\sigma}}\cup\dom{\compose{\sigma_2}{\sigma}} =\{ \addr{0x1}, \addr{0x2}, x \}
+\end{align*}
+%
+Чтобы избежать проблем такого вида, далее мы будем требовать, чтобы символьные ячейки $\li{*}$ удовлетворяли дополнительному свойству: для любых непересекающихся ограничений $g_1,\ldots,g_n$ и символьных локаций $x_1,\ldots,x_n$ должно выполняться следующее:
+\begin{align}\label{eq:li-constraint}
+	&\Li{\aunion(\pair{g_1}{x_1},\ldots,\pair{g_n}{x_n})}=\notag\\
+	&=\union{\pair{g_1}{\li{x_1}},\ldots,\pair{g_n}{\li{x_n}}}
+\end{align}
+%
+Это требование оказывается ключевым для определения процесса уточнения выражений в объединённых кучах.
+%
+\begin{lem}\label{thm:read-union-loc}
+Для всех символьных куч $\sigma$, непересекающихся ограничений $g_1,\ldots,g_n$ и локаций $x_1,\ldots,x_n$,
+\begin{align*}
+\Deref{\sigma}{\aunion\pair{g_i}{x_i}}=\aunion\paiR{g_i}{\deref{\sigma}{x_i}}
+\end{align*}
+\end{lem}
+\begin{proof}
+\allowdisplaybreaks
+\begin{align*}
+&\Deref{\sigma}{\aunion\pair{g_i}{x_i}}=\\
+&=\rdbody{\aunion\pair{g_i}{x_i}}{\sigma}{\li{\aunion\pair{g_i}{x_i}}}\eqby{Св.\ref{prop:union-properties}, \eqref{eq:li-constraint}}\\
+&=\aunion\PAIR{g_i}{\rdbody{x_i}{\sigma}{\li{x_i}}}=\aunion\Pair{g_i}{\deref{\sigma}{x_i}}
+\end{align*}
+\end{proof}
+%
+Теперь мы хотим сформулировать вспомогательное утверждение: $\fillterm{\amerge\pair{g_i}{\sigma_i}}{e}=\aunion\pair{g_i}{\fillterm{\sigma_i}{e}}$. Однако оно не всегда верно: может случиться так, что $g_1\vee\ldots\vee g_n \neq \top$. Это может произойти, когда некоторые пути исполнения были отброшены, что может привести к попытке уточнить терм в несуществующей куче. Например, можно ожидать, что уточнение терма $42$ в любой куче даст $42$, однако в рамках наших определений мы получим $\union{\pair{g_1}{42},\ldots,\pair{g_1}{42}}=\aunion\pair{g_1\vee\ldots\vee g_n}{42}\neq 42$. Чтобы указанное выше утверждение выполнялось, необходимо ограничить результат условием того, что \ruquote{вычисление существует}.
+%
+\begin{restatable}{lem}{mergetermcompositionlemma}\label{thm:merge-term-composition}
+Для всех символьных куч $\sigma_1,\ldots,\sigma_n$, непересекающихся ограничений $g_1,\ldots,g_n$ и выражений $e$,
+\begin{align*}
+\aunion\Pair{g_1\vee\ldots\vee g_n}{\fillterm{\amerge\pair{g_i}{\sigma_i}}{e}}=\aunion\Pair{g_i}{\fillterm{\sigma_i}{e}}
+\end{align*}
+\end{restatable}
+\begin{proof}
+Смотри~\autoref{apdx:proofs}
+\end{proof}
+%
+Несмотря на то, что технически мы не можем приравнять $\compose{\Merge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}}}{\sigma}$ и $\Merge{\pair{g_1}{\compose{\sigma_1}{\sigma}},\ldots,\pair{g_n}{\compose{\sigma_n}{\sigma}}}$ как теоретико-множественные объекты, следующая теорема показывает, что это не будет большой проблемой благодаря определению чтения: \ruquote{физически} кучи могут быть отображениями различных множеств ключей, однако с точки зрения движка символьного исполнения они будут совпадать.
+%
+\begin{thm}\label{thm:merge-left-compose}
+Для всех символьных куч $\sigma,\sigma_1,\ldots,\sigma_n$, непересекающихся ограничений $g_1,\ldots,g_n$ и локаций $x$,
+\begin{align*}
+&\aunion\Pair{g_1\vee\ldots\vee g_n}{\Deref{\compose{\amerge{\pair{g_i}{\sigma_i}}}{\sigma}}{x}}=\\
+&=\Deref{\amerge{\pair{g_i}{\compose{\sigma_i}{\sigma}}}}{x}
+\end{align*}
+\end{thm}
+\begin{proof}
+Пусть $G\eqdef g_1\vee\ldots\vee g_n$ и $M\eqdef\amerge\pair{g_i}{\sigma_i}$.
+\begin{align*}
+&\aunion\Pair{G}{\Deref{\compose{M}{\sigma}}{x}}\eqby{\autoref{thm:read-of-composition}}\\
+&=\aunion\Pair{G}{\find{\sigma}{x}{M}{\deref{M}{x}}}=\\
+&=\aunion\Pair{G}{\cmpbody{x}{\sigma}{M}{\deref{M}{x}}}\eqby{Лем.\ref{thm:merge-term-composition}, Теор.\ref{thm:merge-read}, Св.\ref{prop:union-properties}}\\
+&=\aunion\PAIR{g_i}{\cmpbody{x}{\sigma}{\sigma_i}{\deref{\sigma_i}{x}}}=\\
+&=\aunion\paiR{g_i}{\finD{\sigma}{x}{\sigma_i}{\deref{\sigma_i}{x}}}\eqby{Лем.\ref{thm:read-of-composition}}\\
+&=\aunion\paiR{g_i}{\deref{\compose{\sigma_i}{\sigma}}{x}}=\Deref{\amerge{\pair{g_i}{\compose{\sigma_i}{\sigma}}}}{x}
+\end{align*}
+\end{proof}
+
+\subsection{Запись в символьную кучу}
+
+В данной секции мы будем пользоваться сокращением $\ite{c}{a}{b}\eqdef\union{\pair{c}{a},\pair{\neg c}{b}}$.
+%
+\begin{defn}
+\emph{Запись} символьного значения $v$ в символьную локацию $y$ символьной кучи $\sigma$~--- это символьная куча $\mutate{\sigma}{y}{v}$, такая что для всех $x\in\Dom{\mutate{\sigma}{y}{\cdot}}=\dom{\sigma}\cup\{y\}$,
+\begin{align*}
+	\big(\mutate{\sigma}{y}{v}\big)\big(x\big)\eqdef\Ite{\mg{x}{y}}{v}{\sigma(y)}
+\end{align*}
+\end{defn}
+%
+Заметим, что инвариант кучи~\eqref{eq:store-invariant} для записей выполняется тривиально.
+%
+\begin{restatable}{lem}{findwritelemma}\label{thm:find-write}
+Для всех символьных куч $\sigma$, $\tau$, символьных локаций $x$, $y$ и символьных выражений $v$, $d$,
+\begin{align*}
+	\finD{\mutate{\sigma}{y}{v}}{x}{\tau}{d}=\Ite{\mg{x}{\fillterm{\tau}{y}}}{\fillterm{\tau}{v}}{\find{\sigma}{x}{\tau}{d}}
+\end{align*}
+\end{restatable}
+\begin{proof}
+Смотри~\autoref{apdx:proofs}.
+\end{proof}
+%
+\begin{thm}\label{thm:read-of-write}
+Для всех символьных куч $\sigma$, символьных локаций $x$, $y$ и символьных выражений $v$,
+\begin{align*}
+	\Deref{\mutate{\sigma}{y}{v}}{x} = \Ite{\mg{x}{y}}{v}{\deref{\sigma}{x}}
+\end{align*}
+\end{thm}
+\begin{proof}
+\begin{align*}
+&\Deref{\mutate{\sigma}{y}{v}}{x}=\find{\mutate{\sigma}{y}{v}}{x}{\emptyheap}{\li{x}}\eqby{Лем.\ref{thm:find-write}}\\
+&=\Ite{\mg{x}{\fillterm{\emptyheap}{y}}}{\fillterm{\emptyheap}{v}}{\find{\sigma}{x}{\emptyheap}{\li{x}}}=\\
+&=\Ite{\mg{x}{y}}{v}{\deref{\sigma}{x}}
+\end{align*}
+\end{proof}
+%
+\begin{thm}\label{thm:compose-write}
+Для всех символьных куч $\sigma$, $\sigma'$, символьных локаций $y$ и символьных выражений $v$,
+\begin{align*}
+	\compose{\sigma}{\mutate{\sigma'}{y}{v}}=\mutate{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{y}}{\fillterm{\sigma}{v}}
+\end{align*}
+\end{thm}
+\begin{proof}
+\begin{align*}
+&(\compose{\sigma}{\mutate{\sigma'}{y}{v}})(x)=\find{\mutate{\sigma'}{y}{v}}{x}{\sigma}{\sigma(x)}\eqby{Лем.\ref{thm:find-write}}\\
+&=\Ite{\mg{x}{\fillterm{\sigma}{y}}}{\fillterm{\sigma}{v}}{\find{\sigma'}{x}{\sigma}{\sigma(x)}}=\\
+&=\Ite{\mg{x}{\fillterm{\sigma}{y}}}{\fillterm{\sigma}{v}}{(\compose{\sigma}{\sigma'})(x)}=\mutate{\compose{\sigma}{\sigma'}}{\fillterm{\sigma}{y}}{\fillterm{\sigma}{v}}
+\end{align*}
+\end{proof}
+%
+\begin{thm}\label{thm:merge-write}
+Для всех символьных куч $\sigma_1,\ldots,\sigma_n$, непересекающихся ограничений $g_1,\ldots,g_n$, символьных локаций $y$ и символьных выражений $v$,
+\begin{align*}
+\Mutate{\amerge{\pair{g_i}{\sigma_i}}}{y}{v}=\amerge{\paiR{g_i}{\mutate{\sigma_i}{y}{v}}}
+\end{align*}
+\end{thm}
+\begin{proof}
+\begin{align*}
+&\Dom{\Mutate{\amerge{\pair{g_i}{\sigma_i}}}{y}{v}}=\bigcup_{i=1}^n{\dom{\sigma_i}}\cup\{y\}=\\
+&=\Dom{\amerge{\paiR{g_i}{\mutate{\sigma_i}{y}{v}}}}
+\end{align*}
+Пусть $x\in\Dom{\Mutate{\amerge{\pair{g_i}{\sigma_i}}}{y}{v}}$.
+\begin{align*}
+&\Mutate{\amerge{\pair{g_i}{\sigma_i}}}{y}{v}(x)=\Ite{\mg{x}{y}}{v}{\amerge{\pair{g_i}{\sigma_i}}(x)}=\\
+&=\Ite{\mg{x}{y}}{v}{\aunion{\pair{g_i}{\deref{\sigma_i}{x}}}}\eqby{Св.\ref{prop:union-properties}}\\
+&=\aunion{\Pair{g_i}{\Ite{\mg{x}{y}}{v}{\deref{\sigma_i}{x}}}}=\\
+&=\amerge{\paiR{g_i}{\mutate{\sigma_i}{y}{v}}}(x)
+\end{align*}
+\end{proof}

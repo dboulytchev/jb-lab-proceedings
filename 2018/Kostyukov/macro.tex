@@ -1,0 +1,132 @@
+% \newcommand\eqby[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny #1}}}{=}}}
+\newcommand\eqby[1]{\mathrel{\stackrel{\mbox{\normalfont\tiny #1}}{=}}}
+\newcommand\eqbyref[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny\eqref{#1}}}}{=}}}
+\newcommand\eqdef{\eqby{def}}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+\newcommand\encircle[1]{%
+  \tikz[baseline=(X.base)] 
+    \node (X) [draw, shape=circle, inner sep=0] {\strut #1};}
+
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+\let\emptyheap\epsilon
+
+\newcommand\abs[1]{\left|#1\right|}
+\newcommand\pair[2]{\langle#1, #2\rangle}
+\newcommand\paiR[2]{\big\langle#1, #2\big\rangle}
+\newcommand\Pair[2]{\Big\langle#1, #2\Big\rangle}
+\newcommand\PAIR[2]{\bigg\langle#1, #2\bigg\rangle}
+\newcommand\conv[2]{\llbracket#1\rrbracket_{#2}}
+\newcommand\convtau[1]{\conv{#1}{\tau}}
+
+\newcommand\addrset{loc}
+\newcommand\termset{term}
+\newcommand\guardset{guard}
+
+\newcommand\aunion{union}
+\newcommand\union[1]{\aunion\big(#1\big)}
+\newcommand\Union[1]{\aunion\Big(#1\Big)}
+\newcommand\UNION[1]{\aunion\Bigg(#1\Bigg)}
+\newcommand\unions[1]{\aunion\big\{#1\big\}}
+\newcommand\Unions[1]{\aunion\Big\{#1\Big\}}
+\newcommand\UNIONs[1]{\aunion\Bigg\{#1\Bigg\}}
+
+\newcommand\dom[1]{dom(#1)}
+\newcommand\Dom[1]{dom\big(#1\big)}
+
+\newcommand\addr[1]{\texttt{\small{#1}}}
+\newcommand\mg[2]{#1=#2}
+\newcommand\nmg[2]{#1\neq#2}
+\newcommand\gls[2]{gls(#1,#2)}
+\newcommand\papplytw[2]{#1\,\,#2}
+\newcommand\papplyt[3]{#1\,\,#2\,\,#3}
+\newcommand\papply[4]{#1\,\,#2\,\,#3\,\,#4}
+\newcommand\papplyf[5]{#1\,\,#2\,\,#3\,\,#4\,\,#5}
+
+\newcommand\fancyname{$\iota$-calculus}
+
+\newcommand\fillterm[2]{#1\bullet#2}
+\newcommand\compose[2]{#1\circ#2}
+\newcommand\li[1]{LI(#1)}
+\newcommand\Li[1]{LI\big(#1\big)}
+\newcommand\indep[2]{indep(#1,#2)}
+\newcommand\indeprec[3]{indep_{rec}(#1,#2,#3)}
+\newcommand\Indeprec[3]{indep_{rec}\big(#1,#2,#3\big)}
+\newcommand\aderef{read}
+\newcommand\amutate{write}
+\newcommand\agmutate{Write}
+\newcommand\amerge{merge}
+\newcommand\agmerge{Merge}
+\newcommand\agcompose{\bigcirc}
+\newcommand\agrec{Rec}
+\newcommand\agho{App}
+\newcommand\afind{find}
+\newcommand\aite{ite}
+\newcommand\deref[2]{\aderef(#1,#2)}
+\newcommand\Deref[2]{\aderef\big(#1,#2\big)}
+\newcommand\DereF[2]{\aderef\Big(#1,#2\Big)}
+\newcommand\mutate[3]{\amutate(#1,#2,#3)}
+\newcommand\Mutate[3]{\amutate\big(#1,#2,#3\big)}
+\renewcommand\merge[1]{\amerge(#1)}
+\newcommand\Merge[1]{\amerge\big(#1\big)}
+\newcommand\merges[1]{\amerge\{#1\}}
+\newcommand\Merges[1]{\amerge\big\{#1\big\}}
+\newcommand\gmerge[1]{\agmerge(#1)}
+\newcommand\GMerge[1]{\agmerge\big(#1\big)}
+\newcommand\gcompose[2]{#1\agcompose#2}
+\newcommand\GCompose[2]{#1\agcompose#2}
+\newcommand\gapp[1]{\agho(#1)}
+\newcommand\GApp[1]{\agho\big(#1\big)}
+\newcommand\grec[1]{\agrec(#1)}
+\newcommand\GRec[1]{\agrec\big(#1\big)}
+\newcommand\gmutate[2]{\agmutate(#1,#2)}
+\newcommand\GMutate[2]{\agmutate\big(#1,#2\big)}
+\newcommand\find[4]{\afind(#1,#2,#3,#4)}
+\newcommand\finD[4]{\afind\big(#1,#2,#3,#4\big)}
+\newcommand\Find[4]{\afind\Big(#1,#2,#3,#4\Big)}
+\newcommand\findnew[3]{\afind(#1,#2,#3)}
+\newcommand\finDnew[3]{\afind\big(#1,#2,#3\big)}
+\newcommand\Findnew[3]{\afind\Big(#1,#2,#3\Big)}
+\newcommand\ite[3]{\aite(#1,#2,#3)}
+\newcommand\Ite[3]{\aite\big(#1,#2,#3\big)}
+\newcommand\ITE[3]{\aite\Big(#1,#2,#3\Big)}
+\newcommand\heapset{\Sigma}
+\newcommand\derefold[2]{\aderef^{\heapset}(#1,#2)}
+\newcommand\mergeold[1]{\amerge^{\heapset}(#1)}
+\newcommand\mutateold[3]{\amutate^{\heapset}(#1,#2,#3)}
+\newcommand\findold[4]{\afind^{\heapset}(#1,#2,#3,#4)}
+\newcommand\finDold[4]{\afind^{\heapset}\big(#1,#2,#3,#4\big)}
+\newcommand\composeold[2]{#1\circ^\Sigma #2}
+\newcommand\funcid{func\_id}
+
+\newcommand\rdbodyext[5]{\Union{\big\{\paiR{#4\mg{#1}{#5}}{#2(#5)} \mid #5\in\dom{#2} \big\}\\&\qquad\qquad\qquad\cup\pair{#4\bigwedge_{\mathclap{#5\in\dom{#2}}}{\nmg{#1}{#5}}}{#3}}}
+\newcommand\rdbody[3]{\rdbodyext{#1}{#2}{#3}{}{l}}
+\newcommand\cmpbodyext[6]{\Union{\big\{\paiR{#1\mg{#2}{\fillterm{#4}{#6}}}{\fillterm{#4}{(#3(#6))}} \mid #6\in\dom{#3} \big\}\cup\notag\\&\qquad\qquad\qquad\cup\paiR{#1\bigwedge_{\mathclap{#6\in\dom{#3}}}{\nmg{#2}{\fillterm{#4}{#6}}}}{#5}}}
+\newcommand\cmpbody[4]{\cmpbodyext{}{#1}{#2}{#3}{#4}{l}}
+
+\newcommand{\assign}[2]{#1 $\leftarrow$ #2}
+\newcommand{\kwd}[1]{\textbf{#1}}
+\newcommand{\kwdnop}{\kwd{nop}}
+\newcommand{\kwdread}{\kwd{read}}
+\newcommand{\kwdwrite}{\kwd{write}}
+\newcommand{\kwdite}[3]{\kwd{if}\,#1\,\kwd{then}\,#2\,\kwd{else}\,#3}
+\newcommand{\kwdand}{\kwd{and}}
+\newcommand{\kwdor}{\kwd{or}}
+\newcommand{\kwdnot}{\kwd{not}}
+\newcommand{\kwdtry}{\kwd{try}}
+\newcommand{\kwdfail}{\kwd{fail}}
+\newcommand{\kwdcatch}{\kwd{catch}}
+\newcommand{\kwdnew}{\kwd{alloc}}
+\newcommand{\kwdcall}{\kwd{call}}
+\newcommand{\kwdlet}{\kwd{let}}
+
+\newcommand\attention[1]{$[$\textbf{\textcolor{purple}{attention}}:~~\emph{\textcolor{darkgray}{#1}}$]$}
+\newcommand\todo{\textcolor{purple}{<...>}}
+
+\newcommand{\ruquote}[1]{<<#1>>}
