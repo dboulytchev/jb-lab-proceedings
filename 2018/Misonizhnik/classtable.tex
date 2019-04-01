@@ -1,0 +1,62 @@
+\newcommand\dictionaryct
+{
+\begin{multicols}{2}
+    \begin{lstlisting}
+interface (*\ienumerable*) {}
+interface (*\icollectiontype:*) (*\ienumerable*) {}
+interface (*\ienumerable\texttt{<}*)out(*~\xtype\texttt{>}:*)
+    (*\ienumerable*){}
+struct (*\keyvaluepairtype\texttt{<}\xtype, \ytype\texttt{>}*) {}
+interface (*\onector{\icollectiontype}{\xtype}:*)
+    (*\onector{\ienumerable}{\xtype}*) {}
+interface (*\idictionarytype:*) (*\icollectiontype*) {}
+interface (*\onector{\idictionarytype}{\xtype, \ytype}:*)
+    (*\onector{\icollectiontype}{\onector{\keyvaluepairtype}{\xtype, \ytype}}*) {}
+class (*\onector{\dictionarytype}{\xtype, \ytype}:*)
+    (*\onector{\idictionarytype}{\xtype, \ytype}*),
+    (*\idictionarytype*) {}
+    \end{lstlisting}
+    \columnbreak
+    \begin{alignat*}{3}
+        \classtableline{\objecttype}{} \\
+        \classtableline{\valuetype}{\objecttype} \\
+        \classtableline{\ienumerable}{\objecttype} \\
+        \classtableline{\onector{\ienumerable}{+\xtype}}{\ienumerable} \\
+        \classtableline{\onector{\keyvaluepairtype}{\xtype, \ytype}}{\valuetype} \\
+        \classtableline{\icollectiontype}{\ienumerable} \\
+        \classtableline{\onector{\icollectiontype}{\xtype}}{\onector{\ienumerable}{\xtype}} \\
+        \classtableline{\onector{\idictionarytype}{\xtype, \ytype}}{\onector{\icollectiontype}{\onector{\keyvaluepairtype}{\xtype, \ytype}}} \\
+        \classtableline{\onector{\dictionarytype}{\xtype, \ytype}}{\onector{\idictionarytype}{\xtype, \ytype}} \\
+        \addclasstableline{\idictionarytype}
+    \end{alignat*}
+\end{multicols}
+}
+
+\newcommand\pcpct
+{
+    \begin{alignat*}{3}%
+        \classtableline{\onector{\pcpfstsym}{+\pcpxtype}}{} \\
+        &&\vdots \\
+        \classtableline{\onector{\pcpsndsym}{+\pcpxtype}}{} \\
+        \classtableline{\onector{\pcprconstr}{+\pcpxtype}}{} \\
+        \classtableline{\onector{\pcpsconstr}{+\pcpxtype}}{} \\
+        \classtableline{\pcprconstr_{0}}{\pcprconstr\pcprconstr_{0}, \, \pcpeconstr} \\
+        \classtableline{\pcpsconstr_{0}}{\pcpsconstr\pcpsconstr_{0}, \, \pcpeconstr} \\
+        \classtableline{\pcpeconstr}{} \\
+        \classtableline{\onector{\pcpuword{1}}{+\pcpxtype}}{\overline{\pcpuword{1}}\pcpxtype, \, \pcpwword{1}\pcpxtype, \, \pcpsconstr\pcpxtype, \, \pcprconstr\pcpxtype} \\
+        &&\vdots \\
+        \classtableline{\onector{\pcpuword{n}}{+\pcpxtype}}{\overline{\pcpuword{n}}\pcpxtype, \, \pcpwword{n}\pcpxtype,  \, \pcpsconstr\pcpxtype, \, \pcprconstr\pcpxtype} \\
+        \classtableline{\onector{\pcpvword{1}}{+\pcpytype}}{\overline{\pcpvword{1}}\pcpytype, \, \pcpwword{1}\pcpytype,  \, \pcpsconstr\pcpytype, \, \pcprconstr\pcpytype} \\
+        &&\vdots \\
+        \classtableline{\onector{\pcpvword{n}}{+\pcpytype}}{\overline{\pcpvword{n}}\pcpytype, \, \pcpwword{n}\pcpytype,  \, \pcpsconstr\pcpytype, \, \pcprconstr\pcpytype} \\
+        \classtableline{\onector{\pcpwword{1}}{+\pcpxtype}}{} \\
+        &&\vdots \\
+        \classtableline{\onector{\pcpwword{n}}{+\pcpxtype}}{} \\
+        \classtableline{\pcprestalt}{\pcpuword{1}\pcprestalt, \ldots, \pcpuword{n}\pcprestalt, \, \pcpeconstr} \\
+        \classtableline{\pcprestblt}{\pcpvword{1}\pcprestblt, \ldots, \pcpvword{n}\pcprestblt, \, \pcpeconstr} \\
+        \classtableline{\pcprestart}{\pcpuword{1}\pcprestart, \ldots, \pcpuword{n}\pcprestart, \, \pcpeconstr} \\
+        \classtableline{\pcprestbrt}{\pcpvword{1}\pcprestbrt, \ldots, \pcpvword{n}\pcprestbrt, \, \pcpeconstr} \\
+        \classtableline{\pcprestct}{\pcpwword{1}\pcprestct, \ldots, \pcpwword{n}\pcprestct,\, \pcpeconstr} \\
+        \classtableline{\pcpdword}{\overline{\pcpuword{1}}\pcpdword,\ldots, \overline{\pcpuword{n}}\pcpdword, \, \pcpeconstr} \\
+    \end{alignat*}%
+}
