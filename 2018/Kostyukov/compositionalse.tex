@@ -37,14 +37,13 @@
 \begin{lstlisting}[style=demolang]
 F {
 	if @$g$@ then @$A$@;				// Effect of @$A$@ is @$\sigma_A$@
-	else @$B$@; call F; @$C$@; // Effects of @$B$@ and @$C$@ are @$\sigma_B$@ and @$\sigma_C$@
+	else @$B$@; call F; @$C$@; // Eff. of @$B$@ and @$C$@ are @$\sigma_B$@ and @$\sigma_C$@
 }
 \end{lstlisting}
 
 Очевидный способ вычислить эффект \texttt{F} заключается в том, чтобы раскручивать эту функцию до тех пор, пока инструкция \texttt{\textcolor{blue}{call} F;} не станет недостижимой (из-за накопившихся условий верификации). Этот процесс сойдётся для \ruquote{конечных} функций, и не завершится для рекурсивных функций с неограниченным числом итераций. Однако при помощи обобщённых куч мы можем автоматически построить \emph{уравнение на состояние} функции \texttt{F}.
 
 Процесс построения начинается с исполнения \texttt{F} в изоляции. Исполнение разветвляется по ограничению $g$. Исследуя первую ветку, получаем состояние $\sigma_A$. Теперь последовательно исполняем вторую ветку: эффектом $B$ будет $\sigma_B$, далее следует рекурсивный вызов \texttt{\textcolor{blue}{call} F}. Вместо того, чтобы исследовать тело \texttt{F} заново, мы аппроксимируем сверху эффект \texttt{F}, обозначая его за $\GRec{\texttt{F}}$. Затем, состояние двух последовательных инструкций \texttt{$B$; \textcolor{blue}{call} F;} резюмируется композицией соответствующих состояний $\sigma = \gcompose{\sigma_B}{\GRec{\texttt{F}}}$. Далее движок исполняет $C$ на $\sigma$, получая резюме $\compose{\sigma}{\sigma_C}$ для всей второй ветки. Итоговым состоянием для $F$ будет объединение двух веток, то есть $\GMerge{\pair{g}{\sigma_A}, \pair{\neg g}{\gcompose{\sigma_B}{\gcompose{\grec{\texttt{F}}}{\sigma_C}}}}$. С другой стороны, эффект \texttt{F} обозначается просто $\GRec{\texttt{F}}$. Таким образом, мы получили уравнение
-
 \begin{align*}
 \GRec{\texttt{F}}=\GMerge{\pair{g}{\sigma_A}, \pair{\neg g}{\gcompose{\sigma_B}{\gcompose{\grec{\texttt{F}}}{\sigma_C}}}}
 \end{align*}
@@ -52,7 +51,6 @@ F {
 которое точно описывает все поведения \texttt{F}. Тем самым мы свели задачу верификации программ с кучами к задаче решения систем уравнений над состояниями. В~\autoref{sec:encoding} показано, как можно решать такие системы при помощи решателей ограниченных дизъюнктов Хорна высших порядков.
 
 Теперь можно потребовать, чтобы движок символьного исполнения также поддерживал функцию $rhs : \funcid \rightarrow Heap$, которая отображает идентификаторы рекурсивных функций в соответствующие правые части уравнений на состояния. Эта функция нам потребуется, чтобы определить \emph{отношение независимости}. Мы называем обобщённую кучу $\sigma$ и локацию $x$ независимыми, если обобщённая куча не содержит применений неизвестных функций, и чтение каждой определённой кучи внутри обобщённой даёт только ленивые инстанциации локации $x$. $\indeprec{\sigma}{x}{U} \eqdef$
-
 \begin{align*}
 % &\left\{
     &\begin{array}{rl}
@@ -81,8 +79,9 @@ F {
 \end{align*}
 %
 Заметим, что в обоих случаях четвёртым аргументом $\afind^{\heapset}$ передаётся чтение третьего аргумента. Новая версия $\afind$ будет принимать только три аргумента. Четвёртый аргумент всё ещё полезен для чтения из $\agmutate$ обобщённых куч. Расширение $\afind$ на случай обобщённых куч выглядит следующим образом $\finDnew{\sigma}{x}{\tau}\eqdef$
+
 \begin{align}\label{eq:find-new}
-\left\{
+%\left\{
     \begin{array}{rl}
     \finDold{\sigma}{x}{\tau}{\findnew{\tau}{x}{\emptyheap}}, \mbox{ если } \sigma\in\heapset \\[0.5em]
     \union{\pair{\compose{\tau}{g_1}}{\findnew{\sigma_1}{x}{\tau}},\ldots,\pair{\compose{\tau}{g_n}}{\findnew{\sigma_n}{x}{\tau}}}, \cr
@@ -92,12 +91,12 @@ F {
     \findnew{\tau}{x}{\emptyheap}, \mbox{ если } \sigma = \GRec{f} \mbox{ и } \indep{\sigma}{x}\\[0.5em]
     LI(\compose{\tau}{\sigma}, x), \mbox{ иначе}
     \end{array}
-    \right.%
+%    \right.%
 \end{align}
 
 Такое расширение корректно согласно утверждениям: \autoref{thm:find-is-associative}, \autoref{thm:merge-find} и~\autoref{thm:read-of-write}. Записи обобщённых куч определим следующим образом (это корректно по~\autoref{thm:merge-write}) $\mutate{\sigma}{x}{v}\eqdef$
 \begin{align*}
-\left\{
+%\left\{
     \begin{array}{rl}
     \mutateold{\sigma}{x}{v}, \mbox{ если } \sigma\in\heapset \\[0.4em]
     \GMerge{\pair{g_1}{\mutate{\sigma_1}{x}{v}},\ldots,\pair{g_n}{\mutate{\sigma_n}{x}{v}}}, \cr
@@ -105,7 +104,7 @@ F {
     \GMutate{\sigma_1}{\mutateold{\sigma_2}{x}{v}}, \mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.4em]
     \GMutate{\sigma}{\{x\mapsto v\}}, \mbox{ иначе}
     \end{array}
-    \right.%
+%    \right.%
 \end{align*}
 %
 Чтобы обобщить композицию, необходимо обобщить уточнение. Для $\sigma\in Heap, \sigma'\in\heapset$ определим $\fillterm{\sigma}{\sigma'}$ как частичную функцию с областью определения $\fillterm{\sigma}{\dom{\sigma'}}$ и $(\fillterm{\sigma}{\sigma'})(\fillterm{\sigma}{x})= \fillterm{\sigma}{\sigma'(x)}$ для всех $x\in\dom{\sigma}$. Интуитивно, $\fillterm{\sigma}{\sigma'}$ это куча $\sigma'$ с ленивыми ячейками, заполненными из $\sigma$. Далее, композиция $\compose{\sigma}{\sigma'}\eqdef$
@@ -136,54 +135,52 @@ F {
 
 Полученные обобщения позволяют сформулировать алгоритм композиционального символьного исполнения без раскрутки (см.~\autoref{algo:compositional-se}). Алгоритм имеет много общего с представленным ранее~\autoref{algo:traditional-se}. Отличия состоят в том, что здесь определены функции для работы с динамической памятью при помощи операций над КСП, и изменена функция $Call$.
 %
-\begin{algorithm2e}
-	\SetKwProg{Fn}{Function}{}{}
-	\SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
-	\SetAlgoSkip{}
-	\BlankLine
-    \footnotesize
-    \tcp*[h]{\ldots \emph{ExecStatement} такой же, как в~\autoref{algo:traditional-se}}\\
-	\Fn{\textsc{initSymbolicState}() : Heap} {
-		\Return{$\emptyheap$}\;
-	}
-	\BlankLine
-	\Fn{\textsc{merge}(cond : $guard$, $\sigma_1$ : $Heap$, $\sigma_2$ : $Heap$) : $Heap$} {
-	    \Return{$\merge{\pair{\text{cond}}{\sigma_1}, \pair{\neg \text{cond}}{\sigma_2}}$}\;
-	}
-	\BlankLine
-	\Fn{\textsc{readHeap}($\sigma$ : $Heap$, addr : $loc$) : Term} {
-	    \Return{$\deref{\sigma}{addr}$}\;
-	}
-	\BlankLine
-	\Fn{\textsc{writeHeap}($\sigma$ : $Heap$, addr : $loc$, value : $term$) : Heap} {
-	    \Return{$\mutate{\sigma}{\text{addr}}{\text{value}}$}\;
-	}
-	\BlankLine
-	\Fn{\textsc{allocateInHeap}($\sigma$ : $Heap$, term : $term$) : $Heap$} {
-	    \assign{$addr$}{свежий конкретный адрес}\;
-	    \Return{$\mutate{\sigma}{\text{addr}}{\text{term}}$}\;
-	}
-	\BlankLine
-	\Fn{Call(f : $func$, $\sigma$ : $Heap$, $\pi$ : $PathCondition$) : $Heap$} {
-		\If{$f$ не конкретная функция}{\Return{$\GApp{f}$\label{algo:line:generalized-ho-app}}\;}
-    	\BlankLine
-		\If{$++$counter(f) $>$ 1}{\Return{$\GRec{f}$\label{algo:line:generalized-rec-app}}\;}
-    	\BlankLine
-		\If{$f\not\in\dom{rhs}$}{
-			\assign{\emph{Errors}$_{old}$}{\emph{Errors}\label{algo:line:exploration-start}}\;
-			\assign{$\sigma_f$}{\emph{ExecStatement}($f$.\emph{body}, $\emptyheap$, $\top$)}\;
-		    \assign{$rhs$}{$rhs[f \mapsto \sigma_f]$}\;
-		    \assign{$errs$}{$errs[f \mapsto Errors]$\label{algo:line:exploration-end}}\;
-			\assign{\emph{Errors}}{\emph{Errors}$_{old}$}\;
-		}
-    	\BlankLine
-    	\assign{\emph{Errors}}{\emph{Errors} $\cup\,\,\{ \pi\wedge\fillterm{\sigma}{e} \mid e\in\textit{Errors},\textit{isSatisfiable}(\pi\wedge\fillterm{\sigma}{e}) \}$\label{algo:line:effect-errors}}\;
-		\Return{$\compose{\agmerge{\pair{\pi}{\sigma}}}{rhs(f)}$\label{algo:line:effect-compose}}\;
-	}
-	\BlankLine
+\begin{algorithm}
 \caption{Композициональное символьное исполнение без раскрутки}
 \label{algo:compositional-se}
-\end{algorithm2e}
+%\scriptsize
+\begin{algorithmic}[1]
+    \State \emph{ExecStatement} \ldots \Comment{  такой же, как в~\autoref{algo:traditional-se}}
+	\Function{\textsc{initSymbolicState}}{} : Heap
+		\State \Return{$\emptyheap$}
+	\EndFunction
+	
+	\Function{\textsc{merge}}{cond : $guard$, $\sigma_1$ : $Heap$, $\sigma_2$ : $Heap$} : $Heap$
+	    \State \Return{$\merge{\pair{\text{cond}}{\sigma_1}, \pair{\neg \text{cond}}{\sigma_2}}$}
+	\EndFunction
+	
+	\Function{\textsc{readHeap}}{$\sigma$ : $Heap$, addr : $loc$} : Term
+	    \State \Return{$\deref{\sigma}{addr}$}
+	\EndFunction
+	
+	\Function{\textsc{writeHeap}}{$\sigma$ : $Heap$, addr : $loc$, value : $term$} : Heap
+	    \State \Return{$\mutate{\sigma}{\text{addr}}{\text{value}}$}
+	\EndFunction
+	
+	\Function{\textsc{allocateInHeap}}{$\sigma$ : $Heap$, term : $term$} : $Heap$
+	    \State \assign{$addr$}{новый конкретный адрес}
+	    \State \Return{$\mutate{\sigma}{\text{addr}}{\text{term}}$}
+	\EndFunction
+	
+	\Function{Call}{f : $func$, $\sigma$ : $Heap$, $\pi$ : $PathCondition$} : $Heap$
+		\If{$f$ не конкретная функция}\State \Return{$\GApp{f}$\label{algo:line:generalized-ho-app}}\EndIf
+%    	
+		\If{$++$counter(f) $>$ 1} \State \Return{$\GRec{f}$\label{algo:line:generalized-rec-app}}\EndIf
+%    	
+		\If{$f\not\in\dom{rhs}$}
+			\State \assign{\emph{Errors}$_{old}$}{\emph{Errors}\label{algo:line:exploration-start}}
+			\State \assign{$\sigma_f$}{\emph{ExecStatement}($f$.\emph{body}, $\emptyheap$, $\top$)}
+		    \State \assign{$rhs$}{$rhs[f \mapsto \sigma_f]$}
+		    \State \assign{$errs$}{$errs[f \mapsto Errors]$\label{algo:line:exploration-end}}
+			\State \assign{\emph{Errors}}{\emph{Errors}$_{old}$}
+
+		\EndIf
+    	\State \assign{\emph{Errors}}{\emph{Errors} $\cup\,\,\{ \pi\wedge\fillterm{\sigma}{e} \mid e\in\textit{Errors},\textit{isSatisfiable}(\pi\wedge\fillterm{\sigma}{e}) \}$\label{algo:line:effect-errors}}
+		\State \Return{$\compose{\agmerge{\pair{\pi}{\sigma}}}{rhs(f)}$\label{algo:line:effect-compose}}
+	\EndFunction
+	
+\end{algorithmic}
+\end{algorithm}
 
 
 Применения высшего порядка и рекурсивные вызовы порождают соответствующие символы обобщённых куч (строки~\ref{algo:line:generalized-ho-app},~\ref{algo:line:generalized-rec-app}). Исследованные состояния запоминаются в $rhs$, а найденные ошибки в $errs$ (в настоящей реализации это могут быть базы данных условий верификации). Если функция ещё не была исследована, алгоритм исследует её в изоляции и запоминает её эффект (строки~\ref{algo:line:exploration-start}---\ref{algo:line:exploration-end}), иначе алгоритм переиспользует уже посчитанный эффект. Воспроизведение эффекта происходит за счёт вычисления обобщённой композиции (строка~\ref{algo:line:effect-compose}) и обновления информации об ошибках (строка~\ref{algo:line:effect-errors}). Композиция с $\agmerge\pair{\pi}{\sigma}$ позволяет отсечь ветки, не достижимые при текущем ограничении пути $\pi$.
