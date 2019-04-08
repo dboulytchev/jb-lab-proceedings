@@ -3,96 +3,92 @@
 
 \newcommand{\traditionalalgo}
 {
-\begin{algorithm2e}
-	\scriptsize
-	\SetKw{Yield}{yield}
-	\SetKw{Break}{break}
-	\SetKwProg{Fn}{Function}{}{}
-	\SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
-	\SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
-	\SetKwFor{For}{foreach}{do}{}
-	\SetAlgoSkip{}
-		\KwIn{Корректно типизированная программа $P$, написанная на языке из~\autoref{sec:language}, исследуемая функция $F$}
-	\KwOut{Символьное куча $F$, множество условий путей ошибочных трасс $Errors$}
-	\BlankLine
-		\assign{$\sigma, Errors$}{\texttt{initSymbolicState}(\emph{F}), $\emptyset$\label{algo:line:initState}}\;
-		\Return{ExecStatement\textsc{(}F.body, $\sigma$, true\textsc{)}}\;
-	\BlankLine
-	\Fn{ExecStatement(stmt : Statement, $\sigma$ : SymbolicHeap, $\pi$ : PathCondition) : SymbolicHeap} {
-		\Switch{stmt}{
-			\lCase{\underline{\textsc{nop}}\,\textbf{:}}{
-				\Return{$\sigma$}
-			}
-			\uCase{\underline{\textsc{\{}} statements \underline{\textsc{\}}}\,\textbf{:}}{
-				\For{childStmt $\in$ statements}{
-					\assign{\emph{$\sigma$}}{\emph{ExecStatement}(\emph{childStmt}, \emph{$\sigma$}, \emph{$\pi$})}\;
-				}
-				\Return{$\sigma$}\;
-			}
-			\uCase{\underline{\textsc{if}} cond \underline{\textsc{then}} thenBranch \underline{\textsc{else}} elseBranch\,\textbf{:}}{
-				\assign{\emph{c}}{\emph{Eval}(\emph{cond}, $\sigma$)}\;
-				\Return{Branch\textsc{(}c, $\sigma$, $\pi$,\\
-					\qquad$\lambda\,\pi'.$ExecStatement\textsc{(}thenBranch, fork\textsc{(}$\sigma$\textsc{)}, $\pi'$\textsc{)},\\
-					\qquad$\lambda\,\pi'.$ExecStatement\textsc{(}elseBranch, fork\textsc{(}$\sigma$\textsc{)}, $\pi'$\textsc{))}}\;
-			}
-			\uCase{\underline{\textsc{fail}}\,\textbf{:}}{
-				\assign{$Errors$}{$Errors \cup \{\pi\}$}\;\label{algo:line:abort1}
-				\Return{$\sigma$}\;
-			}
-			\uCase{x $:=$ \underline{\textsc{alloc}}\textsc{(}\emph{$\text{e}_1$, \ldots, $\text{e}_\text{n}$}\textsc{)}\label{algo:line:heap-manipulation-begin}\,\textbf{:}}{
-				\assign{(\emph{$\sigma'$}, \emph{freshRef})}{\texttt{allocateInHeap}\big(\emph{$\sigma$}, ($\text{\emph{Eval}(e}_1, \sigma\text{)},\ldots,\text{\emph{Eval}(}\text{e}_\text{n}, \sigma\text{)}$)\big)\label{algo:line:alloc}}\;
-				\Return{\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma'$, x, freshRef\textsc{\big)}\label{algo:line:write-in-alloc}}
-			}
-			\lCase{x $:=$ expr\,\textbf{:}}{
-				\Return{\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, x, Eval\textsc{(}expr, $\sigma$\textsc{)}\textsc{\big)}\label{algo:line:write-in-assign}}
-			}
-			\uCase{\textsc{(}$\text{x}_\text{1}$, \ldots, $\text{x}_\text{n}$\textsc{)} $:=$ \underline{\textsc{read}}\textsc{(}reference\textsc{)}\,\textbf{:}}{
-				\assign{\emph{r}}{\emph{Eval}(\emph{reference}, $\sigma$)}\;
-				\Return{Branch\textsc{\Big(}r $=$ null, $\sigma$, $\pi$,\\
-					\qquad$\lambda\,\pi'.$ExecStatement\textsc{(}\underline{\textsc{fail}}, $\sigma$, $\pi'$\textsc{)}\label{algo:line:abort2},\\
-					\qquad$\lambda\,\pi'.$\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, $\text{x}_\text{1}$, \ldots, $\text{x}_\text{n}$, \emph{\texttt{readHeap}(\emph{$\sigma$}, \emph{r})}\textsc{\big)\textsc{\Big)}\label{algo:line:read}}\label{algo:line:write-in-read}}\;
-			}
-			\uCase{\underline{\textsc{write}}\textsc{(}reference, \emph{$\text{e}_1$, \ldots, $\text{e}_\text{n}$}\textsc{)}\,\textbf{:}}{
-				\assign{\emph{r}}{\emph{Eval}(\emph{reference}, \emph{state})}\;
-				\Return{Branch\textsc{\Big(}r $=$ null, $\sigma$, $\pi$,\\
-					\qquad$\lambda\,\pi'.$ExecStatement\textsc{(}\underline{\textsc{fail}}, $\sigma$, $\pi'$\textsc{)}\label{algo:line:abort3},\\
-					\qquad$\lambda\,\pi'.$\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, r, \emph{(}$\text{Eval}\emph{(}\emph{e}_1, \sigma\emph{)},\ldots,\text{Eval}\emph{(}\emph{e}_\emph{n}, \sigma\emph{)}$\emph{)}\textsc{\big)}\textsc{\Big)}\label{algo:line:write}}\;\label{algo:line:heap-manipulation-end}
-			}
-			\uCase{\underline{\textsc{call}} func\,\textbf{:}}{
-				\assign{\emph{f}}{\emph{Eval}(\emph{func})}\;
-				\Return{Call\textsc{(}f, $\sigma$, $\pi$\textsc{)}}\;
-			}
-		}
-	}
+\begin{algorithm}
+\scriptsize
 \caption{Классическое символьное исполнение}
 \label{algo:traditional-se}
-\end{algorithm2e}
-\begin{algorithm2e}
-	\scriptsize
-	\SetKwProg{Fn}{Function}{}{}
-	\SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
-	\SetAlgoSkip{}
-	\Fn{Branch(c, $\sigma$, $\pi$, then, else) : SymbolicHeap} {
-		\lIf{isSatisfiable($\pi\,\,\land$\, c)}{\label{algo:line:then-branch-begin}
-			\assign{\emph{$\sigma_{then}$}}{\emph{then}($\pi\,\,\land$\, c)}
-		}
-		\lElse{\assign{\emph{$\sigma_{then}$}}{\emph{$\sigma$}}}
-		\lIf{isSatisfiable($\pi\land\neg$c)}{
-			\assign{\emph{$\sigma_{else}$}}{\emph{else}($\pi\land\neg$c)}
-		}
-		\lElse{\assign{\emph{$\sigma_{else}$}}{\emph{$\sigma$}}}\label{algo:line:else-branch-end}
-		\Return{\texttt{\textsc{merge}}($\sigma_{then}$, $\sigma_{else}$)\label{algo:line:merge}}\;
-	}
-	\Fn{Call(f : Function, $\sigma$ : SymbolicHeap, $\pi$ : PathCondition) : SymbolicHeap\label{algo:line:call-func-begin}} {
-		\If{f~--- символьная функция?}{Аппроксимировать применение функции высшего порядка}
-		\If{$++$counter\textsc{(}f\textsc{)} $>$ \textsc{BOUND}}{Аппроксимировать неограниченную рекурсию}
-		\assign{$\sigma'$}{\emph{ExecStatement}\big(\emph{f.body}, $\sigma$, $\pi$\big)}\;
-		$-$$-$\emph{counter}(\emph{f})\;
-		\Return{$\sigma'$}\;
-	}\label{algo:line:call-func-end}
-	\BlankLine
+\begin{algorithmic}[1]
+	\Require Корректно типизированная программа $P$, написанная на языке из~\autoref{sec:language}, исследуемая функция $F$
+	\Ensure Символьное куча $F$, множество условий путей ошибочных трасс $Errors$
+	
+	\State \assign{$\sigma, Errors$}{\texttt{initSymbolicState}(\emph{F}), $\emptyset$\label{algo:line:initState}}
+	\State \Return \Call{ExecStatement}{F.body, $\sigma$, true}
+
+	\Function{ExecStatement}{stmt : Statement, $\sigma$ : SymbolicHeap, $\pi$ : PathCondition} : SymbolicHeap
+		\Switch{stmt}
+			\Case{\underline{\textsc{nop}}\,\textbf{:}}
+				\Return{$\sigma$}
+			\EndCase
+			\Case{\underline{\textsc{\{}} statements \underline{\textsc{\}}}\,\textbf{:}}
+				\ForAll{childStmt $\in$ statements}
+					\State \assign{\emph{$\sigma$}}{\Call{\emph{ExecStatement}}{\emph{childStmt}, \emph{$\sigma$}, \emph{$\pi$}}}
+				\EndFor
+				\State \Return{$\sigma$}
+			\EndCase
+			\Case{\underline{\textsc{if}} cond \underline{\textsc{then}} thenBranch \underline{\textsc{else}} elseBranch\,\textbf{:}}
+				\State \assign{\emph{c}}{\Call{\emph{Eval}}{\emph{cond}, $\sigma$}}
+				\State \Return {Branch\textsc{(}c, $\sigma$, $\pi$,\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}\textsc{(}thenBranch, \emph{fork}\textsc{(}$\sigma$\textsc{)}, $\pi'$\textsc{)},\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}\textsc{(}elseBranch, \emph{fork}\textsc{(}$\sigma$\textsc{)}, $\pi'$\textsc{))}}
+			\EndCase
+			\Case{\underline{\textsc{fail}}\,\textbf{:}}
+				\State \assign{$Errors$}{$Errors \cup \{\pi\}$}\label{algo:line:abort1}
+				\State \Return{$\sigma$}
+			\EndCase
+			\Case{x $:=$ \Call{\underline{\textsc{alloc}}}{\emph{$\text{e}_1$, \ldots, $\text{e}_\text{n}$}}\label{algo:line:heap-manipulation-begin}\,\textbf{:}}
+				\State \assign{(\emph{$\sigma'$}, \emph{freshRef})}{\texttt{allocateInHeap}\big(\emph{$\sigma$},($\text{\emph{Eval}(e}_1, \sigma\text{)},\ldots,\text{\emph{Eval}(}\text{e}_\text{n}, \sigma\text{)}$)\big)\label{algo:line:alloc}}
+				\State \Return{\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma'$, x, freshRef\textsc{\big)}\label{algo:line:write-in-alloc}}
+			\EndCase
+			\Case{x $:=$ expr\,\textbf{:}}
+				\Return{\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, x, \emph{Eval}(\emph{expr}, $\sigma$)\textsc{\big)}\label{algo:line:write-in-assign}}
+			\EndCase
+			\Case{{$\text{x}_\text{1}$, \ldots, $\text{x}_\text{n}$} $:=$ \underline{\textsc{read}}(\emph{reference})\,\textbf{:}}
+				\State \assign{\emph{r}}{\emph{Eval}(\emph{reference}, $\sigma$)}
+				\State \Return{\emph{Branch}\textsc{\Big(}$r = null$, $\sigma$, $\pi$,\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}(\underline{\textsc{fail}}, $\sigma$, $\pi'$)\label{algo:line:abort2},\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, $\text{x}_\text{1}$, \ldots, $\text{x}_\text{n}$, \texttt{readHeap}(\emph{$\sigma$}, \emph{r})\textsc{\big)\textsc{\Big)}\label{algo:line:read}}\label{algo:line:write-in-read}}
+			\EndCase
+			\Case{\underline{\textsc{write}}({\emph{reference}, \emph{$\text{e}_1$, \ldots, $\text{e}_\text{n}$}})\,\textbf{:}}
+				\State \assign{\emph{r}}{\emph{Eval}(\emph{reference}, \emph{state})}
+				\State \Return{\emph{Branch}\textsc{\Big(}$r = null$, $\sigma$, $\pi$,\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}({\underline{\textsc{fail}}, $\sigma$, $\pi'$})\label{algo:line:abort3},\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, r, ($\text{\emph{Eval}}(\emph{e}_1, \sigma),\ldots,\text{\emph{Eval}}(\emph{e}_\emph{n}, \sigma)$)\textsc{\big)}\textsc{\Big)}\label{algo:line:write}}\label{algo:line:heap-manipulation-end}
+			\EndCase
+			\Case{\underline{\textsc{call}}(func)\,\textbf{:}}
+				\State \assign{\emph{f}}{\emph{Eval}(\emph{func})}
+				\State \Return{\emph{Call}($f$, $\sigma$, $\pi$)}
+			\EndCase
+%		}
+%	}
+	\EndSwitch
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[t]
 \caption{Классическое символьное исполнение (продолжение)}
-\end{algorithm2e}
+\begin{algorithmic}[1]
+	\Function{Branch}{c, $\sigma$, $\pi$, then, else} : SymbolicHeap
+		\If{isSatisfiable($\pi\,\,\land$\, c)}\label{algo:line:then-branch-begin}
+			 \State \assign{\emph{$\sigma_{then}$}}{\emph{then}($\pi\,\,\land$\, c)}
+		\Else~\assign{\emph{$\sigma_{then}$}}{\emph{$\sigma$}}\EndIf
+		\If{isSatisfiable($\pi\land\neg$c)}
+			\State \assign{\emph{$\sigma_{else}$}}{\emph{else}($\pi\land\neg$c)}
+		\Else~\assign{\emph{$\sigma_{else}$}}{\emph{$\sigma$}}\EndIf\label{algo:line:else-branch-end}
+		\State \Return \Call{\texttt{\textsc{merge}}}{$\sigma_{then}$, $\sigma_{else}$}\label{algo:line:merge}
+	\EndFunction
+	\Function{Call}{f : Function, $\sigma$ : SymbolicHeap, $\pi$ : PathCondition} : SymbolicHeap\label{algo:line:call-func-begin}
+		\If{f~--- символьная функция?}
+			\State Аппроксимировать применение функции высшего порядка
+		\EndIf
+		\If{$++$counter{f} $>$ \textsc{BOUND}}
+			\State Аппроксимировать неограниченную рекурсию
+		\EndIf
+		\State \assign{$\sigma'$}{\Call{\emph{ExecStatement}}{\emph{f.body}, $\sigma$, $\pi$}}
+		\State $-$$-$\emph{counter}(\emph{f})
+		\State \Return{$\sigma'$}
+	\EndFunction\label{algo:line:call-func-end}
+\end{algorithmic}
+\end{algorithm}
 }
 
 Символьное исполнение~--- это эффективная техника исследования путей исполнения программ. Символьное исполнение отличается от \emph{конкретного} тем, что исполняет программу над \emph{символьными} значениями, которые моделируют множества всех возможных конкретных входных значений. Движки символьного исполнения поддерживают \emph{состояние} программы~--- тройку $(stmt, \sigma, \pi)$, где $stmt$~--- это текущая инструкция, $\sigma$~--- \emph{символьная память} программы (\emph{символьная куча} в нашем случае) и $\pi$~--- \emph{условие пути} текущей ветки исполнения (конъюнкция логических формул~--- предположений, необходимых, чтобы попасть в текущую ветку исполнения).
