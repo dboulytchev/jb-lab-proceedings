@@ -1,8 +1,8 @@
-\newsavebox\CBox
-\newcommand\hcancel[2][0.1pt]{%
-  \ifmmode\sbox\CBox{$#2$}\else\sbox\CBox{#2}\fi%
-  \makebox[0pt][l]{\usebox\CBox}%
-  \textcolor{red}{\rule[0.3\ht\CBox-#1/2]{\wd\CBox}{#1}}}
+%\newsavebox\CBox
+%\newcommand\hcancel[2][0.1pt]{%
+%  \ifmmode\sbox\CBox{$#2$}\else\sbox\CBox{#2}\fi%
+%  \makebox[0pt][l]{\usebox\CBox}%
+%  \textcolor{red}{\rule[0.3\ht\CBox-#1/2]{\wd\CBox}{#1}}}
 
 \newcommand{\vvariance}[0]{v}
 \newcommand{\objecttype}[0]{\texttt{Object}}
@@ -156,8 +156,8 @@
     &\qquad where \,\, #1 \, &\subtype& \,\, #2
 }
 
-\newcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
-\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+\renewcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+\renewcommand\restr[2]{{% we make the whole thing an ordinary symbol
   \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
   #1 % the function
   \vphantom{\big|} % pretend it's a little taller at normal size
