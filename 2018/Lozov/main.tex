@@ -22,6 +22,16 @@
 \newcommand{\dbi}[1]{\mbox{\bf{#1}}}
 \newcommand{\binds}{\;\mapsto\;}
 
+\renewcommand{\theoremname}{Теорема}
+\renewcommand{\lemmaname}{Лемма}
+\renewcommand{\definitionname}{Определение}
+%\newtheorem{mydef}{Definition}
+%\renewcommand{\abstractname}{Abstract}
+%\renewcommand*{\proofname}{Proof}
+%\renewcommand*{\figurename}{Figure}
+%\renewcommand*{\tablename}{Table}
+%\renewcommand*{\refname}{References}
+
 \lstdefinelanguage{ocanren}{
 keywords={fresh, let, in, match, with, when, class, type,
 object, method, of, rec, repeat, until, while, not, do, done, as, val, inherit,
@@ -559,7 +569,7 @@ $$}
 \label{relational_typing}
 \end{figure}
 
-Семантика расширенного языка представлена на рисунке~\ref{relational_semantics}. Прежде всего, было расширено состояние: помимо стека контекстов и текущего выражения состояние теперь содержит множество использованных {\it семантических переменных} $\Sigma$ и {\it реляционное состояние} $\sigma$. Семантические переменные вводятся и заменяют синтаксические переменные после каждого исполнения конструкции \code{fresh}. Также расширенная семантика в отличие от исходной является недетерминированной, так как к состаянию вида $\inbr{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}$ применимо два правила\textsc{DisjL} и \textsc{DisjR}. Аналогично, к состаянию вида $\inbr{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}$ могут быть применены правила \textsc{ConjStartL} и \textsc{ConjStartR}. Таким образом, результатом вычисления реляционной программы может иметь пустое, конечное или бесконечное множество  успешно вычисленных состояний.
+Семантика расширенного языка представлена на рисунках~\ref{relational_semantics}, \ref{relational_semantics_trans}. Прежде всего, было расширено состояние: помимо стека контекстов и текущего выражения состояние теперь содержит множество использованных {\it семантических переменных} $\Sigma$ и {\it реляционное состояние} $\sigma$. Семантические переменные вводятся и заменяют синтаксические переменные после каждого исполнения конструкции \code{fresh}. Также расширенная семантика в отличие от исходной является недетерминированной, так как к состаянию вида $\inbr{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}$ применимо два правила\textsc{DisjL} и \textsc{DisjR}. Аналогично, к состаянию вида $\inbr{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}$ могут быть применены правила \textsc{ConjStartL} и \textsc{ConjStartR}. Таким образом, результатом вычисления реляционной программы может иметь пустое, конечное или бесконечное множество  успешно вычисленных состояний.
 
 Реляционное состояние используется при исполнении унификации и desequality constraint. Оно состоит из положительной подстановки и множества отрицательных подстановок. Положительная подстановка сопоставляет семантическим переменным выражения, с которыми они связаны. Каждая из отрицательных также сопоставляет семантические переменные и выражения и является ограничением для всех последующих исполнений унификаций.
 
@@ -567,79 +577,85 @@ $$}
 \def\arraystretch{0}
 \begin{figure}
 \centering
-{\bf Семантические переменные:}\\[-7mm]
+{\bf Семантические переменные:}\\
 \begin{gather*}
 \mathfrak S = \mathfrak s_1, \mathfrak s_2, \dots\\
-\Sigma, \Sigma^\prime\dots \subset 2^{\mathfrak S}\\[-2mm]
+\Sigma, \Sigma^\prime\dots \subset 2^{\mathfrak S}\\
 \mbox{\supp{(множества выделенных семантических переменных)}}\\
-\inbr{\Sigma^\prime, \mathfrak s}\gets\inmath{new}\;\Sigma,\;\Sigma^\prime=\Sigma\cup\{\mathfrak s\},\;{\mathfrak s}\notin\Sigma\\[-2mm]
-\mbox{\supp{(выделение новой семантической переменной)}}\vspace{-2mm}
+\inbr{\Sigma^\prime, \mathfrak s}\gets\inmath{new}\;\Sigma,\;\Sigma^\prime=\Sigma\cup\{\mathfrak s\},\;{\mathfrak s}\notin\Sigma\\
+\mbox{\supp{(выделение новой семантической переменной)}}
 \end{gather*}
-{\bf Значения:}\\[-7mm]
+{\bf Значения:}\\
 $$
 \mathcal V \mathrel{{+}{=}} \inmath{success}\mid\mathfrak s
 $$\vspace{-2mm}
-{\bf Контексты:}\\[-6mm]
+{\bf Контексты:}\\
 $$
 \mathcal C \mathrel{{+}{=}}\Box\equiv e\mid v\equiv\Box\mid\Box\not\equiv e\mid v\not\equiv\Box\mid\Box\wedge e\mid e\wedge\Box
-$$\vspace{-2mm}
+$$
 {\bf Состояния:}
 \begin{gather*}
-\inbr{\Sigma,\mathcal S,e,\sigma}\\[-2mm]
-\Sigma \mbox{\supp{-- мн-во семантических переменных,}}\\[-2mm]
-\mathcal S \mbox{\supp{-- стек контекстов,}}\\[-2mm]
-e\mbox{\supp{-- выражение,}}\\[-2mm]
+\inbr{\Sigma,\mathcal S,e,\sigma}\\
+\Sigma \mbox{\supp{-- мн-во семантических переменных,}}\\
+\mathcal S \mbox{\supp{-- стек контекстов,}}\\
+e\mbox{\supp{-- выражение,}}\\
 \sigma\mbox{\supp{-- логическое состояние.}}\\
 \inbr{\emptyset,\epsilon,e,\iota}\mbox{\supp{(начальное состояние)}}
-\end{gather*}\vspace{-2mm}
+\end{gather*}
+\caption{Семантика для реляционного расширения}
+\label{relational_semantics}
+\end{figure}
+
+\begin{figure}
+\centering
 {\bf Переходы:}\vspace{1mm}
 {\def\arraystretch{0}
 \begin{tabular}{p{9cm}}
 {\small$$
 \step{\Sigma,\,\mathcal S,\,\Fresh{x} \;e,\,\sigma}{\Sigma^\prime,\,\mathcal S,\,e[x\gets\mathfrak s],\,\sigma},\,\inbr{\Sigma^\prime,\mathfrak s}\gets\inmath{new}\;\Sigma\ruleno{Fresh}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e_1\equiv e_2,\,\sigma}{\Sigma,\,\Box\equiv e_2:\mathcal S,\,e_1,\,\sigma}\ruleno{UnifyL}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,v\equiv e,\,\sigma}{\Sigma,\,v\equiv\Box:\mathcal S,\,e,\,\sigma}\ruleno{UnifyR}
-$$}\\[-8mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,v_1\equiv v_2,\,\sigma}{\Sigma,\,\mathcal S,\,\inmath{success},\,\sigma^\prime},\,{\bf unify}\,(\sigma,\,v_1,\,v_2)=\sigma^\prime\ruleno{Unify}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e_1\not\equiv e_2,\,\sigma}{\Sigma,\,\Box\not\equiv e_2:\mathcal S,\,e_1,\,\sigma}\ruleno{DisEqL}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,v\not\equiv e,\,\sigma}{\Sigma,\,v\not\equiv\Box:\mathcal S,\,e,\,\sigma}\ruleno{DisEqR}
-$$}\\[-8mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,v_1\not\equiv v_2,\,\sigma}{\Sigma,\,\mathcal S,\,\inmath{success},\,\sigma^\prime},\,{\bf diseq}\,(\sigma,\,v_1,\,v_2)=\sigma^\prime\ruleno{DisEq}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}{\Sigma,\,\mathcal S,\,e_1,\,\sigma}\ruleno{DisjL}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}{\Sigma,\,\mathcal S,\,e_2,\,\sigma}\ruleno{DisjR}
-$$}\\[-8mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}{\Sigma,\,\Box\wedge e_2:\mathcal S,\,e_1,\,\sigma}\ruleno{ConjStartL}
-$$}\\[-10mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}{\Sigma,\,e_1\wedge\Box:\mathcal S,\,e_2,\,\sigma}\ruleno{ConjStartR}
-$$}\\[-7mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,\inmath{success}\wedge e,\,\sigma}{\Sigma,\,\mathcal S,\,e,\,\sigma}\ruleno{ConjL}
-$$}\\[-5mm]
+$$}\\
 {\small$$
 \step{\Sigma,\,\mathcal S,\,e\wedge\inmath{success},\,\sigma}{\Sigma,\,\mathcal S,\,e,\,\sigma}\ruleno{ConjR}
 $$}
-\end{tabular}}\\[-7mm]
-\caption{Семантика для реляционного расширения}
-\label{relational_semantics}
+\end{tabular}}
+\caption{Семантика для реляционного расширения, переходы}
+\label{relational_semantics_trans}
 \end{figure}
 
-Как видно из описания семантики (рисунок~\ref{relational_semantics}) , реляционное состояние обновляется только с помощью функций {\bf unify} (правило $\textsc{Unify}$) и {\bf diseq} (правило $\textsc{DisEq}$). Обе эти функции обобщают алгоритм синтаксической унификации~\cite{lozov-spbu:Unify}. Ниже представлено неформальное описание работы данных функций.
+Как видно из описания семантики (рисунок~\ref{relational_semantics_trans}), реляционное состояние обновляется только с помощью функций {\bf unify} (правило $\textsc{Unify}$) и {\bf diseq} (правило $\textsc{DisEq}$). Обе эти функции обобщают алгоритм синтаксической унификации~\cite{lozov-spbu:Unify}. Ниже представлено неформальное описание работы данных функций.
 
 Функция {\bf unify} унифицирует свои аргументы в контексте текущей положительной подстановки, создавая новую положительную подстановку. В случае успешной унификации эта функция сравнивает новую подстановку со всеми отрицательными подстановками. Если унификация прошла успешно и ни одна отрицательная подстановка не вложена в новую положительную, то функция {\bf unify} успешно выполняется и возвращает обновленное реляционное состояние с новой положительной подстановкой. В противном случае, {\bf unify} не возвращает ничего, и правило $\textsc{Unify}$ не может быть применено, следовательно, вычисление для текущего состояния не может быть продолжено. Функция {\bf diseq} также унифицирует свои аргументы в контексте текущей положительной постановке, в результате чего возникает новая отрицательная подстановка. Если эта отрицательная подстановка отличается от положительной подстановки, то {\bf diseq} завершается и возвращает новое реляционное состояние, пополненное отрицательной подстановкой. В противном случае, правило $\textsc{DisEq}$ не может быть применено, и вычисление для текущего состояния не может быть продолжено. Подробнее эти функции описаны в работе~\cite{lozov-spbu:CKanren}.
 
