@@ -14,13 +14,16 @@
 
 \newtheorem{mytheorem}{Theorem}
 \newtheorem{mydef}{Definition}
-
+\renewcommand{\abstractname}{Abstract}
+\renewcommand*{\proofname}{Proof}
+\renewcommand*{\figurename}{Figure}
+\renewcommand*{\tablename}{Table}
+\renewcommand*{\refname}{References}
 
 \maketitle
 
 \begin{abstract}
 Context-free path querying is a technique, which recently gains popularity in many areas, for example, graph databases, bioinformatics, static analysis, etc. The generalization of matrix-based Valiant's context-free language recognition algorithm for graph case is widely considered as a recipe for efficient context-free path querying; however, no progress has been made in this direction so far.
-
 We propose the first generalization of matrix-based Valiant's algorithm for context-free and conjunctive path querying w.r.t relational and single-path query semantics. Our generalization does not deliver a truly sub-cubic worst-case complexity algorithm, whose existence still remains a hard open problem in the area. On the other hand, the utilization of matrix operations in the process of path query evaluation makes it possible to efficiently apply a wide class of optimizations and computing techniques, such as \textit{GPGPU}, parallel processing, sparse matrix representation, distributed-memory computation, etc.
 
 \end{abstract}
