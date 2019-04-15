@@ -5,7 +5,7 @@
 \usepackage[T2A]{fontenc}
 \usepackage{amsmath}
 \usepackage{tikz}
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows, matrix}
 \usepackage{indentfirst}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -13,7 +13,7 @@
 \usepackage{listings}
 \usepackage{algpseudocode}
 \usepackage{algorithm}
-\usepackage{caption}
+\usepackage[compatibility=false]{caption}
 \usepackage{algorithmicx}
 \usepackage{wrapfig}
 \usepackage{supertabular}
@@ -22,20 +22,28 @@
 \usepackage{textcomp}
 \usepackage{cite}
 \usepackage{ucs}
-\usepackage[caption=false]{subfig}
+%\usepackage[caption=false]{subfig}
 \usepackage{verbments}
 \usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage[inference]{semantic}
 
-%% From Gorokhov
-\usepackage{pgfplots}
-\usepackage{graphicx}
-\usepackage{caption}
+\usepackage[pdfencoding=auto]{hyperref}
 
-%% From Smolina
-%\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
-%\setcounter{secnumdepth}{4}
-%\setcounter{tocdepth}{4}
+%%% Kostyukov
+\usepackage{hyperref}
+\usepackage[inline]{enumitem}
+\usepackage{cmap}
+\usepackage{bm}
+\usepackage{cancel}
+\usepackage{booktabs}
+\usepackage{empheq}
+\usepackage{enumitem}
+\usepackage{thm-restate}
+\usepackage{cleveref}
+\DeclareMathAlphabet{\mathcal}{OT1}{pzc}{m}{it}
 
+\usepackage{bussproofs}
 \usepackage{mathtools}
 \usepackage{multirow}
 \usepackage{url}
@@ -44,13 +52,16 @@
 \let\endproof\relax
 \usepackage{amsthm}
 \usepackage{stmaryrd}
+\usepackage{placeins}
+\usepackage{changepage}
 
-\pgfplotsset{compat=1.9}
+%\pgfplotsset{compat=1.9}
 
 \algtext*{EndWhile}% Remove "end while" text
 \algtext*{EndIf}% Remove "end if" text
 \algtext*{EndFor}% Remove "end for" text
 \algtext*{EndFunction}% Remove "end function" text
+\algtext*{EndProcedure}% Remove "end function" text
 \algrenewcommand\algorithmicindent{1.0em}%
 
 
@@ -66,6 +77,7 @@
 \usepackage{float}
 \usepackage{minted}
 \usepackage{array}
+\usepackage{thmtools}
 
 \newcommand{\cd}[1]{\texttt{#1}}
 
@@ -119,8 +131,8 @@ language=ocanren
 
 %
 
-\pdfpagewidth=14.8cm
-\pdfpageheight=21cm
+%\pdfpagewidth=14.8cm
+%\pdfpageheight=21cm
 
 \textwidth=10cm
 \textheight=15cm
@@ -300,5 +312,7 @@ escapechar=~
 \include{Bozhko/main}
 \include{Kravchenko/main}
 \include{Borovkov/main}
+\include{Kostyukov/main}
+\include{Misonizhnik/main}
 
 \end{document}

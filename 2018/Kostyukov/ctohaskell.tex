@@ -1,0 +1,92 @@
+\newpage
+\section{Трансляцией программ с динамической памятью в Haskell\protect\footnotemark}\label{apdx:haskell}
+\footnotetext{Эта трансляция проведена человеком, однако менее читаемая версия может быть получена полностью автоматически.}
+
+% \begin{figure}
+% \begin{minipage}[t]{.02\textwidth}
+% \hfill
+% \end{minipage}
+\begin{minipage}[t]{.32\textwidth}
+\begin{minted}[fontsize=\fontsize{6}{6},linenos=true,breaklines]{C}
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct node {
+  int key;
+  struct node *next;
+} node_t;
+
+void inc(node_t *node) {
+  if (node) {
+    node->key += 1;
+    inc(node->next);
+  }
+}
+
+void main() {
+  node_t *a =
+    malloc(sizeof(node_t));
+  node_t *b =
+    malloc(sizeof(node_t));
+  node_t *c =
+    malloc(sizeof(node_t));
+  a->key = 10;
+  b->key = 20;
+  c->key = 30;
+  a->next = b;
+  b->next = c;
+  c->next = NULL;
+  inc(a);
+  printf("%d\n", c->key);
+}
+\end{minted}
+%\hfill
+\end{minipage}
+\begin{minipage}[t]{.6\textwidth}
+\begin{minted}[fontsize=\fontsize{6}{6},breaklines]{haskell}
+data Field =  Key | Next
+type Addr = Int
+type Loc = (Addr, Field)
+
+ub _ = error "Undefined behaviour"
+
+-- Heap before the recursive call of "inc"
+h1_int :: (Loc -> Int) -> Addr -> Loc -> Int
+h1_int ctx node loc@(addr, Key) | addr == node = ctx loc + 1
+h1_int ctx _ loc = ctx loc
+
+h1_ptr :: (Loc -> Addr) -> Loc -> Addr
+h1_ptr ctx loc = ctx loc
+
+-- The effect of "inc"
+inc_int :: (Loc -> Int) -> (Loc -> Addr) -> Addr -> Loc -> Int
+inc_int ctx_int ctx_ptr 0 loc = ctx_int loc
+inc_int ctx_int ctx_ptr node loc =
+    let next = ctx_ptr (node, Next) in
+    inc_int (h1_int ctx_int node) (h1_ptr ctx_ptr) next loc
+
+-- Heap before the call of "inc" from "main"
+h2_int :: (Loc -> Int) -> Loc -> Int
+h2_int _ (1, Key) = 10
+h2_int _ (2, Key) = 20
+h2_int _ (3, Key) = 30
+h2_int ctx loc = ctx loc
+
+h2_ptr :: (Loc -> Addr) -> Loc -> Addr
+h2_ptr _ (1, Next) = 2
+h2_ptr _ (2, Next) = 3
+h2_ptr _ (3, Next) = 0
+h2_ptr ctx loc = ctx loc
+
+main =
+    print $ show $ inc_int (h2_int ub) (h2_ptr ub) 1 (3, Key)
+\end{minted}
+\end{minipage}\\[3em]
+Символьное исполнение без раскрутки даст $\compose{h_2}{inc}$ со следующим уравнением на состояние:
+\[
+\GRec{inc} = \GMerge{\pair{\mg{\li{node}}{0}}{\emptyheap}, \pair{\nmg{\li{node}}{0}}{\GCompose{h_1}{\GRec{inc}}}},
+\]
+где $h_1$ и $h_2$~--- это определённые кучи, полученные исполнением строчки~11~и~строк~17-28 соответственно.
+
+Каждая определённая куча транслируется в две функции, по одной на соответствующий тип локации.
+В результате программа транслируется композиционально: \texttt{inc} соответствует той же функции на Haskell, как и \texttt{main}; если появится ещё одна функция, вызывающая \texttt{inc}, готовая Haskell версия функции \texttt{inc} может быть переиспользована. В программах, полученных в результате такой трансляции, всегда будет только хвостовая рекурсия.

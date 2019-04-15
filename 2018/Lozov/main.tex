@@ -1,28 +1,1497 @@
-\title{Название}
+\renewcommand{\lstlistingname}{Листинг}
 
-\titlerunning{Название, которое будет отображаться в колонтитуле}
+\newcommand{\goal}{\mathfrak G}
+\newcommand{\inmath}[1]{\mbox{\lstinline{#1}}}
+\newcommand{\Let}[3]{\inmath{let} \; {#1} = {#2} \; \inmath{in} \; {#3}}
+\newcommand{\LetR}[3]{\inmath{let rec} \; {#1} = {#2} \; \inmath{in} \; {#3}}
+\newcommand{\Match}[3]{\inmath{match} \, {#1} \, \inmath{with} \, \{{#2}\!\to\!{#3}\}}
+\newcommand{\Fresh}[1]{\inmath{fresh} \; ({#1})}
 
-\author{автор}
+\def\transarrow{\xrightarrow}
+\newcommand{\setarrow}[1]{\def\transarrow{#1}}
 
-\authorrunning{Автор для колонтитула}
+\newcommand{\withenv}[2]{{#1}\vdash{#2}}
+\newcommand{\trans}[3]{{#1}\transarrow{#2}{#3}}
+\newcommand{\trule}[2]{\frac{#1}{#2}}
+\renewcommand{\ruleno}[1]{\eqno[\scriptsize\textsc{#1}]}
+\newcommand{\supp}[1]{\scriptsize{#1}}
+\newcommand{\inbr}[1]{\left<{#1}\right>}
+\newcommand{\code}[1]{\lstinline{#1}}
+\newcommand{\mcode}[1]{\text{\lstinline[mathescape=true]{#1}}}
+\newcommand{\sembr}[1]{\llbracket{#1}\rrbracket}
+\newcommand{\dbi}[1]{\mbox{\bf{#1}}}
+\newcommand{\binds}{\;\mapsto\;}
 
-\tocauthor{Автор для оглавления}
+\renewcommand{\theoremname}{Теорема}
+\renewcommand{\lemmaname}{Лемма}
+\renewcommand{\definitionname}{Определение}
+%\newtheorem{mydef}{Definition}
+%\renewcommand{\abstractname}{Abstract}
+%\renewcommand*{\proofname}{Proof}
+%\renewcommand*{\figurename}{Figure}
+%\renewcommand*{\tablename}{Table}
+%\renewcommand*{\refname}{References}
+
+\lstdefinelanguage{ocanren}{
+keywords={fresh, let, in, match, with, when, class, type,
+object, method, of, rec, repeat, until, while, not, do, done, as, val, inherit,
+new, module, sig, deriving, datatype, struct, if, then, else, open, private, virtual, include, success, failure,
+true, false},
+sensitive=true,
+commentstyle=\small\itshape\ttfamily,
+keywordstyle=\ttfamily\underbar,
+identifierstyle=\ttfamily,
+basewidth={0.5em,0.5em},
+columns=fixed,
+fontadjust=true,
+literate={fun}{{$\lambda$}}1 {->}{{$\to$}}3 {===}{{$\equiv$}}1 {=/=}{{$\not\equiv$}}1 {|>}{{$\triangleright$}}3 {\\/}{{$\vee$}}2 {/\\}{{$\wedge$}}2 {^}{{$$}}1,
+morecomment=[s]{(*}{*)}
+}
+
+\lstset{
+mathescape=true,
+%basicstyle=\small,
+identifierstyle=\ttfamily,
+keywordstyle=\bfseries,
+commentstyle=\scriptsize\rmfamily,
+basewidth={0.5em,0.5em},
+fontadjust=true,
+language=ocanren
+}
+
+\title{Преобразование \\
+  типизированных функций\\
+  в реляционную форму}
+
+\titlerunning{Преобразование функций в реляционную форму}
+
+\author{Лозов Петр Алексеевич}
+
+\authorrunning{Лозов~П.~А.}
+
+\tocauthor{Лозов~П.~А.}
 \institute{Санкт-Петербургский государственный университет\\
-	\email{author@mail.com}}
+	\email{lozov.peter@gmail.com}}
 
 \maketitle
 
 \begin{abstract}
-Аннотация
+Реляционное программирование является подходом, позволяющим исполнять программы в различных ``направлениях''; для получения различных сценариев поведения по одной программе.
+В данной работе рассмотрена задача преобразования функциональных программ в реляционные.
+Представлен метод преобразования функций в реляционную форму, доказаны его статическая и динамическая корректности.
+Также в работе обсуждаются ограничения предложенного метода, представлена реализация для подмножества языка OCaml и проведена апробация метода на ряде реалистичных примеров.
 \end{abstract}
 
-\section*{Введение}
-И так далее
+\section{Введение}
+Реляционное программирование~\cite{lozov-spbu:TheReasonedSchemer} является технологией, основанной на построении программы в виде набора отношений. Реляционная программа может быть исполнена в различных  ``направлениях'', то есть независимо от того, какие из аргументов отношения известны, а какие необходимо найти. Это делает возможным, например, моделирование вычисления обратных функций.
 
-\begin{thebibliography}{99}
+Хотя многие логические языки программирования, такие как Prolog, Mercury~\cite{lozov-spbu:Mercury} или Curry~\cite{lozov-spbu:Curry}, позволяют использовать некоторые реляционные эффекты, был создан miniKanren~\cite{lozov-spbu:mkanren}~--- язык, который специально разработан для реляционного программирования. Изначально данный язык являлся небольшим предметно-ориентированным языком (Domain-specific language, DSL) на основе языка Scheme/Racket. Его минимальная реализация~\cite{lozov-spbu:implementation} содержит менее ста строк кода. Впоследствии miniKanren нашел применение, будучи встроенным во многие языки программирования, среди которых Haskell, Standard ML и OCaml.
 
-\bibitem{bib4}
-  Author. Name. Conference.
-  
+Непосредственная разработка реляционных программ является сложной задачей,
+чения языка miniKanren и его особенностей. Однако во многих случаях требуемая реляционная программа может быть получена из некоторой функциональной программы автоматически. Таким образом, появляется задача автоматического преобразования функциональных программ в реляционные.
+
+При наличии подобного метода преобразования становится возможным разработка программы на более привычном функциональном языке с последующим преобразованием её в реляционную программу. C одной стороны, данный подход позволяет более гибко использовать функциональные программы за счет их применения в различных направлениях. С другой стороны, этот подход снижает сложность разработки функциональных программ. Действительно, из всех направлений, в которых может исполняться реляционная спецификация, разработчик может выбрать наиболее просто реализуемое направление на функциональном языке. Например, для реализации генератора всех перестановок элементов заданного списка можно разработать значительно более простой алгоритм сортировки списка, преобразовать его в реляционную форму и исполнить в обратном направлении.
+
+Отметим, что после появления языка miniKanren был создан метод преобразования функциональных программ в реляционные, называемый \textbf{Unnesting}~\cite{lozov-spbu:miniKanren}. Однако данный метод рассматривает только случай нетипизированных программ и работает для специальных примеров. Более того он никогда не был реализован.
+
+В данной работе вводится метод реляционного преобразования, который может быть применён к типизированным программам общего вида. Для описания этих программ используется компактный ML-подобный язык (является подмножеством OCaml), оснащенный системой типов Хиндли-Милнера с let-полиморфизмом~\cite{lozov-spbu:poly}. Приведены формальные модели функционального и реляционного языков и описано преобразование типизированных функций в реляционную форму, для которого доказаны статическая и динамическая корректность. Преобразование в реляционную форму апробировано на наборе примеров.
+
+\section{Обзор литературы}
+
+%\subsection{Реляционное программирование и miniKanren}
+Основной особенностью языка miniKanren~\cite{lozov-spbu:TheReasonedSchemer,lozov-spbu:miniKanren} является отсутствие различий между аргументами и результатом, что позволяет исполнять программы в различных ``направлениях''. Такой подход имеет практическое значение: некоторые задачи формулируются гораздо проще, если рассматривать их как запросы к реляционной программе. Существует целый ряд примеров, подтверждающих это наблюдение. К примеру, задача вывода типов для просто-типизированного лямбда-исчисления~\cite{Lambda} или задача о выявлении населенности какого-либо типа могут быть сформулированы в виде запросов к более простой в реализации реляционной программе проверки корректности типов. Другим примером может послужить задача генерации ``квайнов''~\cite{lozov-spbu:quines}~--- программ, результатом исполнения которых являются они сами. Данная задача может быть представлена как запрос к реляционному интерпретатору, также более простому в сравнении с изначальной задачей. Наконец, генератор всех перестановок элементов данного списка выразим в виде запроса к реляционной сортировке списка.
+
+В контексте данной статьи будет использоваться конкретная реализация языка miniKanren -- DSL на основе Objective Caml4, называемый OCanren~\cite{lozov-spbu:ocanren-git}. Данный язык соответствует оригинальной реализации miniKanren~\cite{lozov-spbu:implementation}. Также OCanren дополнен конструкцией ``Disequality constraint''~\cite{lozov-spbu:CKanren}.
+
+Основной синтаксической единицей языка miniKanren является цель ($goal$). Для определения целей существуют несколько конструкций, описания которых представлены ниже.
+\begin{itemize}
+\item Синтаксическая унификация~\cite{lozov-spbu:Unify} $t_1 \equiv t_2$, где $t_1, t_2$~--- некоторые значения. Унификация выступает в качестве базовой конструкции для построения целей. Если пара значений $t_1, t_2$ может быть корректно унифирована, то цель считается успешно выполненной. В противном случае цель отвергается.
+\item Disequality constraint $t_1 \not \equiv t_2$, где $t_1, t_2$~--- некоторые значения. Как и унификация, используется для построения целей; имеет противоположное унификации поведение.
+\item Дизъюнкция $g_1 \vee g_2$, где $g_1, g_2$~--- некоторые цели. В данном случае обе цели обрабатываются независимо, после чего их решения объединяются.
+\item Конъюнкция $g_1 \wedge g_2$, где $g_1, g_2$~--- некоторые цели. Этот элемент синтаксиса выполняется последовательно, причем $g_2$ вычисляется только в случае успешного выполнения цели $g_1$ и использует результаты её вычисления.
+\item Конструкция $\underline{fresh} \; (x) \; g$, где $x$~--- имя переменной, $g$~--- некоторая цель. Данная конструкция используется для ввода переменной, отсутствующей в текущем контексте исполнения (далее подобные переменные будем называть "свежими"), в цель $g$.
+\end{itemize}
+
+Результат выполнения реляционной программы представляется в виде потока данных, из которого можно запрашивать решения.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.4\textwidth}
+\centering
+\begin{lstlisting}[numbers=left,numberstyle=\small,stepnumber=1,numbersep=-5pt]
+  type num = O | S of num
+
+  let rec add a b c =
+    (a === O /\ b === c) \/
+    (fresh (a' c')
+       (a === S a') /\
+       (add a' b c') /\
+       (c === S c'))
+\end{lstlisting}
+\end{subfigure}
+\caption{Сложение чисел Пеано}
+\label{lozov-spbu:peano}
+\end{figure}
+
+В качестве примера рассмотрим реляционную программу сложения чисел Пеано (рисунок~\ref{lozov-spbu:peano}).
+
+Интерпретировать отношение ``\code{add a b c}'' нужно как следующее утверждение: ``сумма \code{a} и \code{b} равняется \code{c}''. Действительно, в случае, когда \lstinline{a} равняется нулю, \code{b} в точности совпадает с \code{c} (строка 4)
+
+С другой стороны, можно представить \code{a} в виде \code{S a'} (строка 7)~--- для этого понадобится ``свежая'' переменная \code{a'} (строка 5). Также понадобится дополнительная переменная \code{c'} для обозначения суммы \code{a'} и \code{b}, что выражается в виде \code{add a' b c'} (строка 8). Остается указать, что \code{c} должно быть на единицу больше, чем \code{c'} (строка 9).
+
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{c}
+\code{fresh (x) add (S O) (S O) x} $\Rightarrow$ \code{[x = S (S O)]} \\
+(a) \\ \\
+\code{fresh (x) add (S (S O)) x (S (S (S O)))} $\Rightarrow$ \code{[x = S O]}\\
+(b) \\ \\
+\code{fresh (x y) add x y (S (S O))} $\Rightarrow \left[
+\begin{array}{ll}
+\mcode{x = O,}        & \mcode{y = S (S O);} \\
+\mcode{ x = S O,}     & \mcode{y = S O;} \\
+\mcode{ x = S (S O),} & \mcode{y = O} \\
+\end{array} \right]$ \\
+(c) \\ \\
+\code{fresh (x) add (S(S (S O))) x (S (S O))} $\Rightarrow$ \code{[]}\\
+(d)
+\end{tabular}
+\caption{Примеры использования отношения \code{add}}
+\label{examples}
+\end{figure}
+
+Рассмотрим несколько различных целей, построенных с помощью отношения \code{add}, и изображенных на рисунке~\ref{examples}. В каждом примере отношение принимает следующие возможные аргументы: константные выражения и ``свежие'' переменные, внедренные с помощью конструкции \code{fresh}.
+Прежде всего отношение \code{add} можно использовать для сложения двух чисел. Для этого в качестве аргументов ему необходимо передать эти числа и ``свежую'' переменную. В этом случае результатом вычисления цели будет поток, содержащий сумму этих чисел. На рисунке~\ref{examples}a приведен пример суммы двух единиц. Помимо сложения с помощью данного отношения можно произвести вычитание, передав уменьшаемое в качестве третьего аргумента, вычитаемое в качестве первого аргумента и ``свежую'' переменную, олицетворяющую разность, в качестве второго аргумента. На рисунке~\ref{examples}b приведен пример разности чисел 3 и 2. Также отношение \code{add} позволяет сгенерировать все пары слагаемых для фиксированной суммы. Для достижения этой цели передадим отношению две ``свежих'' переменных и число. Полученный после вычисления цели поток будет содержать все пары корректных слагаемых. На рисунке~\ref{examples}c приведен пример генерации слагаемых для суммы, равной двум. Наконец, данное отношение позволяет выявить некорректные аргументы, ведь получение в качестве результата вычисления цели пустого потока сигнализирует об отсутствии правильных решений. На рисунке~\ref{examples}d приведен пример попытки прибавить к трем неотрицательное число и получить два.
+
+\subsection{Схожие работы}
+
+Взаимодействие декларативных языков программирования (а реляционное программирование является декларативным) с языками более прагматичными (например, Java или OCaml)~--- задача достаточно естественная, так как позволяет совместить выразительность декларативного языка с оптимизированностью и обширной функциональностью императивного или функционального языка. В качестве примера можно упомянуть работы~\cite{OCLtoJS_1, OCLtoJS_2}, где для описания ограничений на метамодель REAL \cite{terehov1, terehov2} используется декларативный язык OCL (Object Constraint Language). Данный язык позволил кратко и понятно описать необходимые ограничения, однако оказался непригоден для работы с реальными данными. Поэтому ограничения на языке OCL были преобразованы в скрипты, написанные на императивном языке JavaScript.
+
+В контексте данной работы наиболее показательным декларативным языком программирования является Prolog: во-первых, между ним и языком miniKanren много общего; во-вторых, задача взаимодействия этого языка с другими достаточно исследована. Прежде всего, для языка Prolog существуют методы компиляции в более низкоуровневые языки, например в язык С~\cite{RW:C1,RW:C2}. Для более высокоуровневого императивного языка Java разработан метод преобразования из Prolog в Java~\cite{RW:Prolog2Java}, позволяющий увеличить эффективность исполнения декларативной программы. Также формально описан и реализован метод декомпиляции Java Bitecode в Prolog~\cite{RW:Java2Prolog}. Помимо этого, проведено совмещение Prolog и Java посредством встраивания первого языка во второй~\cite{RW:PrologAndJava}. Схожее совмещение было проведено для языков Prolog и C\#~\cite{RW:PrologAndCSharp}.
+
+В случае взаимодействия функционального языка с реляционным можно выделить обратную задачу: преобразование программ в реляционную форму. Решение данной задачи позволит, с одной стороны, использовать привычный язык программирования (в нашем случае OCaml) для описания функций, а, с другой стороны, позволит исполнять программы реляционно (в частности, моделировать вычисление обратных функций). Для данной задачи было предложено решение, называемое \textbf{Unnesting}~\cite{lozov-spbu:miniKanren}.
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[t]{0.4\textwidth}
+    \centering
+\begin{lstlisting}
+let rec add a b =
+  match a with
+  | O -> b
+  | S a' ->
+     S (add a' b)
+\end{lstlisting}
+\caption{}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+\begin{lstlisting}
+let rec add a b =
+  match a with
+  | O -> b
+  | S a' ->
+     let q = add a' b in
+     S q
+\end{lstlisting}
+\vspace{-1\baselineskip}
+\caption{}
+  \end{subfigure}
+  \vskip2mm
+  \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+\begin{lstlisting}
+let rec add a b c =
+  (a === O /\ b === c) \/
+  (fresh (a' q)
+     (a === S a') /\
+     (add a' b q) /\
+     (c === S q))
+\end{lstlisting}
+\caption{}
+  \end{subfigure}
+\caption{Пример исполнения преобразования Unnesting}
+\label{unnesting_example}
+\end{figure}
+
+%\FloatBarrier
+
+Данный подход заключается в следующем. Сначала, в программу с помощью конструкции связывания \code{let} вводится новая переменная для каждого вложенного подвыражения. Далее, происходит построение реляционной программы: каждая конструкция сопоставления с образцом заменяется на дизъюнкцию, все переменные из шаблона и из \code{let}-связывания вводятся с помощью конструкции \code{fresh}, каждая функция получает дополнительный аргугмент, который унифицируется с результатом. Пример данного преобразования проиллюстрирован на рисунке~\ref{unnesting_example}. Изначальная функциональная программа изображена на рисунке~\ref{unnesting_example}a, функциональная программа, полученная после внедрения новых переменных для подвыражений изображена на рисунке~\ref{unnesting_example}b, и итоговая реляционная программа изображена на рисунке~\ref{unnesting_example}c.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.4\textwidth}
+ \centering
+\begin{lstlisting}
+let bar y =
+  let f x = x in
+  let g a = f in
+  g A y
+\end{lstlisting}
+\vspace{-1\baselineskip}
+    \caption{}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[t]{0.4\textwidth}
+    \centering
+\begin{lstlisting}
+let bar y r =
+  let f x r = x === r in
+  let g a r = f === r in
+  g A y r
+\end{lstlisting}
+\vspace{-1\baselineskip}
+  \caption{}
+  \end{subfigure}
+\caption{Некорректный случай для преобразования Unnesting}
+\label{unnesting_invalid}
+\end{figure}
+
+%\FloatBarrier
+
+Однако, не каждая функциональная программа может быть преобразована в реляционную форму с помощью метода Unnesting. Рассмотрим, например, программу, изображённую на рисунке~\ref{unnesting_invalid}a. После применения преобразования будет получена реляционная форма, изображенная на рисунке~\ref{unnesting_invalid}b. Данная форма, очевидно, некорректна, так как она содержит унификацию функции \code{f} и значения \code{r}. Для того, чтобы Unnesting построил корректную реляционную программу необходимо провести для тела функции \code{g} $\eta$-расширение. Заметим, что преобразование описанное в секции 5 отлично от Unnesting и использует $\eta$-расширение ограниченно (только в одном случае).
+
+
+\section{Входной язык и его реляционное расширение}
+
+Предлагаемый нами метод реляционного преобразования основан на идее трансформации программы на функциональном языке в программу на реляционном расширении этого языка.
+В контексте miniKanren данный подход выглядит вполне естественным, поскольку сам miniKanren, как DSL, использует много важных функций из основного языка (например, абстракцию или конструкторы).
+
+%\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{figure}
+\centering
+$$
+\begin{array}{rcl}
+ \mathcal E &=&x\\
+     & &\lambda x.e\\
+     & &e_1\;e_2\\
+     & &C^n(e_1,\dots, e_n)\\
+     & &\inmath{true}\\
+     & &\inmath{false}\\
+     & &\Let{x}{e_1}{e_2}\\
+     & &\LetR{x}{e_1}{e_2}\\
+     & &e_1\,=\,e_2\\
+     & &\Match{e}{p_i}{e_i}\\
+     & &\\
+ \mathcal P &=&C^n(x_1,\dots,x_n)\\
+\end{array}
+$$\vspace*{-5mm}
+\caption{Синтаксис исходного языка}
+\label{functional_syntax}
+\end{figure}
+
+%\end{wrapfigure}
+Рассмотрим формальное описание ML-подобного функционального языка, используемого в качестве входного языка для реляционного преобразования. Формальное описание состоит из синтаксиса, правил вывода типов и семантики.
+
+\FloatBarrier
+
+Синтаксис исходного функционального языка показан на рисунке~\ref{functional_syntax}.
+Он состоит из лямбда-исчисления, обогащенного конструкторами с фиксированной размерностью $C^n$, двумя предопределенными конструкторами \code{true} и \code{false}, операцией синтаксического сравнения ``\code{=}'', шаблонами $p$ и конструкциями сопоставления с образцом, а также выражениями для рекурсивных/нерекурсивных let-ссылок.
+
+При использовании сопоставления с образцом доступны только шаблоны вида $C^n(x_1,\dots,x_n)$. Данное ограничение несущественно, так как шаблоны общего вида выразимы с помощью описанных выше. Также запрещен специальный шаблон wildcard (обозн. ``\_''), позволяющий игнорировать сопоставляемую ему часть выражения.
+
+\setarrow{:}
+\newcommand{\typed}[3]{\withenv{#1}{\trans{#2}{}{#3}}}
+
+\begin{figure}[h]
+\begin{adjustwidth}{-1cm}{0cm}
+\centering
+{\bf Типы:}
+$$
+\begin{array}{rcll}
+  \mathcal X &=&\alpha, \beta, \dots                            &\mbox{\supp{(типовые переменные)}}\\
+  \mathcal D &=&\inmath{bool},\,T^n,...                         &\mbox{\supp{(конструкторы типов данных)}}\\
+  \mathcal T &=&\alpha\mid T^k(t_1,\dots,t_k)\mid t_1\to t_2    &\mbox{\supp{(типы)}}\\
+  \mathcal S &=&\forall\bar{\alpha}.t                           &\mbox{\supp{(схемы типов)}}
+\end{array}
+$$
+{\bf Правила типизации:}
+\def\arraystretch{0}
+%\begin{tabular}{p{66mm}p{7cm}}
+{\small
+$$
+\typed{\Gamma}{\inmath{true},\;\inmath{false}}{\inmath{bool}}
+\ruleno{Bool$_T$}
+$$}
+%&
+{\small
+$$
+\trule{\typed{\Gamma}{e_1}{t}\;\;\;\;\typed{\Gamma}{e_2}{t}}
+      {\typed{\Gamma}{e_1=e_2}{\inmath{bool}}}
+\ruleno{Eq$_T$}
+$$}
+%\\
+{\small$$
+\trule{\typed{\Gamma}{e_i}{t^C_i}}
+      {\typed{\Gamma}{C^n(e_1,\dots,e_n)}{t^C}}
+\ruleno{Constr$_T$}
+$$}
+%&
+{\small$$
+\typed{\Gamma,x:\forall\bar{\alpha}.t}{x}{t[\bar{\alpha}\gets\bar{t^\prime}]}
+\ruleno{Var$_T$}
+$$}
+%\\
+{\small$$
+\trule{\typed{\Gamma}{f}{t_1\to t_2}\;\;\;\;\typed{\Gamma}{e}{t_1}}
+      {\typed{\Gamma}{f\;e}{t_2}}
+\ruleno{App$_T$}
+$$}
+%&
+{\small$$
+\trule{\typed{\Gamma,\,x:t_1}{f}{t_2}}
+      {\typed{\Gamma}{\lambda x.f}{t_1\to t_2}}
+\ruleno{Abs$_T$}
+$$}
+%\\
+%\multicolumn{2}{p{14cm}}{
+{\small$$\begin{array}{c}
+\bar{\alpha}=FV(t_1)\setminus FV(\Gamma) \\[5pt]
+\displaystyle
+\trule{\typed{\Gamma}{e_1}{t_1}\;\;\;\;\typed{\Gamma,x:\forall\bar{\alpha}.t_1}{e_2}{t}}
+      {\typed{\Gamma}{\Let{x}{e_1}{e_2}}{t}}
+\end{array}
+\ruleno{Let$_T$}
+$$}
+%}
+  %\\
+%\multicolumn{2}{p{14cm}}{
+{\small$$\begin{array}{c}
+\bar{\alpha}=FV(t_1)\setminus FV(\Gamma) \\[5pt]
+\displaystyle
+\trule{\typed{\Gamma,f:t_1}{\lambda x.e_1}{t_1}\;\;\;\;\typed{\Gamma,f:\forall\bar{\alpha}.t_1}{e_2}{t}}
+      {\typed{\Gamma}{\LetR{f}{\lambda x.e_1}{e_2}}{t}}
+\end{array}
+\ruleno{LetRec$_T$}
+$$}
+%}\\
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\trule{\typed{\Gamma}{e}{t^C}\;\;\;\;\typed{\Gamma,x^i_1:t^{C_i}_1,\dots,x^i_{k_i}:t^{C_i}_{k_i}}{e_i}{t}}
+      {\typed{\Gamma}{\Match{e}{C_i^{k_i}(x^i_1,\dots,x^i_{k_i})}{e_i}}{t}}
+\ruleno{Match$_T$}
+$$}
+%}
+%\end{tabular}
+\end{adjustwidth}
+\caption{Правила типизации для входного языка}
+\label{functional_typing}
+\end{figure}
+
+Данный язык оснащен системой вывода типов Хиндли-Милнера, правила которой описаны на рисунке~\ref{functional_typing}. Данная система вывода типов поддерживает типовые переменные, функциональные типы, а также набор неявно определенных алгебраических типов данных $T^k$, причем каждый конструктор $C^n$ принадлежит ровно одному типу, и конструкторы \code{true} и \code{false} принадлежат выделенному алгебраическому типу \code{bool}.
+\FloatBarrier
+
+В правиле \textsc{Constr$_T$} предполагается, что тип $t^C$ представим в виде $T^k(t_1,\dots,t_k)$, где каждый из типов $t_i$ восстанавливается из типов $t_i^C$ аргументов конструктора $C^n$.
+
+
+Также в правиле \textsc{Match$_T$} типы каждого образца $C_i^{k_i}(x^i_1,\dots,x^i_{k_i})$ должны быть равны типу $t^C$, а  $t^{C_i}_j$ являются типом $j$-ого аргумента конструктора $C_i$. Правило \textsc{Eq$_T$} требует одинакового типа для обоих аргументов.
+
+
+\setarrow{\to}
+\newcommand{\step}[2]{\trans{\inbr{#1}}{}{\inbr{#2}}}
+
+\begin{figure}[t]
+\begin{adjustwidth}{-1cm}{0cm}
+\centering
+{\bf Значения:}\\[-7mm]
+{\small$$
+\mathcal V = C^n(v_1,\dots,v_n)\mid\lambda x.e\mid\mu f\lambda x.e\mid\inmath{true}\mid\inmath{false}
+$$}
+{\bf Контексты:}\\[-7mm]
+{\small$$\begin{array}{c}
+\mathcal C = \Box\;e\mid v\;\Box\mid\Let{x}{\Box}{e}\mid\Match{\Box}{p_i}{e_i}\\
+\mid C^n(\bar{v},\Box,\bar{e})\mid\Box=e\mid v=\Box
+\end{array}
+$$}
+{\bf Стек контекстов:}\\[-7mm]
+{\small$$
+\mathcal S=\epsilon\mid\mathcal C : \mathcal S
+$$}
+{\bf Состояния:}\\[-7mm]
+{\small$$\begin{array}{cc}
+\inbr{\mathcal S, e} & \mbox{\supp{(стек контекстов, выражение)}}; \\
+\inbr{\epsilon,e}    & \mbox{\supp{(начальное состояние)}};        \\
+\inbr{\epsilon,v}    & \mbox{\supp{(финальное состояние)}}
+\end{array}$$}
+{\bf Переходы:}
+\bgroup
+%\def\arraystretch{0}
+%\begin{tabular}{p{7cm}p{66mm}}
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{C:\mathcal S,\, v}{\mathcal S,\, C[v]}\ruleno{Value}
+$$}\vskip-9mm
+%}\\[-4mm]
+{\small$$
+\step{\mathcal S,\, f\;e}{\Box\;e:\mathcal S,\, f}\ruleno{AppL}
+$$}\vskip-9mm
+%&
+{\small$$
+\step{\mathcal S,\, v\;e_2}{v\;\Box:\mathcal S,\, e_2}\ruleno{AppR}
+$$}\vskip-9mm
+%\\[-4mm]
+{\small$$
+\step{\mathcal S,\,e_1=e_2}{\Box=e_2:\mathcal S,\,e_1}\ruleno{EqL}
+$$}\vskip-9mm
+%&
+{\small$$
+\step{\mathcal S,\,v=e}{v=\Box:\mathcal S,\,e}\ruleno{EqR}
+$$}\vskip-9mm
+%\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\,v=v}{\mathcal S,\,\inmath{true}}\ruleno{EqTrue}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\,v_1=v_2}{\mathcal S,\,\inmath{false}},\;v_1\ne v_2\ruleno{EqFalse}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\, (\lambda x.e)\;v}{\mathcal S,\, e[x\gets v]}\ruleno{Beta}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\, (\mu f\lambda x.e)\;v}{\mathcal S,\, e[f\gets\mu f\lambda x.e,\, x\gets v]}\ruleno{Mu}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\, C^n(\overline{v},e_1,\dots,e_n)}{C^n(\overline{v},\Box,\dots,e_n):\mathcal S,\, e_1}\ruleno{Constr}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\, \Let{x}{e_1}{e_2}}{\Let{x}{\Box}{e_2}:\mathcal S,\, e_1}\ruleno{Let}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\, \Let{x}{v}{e}}{\mathcal S,\,e[x\gets v]}\ruleno{LetVal}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\, \LetR{f}{\lambda x.e_1}{e_2}}{\mathcal S,\, e_2[f\gets\mu f\lambda x.e_1]}\ruleno{LetRec}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\,\Match{e}{p_i}{e_i}}{\Match{\Box}{p_i}{e_i}:\mathcal S,\, e}\hspace*{-0.6cm}\ruleno{Match}
+$$}\vskip-9mm
+%}\\[-4mm]
+%\multicolumn{2}{p{14cm}}{
+{\small$$
+\step{\mathcal S,\,\Match{C_k^{n_k}(\overline{v_j})}{C_i^{n_i}(\overline{x^i_j})}{e_i}}{\mathcal S,\,e_k[\overline{x^k_j\!\gets\! v_j}]}\hspace*{-0.6 cm}\ruleno{MatchVal}
+$$}
+%}
+%\end{tabular}
+\egroup
+\end{adjustwidth}
+\caption{Семантика входного языка}
+\label{functional_semantics}
+\end{figure}
+
+Семантика данного языка, представленная в нотации Матиаса Феллейсена~\cite{Felleisen} (рисунок~\ref{functional_semantics}), является системой переходов между состояниями. Отношение перехода $\inbr{S, e} \to \inbr{S', e'}$ описывает один шаг вычисления выражения $e$ в стеке контекстов $S$, после которого будет получено новое выражение $e'$ с обновленным стеком контекстов $S'$. Контекст представляет из себя выражение с уникальной дырой; неформально говоря, стек контестов описывает путь вычисления выражения от внешнего уровня до места, где в текущий момент остановлено вычисление. Для контекста $C$ и выражения $e$ обозначим $C[e]$~--- полное выражение без дыр, полученное путем подстановки $e$ вместо уникальной дыры в $C$. Для состояния $\inbr{C_1 : \ldots : C_n, e}$ полным выражением является $C_n[\ldots[C_1[e]]\ldots]$, которое является промежуточным результатом вычисления.
+
+В данной семантике правила $\textsc{Beta}$, $\textsc{Mu}$, $\textsc{LetVal}$,
+$\textsc{LetRec}$ и $\textsc{MatchVal}$ используют подстановку, которая согласуется с переменными в лямбда-абстракции и \lstinline|let|-конструкции. В правиле $\textsc{MatchVal}$ предполагается, что каждый конструктор-образец уникален~--- это значимое отличие от стандартной семантики сопоставления с образцом, где шаблоны рассматриваются сверху вниз до первого успешного сопоставления.
+
+Наконец, выражение $e$ вычисляется к результирующему значению $v$ если
+$\inbr{\epsilon, e} \to^* \inbr{\epsilon, v}$, где $\epsilon$~--- пустой стек, ``$\to^*$''~--- рефлексивно-транзитивное замыкание отношения ``$\to$''.
+
+\FloatBarrier
+
+%\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{figure}
+\centering
+$$
+\begin{array}{rl}
+\mathcal E\mathrel{{+}{=}}&\Fresh{x} \;e\\
+                    &e_1\equiv e_2\\
+                    &e_1\not\equiv e_2\\
+                    &e_1\vee e_2\\
+                    &e_1\wedge e_2
+\end{array}
+$$
+\caption{Синтаксис реляционного расширения}
+\label{relational_syntax}
+\end{figure}
+%\end{wrapfigure}
+
+Реляционное расширение добавляет пять стандартных конструкций языка miniKanren для построения целей, синтаксис которых отображен на рисунке~\ref{relational_syntax}. Вследствие добавления конструкций miniKantren к конструкциям функционального языка, становится возможным построение всевозможных смешанных выражений, к примеру, \code{(funx.x /\\ funy.y)}. Для устранения подобных некорректных выражений была расширена система типов для исходного языка, что описано на рисунке~\ref{relational_typing}. Фактический, данный подход следует реализации языка OCaml, где строгая система типов позволяет исключить большинство некорректных программ во время компиляции. Также система типов была дополнена специальным типом $\goal$, олицетворяющим результат вычисления отношения.
+
+\setarrow{:}
+\begin{figure}[h]
+\centering
+{\bf Типы:}
+$$
+\begin{array}{rcl}
+
+ \mathcal T &\mathrel{{+}{=}}&\goal
+\end{array}
+$$
+{\bf Правила типизации:}
+\def\arraystretch{0}
+{\small
+$$
+\trule{\typed{\Gamma,x:l}{e}{\goal}}
+      {\typed{\Gamma}{\Fresh{x} \;e}{\goal}}
+\ruleno{Fresh$_T$}
+$$}
+{\small
+$$
+\trule{\typed{\Gamma}{e_1}{l}\;\;\;\;\typed{\Gamma}{e_2}{l}}
+      {\typed{\Gamma}{e_1\equiv e_2}{\goal}}
+\ruleno{Unify$_T$}
+$$}
+{\small$$\hspace*{2cm}
+\trule{\typed{\Gamma}{e_1}{l}\;\;\;\;\typed{\Gamma}{e_2}{l}}
+      {\typed{\Gamma}{e_1\not\equiv e_2}{\goal}}
+\ruleno{Disequality$_T$}
+$$}
+{\small$$\hspace*{2cm}
+\trule{\typed{\Gamma}{e_1}{\goal}\;\;\;\;\typed{\Gamma}{e_2}{\goal}}
+      {\typed{\Gamma}{e_1\wedge e_2}{\goal}}
+\ruleno{Conjunction$_T$}
+$$}
+{\small$$\hspace*{19mm}
+\trule{\typed{\Gamma}{e_1}{\goal}\;\;\;\;\typed{\Gamma}{e_2}{\goal}}
+      {\typed{\Gamma}{e_1\vee e_2}{\goal}}
+\ruleno{Disjunction$_T$}
+$$}
+\caption{Правила типизации для реляционного расширения}
+\label{relational_typing}
+\end{figure}
+
+Семантика расширенного языка представлена на рисунках~\ref{relational_semantics}, \ref{relational_semantics_trans}. Прежде всего, было расширено состояние: помимо стека контекстов и текущего выражения состояние теперь содержит множество использованных {\it семантических переменных} $\Sigma$ и {\it реляционное состояние} $\sigma$. Семантические переменные вводятся и заменяют синтаксические переменные после каждого исполнения конструкции \code{fresh}. Также расширенная семантика в отличие от исходной является недетерминированной, так как к состаянию вида $\inbr{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}$ применимо два правила\textsc{DisjL} и \textsc{DisjR}. Аналогично, к состаянию вида $\inbr{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}$ могут быть применены правила \textsc{ConjStartL} и \textsc{ConjStartR}. Таким образом, результатом вычисления реляционной программы может иметь пустое, конечное или бесконечное множество  успешно вычисленных состояний.
+
+Реляционное состояние используется при исполнении унификации и desequality constraint. Оно состоит из положительной подстановки и множества отрицательных подстановок. Положительная подстановка сопоставляет семантическим переменным выражения, с которыми они связаны. Каждая из отрицательных также сопоставляет семантические переменные и выражения и является ограничением для всех последующих исполнений унификаций.
+
+\setarrow{\leadsto}
+\def\arraystretch{0}
+\begin{figure}
+\centering
+{\bf Семантические переменные:}\\
+\begin{gather*}
+\mathfrak S = \mathfrak s_1, \mathfrak s_2, \dots\\
+\Sigma, \Sigma^\prime\dots \subset 2^{\mathfrak S}\\
+\mbox{\supp{(множества выделенных семантических переменных)}}\\
+\inbr{\Sigma^\prime, \mathfrak s}\gets\inmath{new}\;\Sigma,\;\Sigma^\prime=\Sigma\cup\{\mathfrak s\},\;{\mathfrak s}\notin\Sigma\\
+\mbox{\supp{(выделение новой семантической переменной)}}
+\end{gather*}
+{\bf Значения:}\\
+$$
+\mathcal V \mathrel{{+}{=}} \inmath{success}\mid\mathfrak s
+$$\vspace{-2mm}
+{\bf Контексты:}\\
+$$
+\mathcal C \mathrel{{+}{=}}\Box\equiv e\mid v\equiv\Box\mid\Box\not\equiv e\mid v\not\equiv\Box\mid\Box\wedge e\mid e\wedge\Box
+$$
+{\bf Состояния:}
+\begin{gather*}
+\inbr{\Sigma,\mathcal S,e,\sigma}\\
+\Sigma \mbox{\supp{-- мн-во семантических переменных,}}\\
+\mathcal S \mbox{\supp{-- стек контекстов,}}\\
+e\mbox{\supp{-- выражение,}}\\
+\sigma\mbox{\supp{-- логическое состояние.}}\\
+\inbr{\emptyset,\epsilon,e,\iota}\mbox{\supp{(начальное состояние)}}
+\end{gather*}
+\caption{Семантика для реляционного расширения}
+\label{relational_semantics}
+\end{figure}
+
+\begin{figure}
+\centering
+{\bf Переходы:}\vspace{1mm}
+{\def\arraystretch{0}
+\begin{tabular}{p{9cm}}
+{\small$$
+\step{\Sigma,\,\mathcal S,\,\Fresh{x} \;e,\,\sigma}{\Sigma^\prime,\,\mathcal S,\,e[x\gets\mathfrak s],\,\sigma},\,\inbr{\Sigma^\prime,\mathfrak s}\gets\inmath{new}\;\Sigma\ruleno{Fresh}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e_1\equiv e_2,\,\sigma}{\Sigma,\,\Box\equiv e_2:\mathcal S,\,e_1,\,\sigma}\ruleno{UnifyL}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,v\equiv e,\,\sigma}{\Sigma,\,v\equiv\Box:\mathcal S,\,e,\,\sigma}\ruleno{UnifyR}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,v_1\equiv v_2,\,\sigma}{\Sigma,\,\mathcal S,\,\inmath{success},\,\sigma^\prime},\,{\bf unify}\,(\sigma,\,v_1,\,v_2)=\sigma^\prime\ruleno{Unify}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e_1\not\equiv e_2,\,\sigma}{\Sigma,\,\Box\not\equiv e_2:\mathcal S,\,e_1,\,\sigma}\ruleno{DisEqL}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,v\not\equiv e,\,\sigma}{\Sigma,\,v\not\equiv\Box:\mathcal S,\,e,\,\sigma}\ruleno{DisEqR}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,v_1\not\equiv v_2,\,\sigma}{\Sigma,\,\mathcal S,\,\inmath{success},\,\sigma^\prime},\,{\bf diseq}\,(\sigma,\,v_1,\,v_2)=\sigma^\prime\ruleno{DisEq}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}{\Sigma,\,\mathcal S,\,e_1,\,\sigma}\ruleno{DisjL}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e_1\vee e_2,\,\sigma}{\Sigma,\,\mathcal S,\,e_2,\,\sigma}\ruleno{DisjR}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}{\Sigma,\,\Box\wedge e_2:\mathcal S,\,e_1,\,\sigma}\ruleno{ConjStartL}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e_1\wedge e_2,\,\sigma}{\Sigma,\,e_1\wedge\Box:\mathcal S,\,e_2,\,\sigma}\ruleno{ConjStartR}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,\inmath{success}\wedge e,\,\sigma}{\Sigma,\,\mathcal S,\,e,\,\sigma}\ruleno{ConjL}
+$$}\\
+{\small$$
+\step{\Sigma,\,\mathcal S,\,e\wedge\inmath{success},\,\sigma}{\Sigma,\,\mathcal S,\,e,\,\sigma}\ruleno{ConjR}
+$$}
+\end{tabular}}
+\caption{Семантика для реляционного расширения, переходы}
+\label{relational_semantics_trans}
+\end{figure}
+
+Как видно из описания семантики (рисунок~\ref{relational_semantics_trans}), реляционное состояние обновляется только с помощью функций {\bf unify} (правило $\textsc{Unify}$) и {\bf diseq} (правило $\textsc{DisEq}$). Обе эти функции обобщают алгоритм синтаксической унификации~\cite{lozov-spbu:Unify}. Ниже представлено неформальное описание работы данных функций.
+
+Функция {\bf unify} унифицирует свои аргументы в контексте текущей положительной подстановки, создавая новую положительную подстановку. В случае успешной унификации эта функция сравнивает новую подстановку со всеми отрицательными подстановками. Если унификация прошла успешно и ни одна отрицательная подстановка не вложена в новую положительную, то функция {\bf unify} успешно выполняется и возвращает обновленное реляционное состояние с новой положительной подстановкой. В противном случае, {\bf unify} не возвращает ничего, и правило $\textsc{Unify}$ не может быть применено, следовательно, вычисление для текущего состояния не может быть продолжено. Функция {\bf diseq} также унифицирует свои аргументы в контексте текущей положительной постановке, в результате чего возникает новая отрицательная подстановка. Если эта отрицательная подстановка отличается от положительной подстановки, то {\bf diseq} завершается и возвращает новое реляционное состояние, пополненное отрицательной подстановкой. В противном случае, правило $\textsc{DisEq}$ не может быть применено, и вычисление для текущего состояния не может быть продолжено. Подробнее эти функции описаны в работе~\cite{lozov-spbu:CKanren}.
+
+Отметим, что все существующие правила семантики исходного языка дополняются множеством семантических переменных и реляционным состоянием, но не используют их.
+
+Наконец, для замкнутой реляционной программы $g$ типа $\goal$ и реляционного состояния сигма $\sigma$, определим $g \leadsto^r \sigma$ верным тогда и только тогда, когда
+
+$$
+\inbr{\emptyset,\epsilon,g,\iota}\leadsto^*\inbr{\Sigma,\epsilon,\lstinline|success|,\sigma}\mbox{ для некоторого $\Sigma$}
+$$
+
+\noindent где ``$\leadsto^*$'' рефлексивно-транзитивное замыкание операции ``$\leadsto$''.
+
+\section{Преобразование функциональных программ в реляционную форму}
+
+Прежде чем описать преобразование функциональных программ в реляционные, сформулируем несколько ограничений для входных программ. Функциональные программы, как правило, оперируют значениями высшего порядка, в то время как miniKanren ограничен унификацией первого порядка. Поэтому не всякая функциональная программа может быть преобразована в реляционную форму.
+
+Неформально говоря, необходимо исключить значения, которые содержат в своей структуре значения высшего порядка.
+Это выражается в виде следующих ограничений на преобразовываемую программу:
+
+\begin{itemize}
+  \item тип любого конструктора должен содержать либо типовые переменные, либо типовые константы;
+  \item конструкторы и полиморфная операция сравнения могут быть применены только к значениям первого порядка;
+  \item все \lstinline|match|-выражения должны быть первого порядка.
+\end{itemize}
+
+
+Первые два ограничения сужают полиморфизм для реляционных программ: все типовые переменные могут быть заменены только на типы выражений первого порядка (это ограничение, конечно, достаточно, но не необходимо).
+
+Третье ограничение несущественно и введено только для упрощения. Если \lstinline|match|-выражение имеет тип высшего порядка, то его всегда можно преобразовать, используя $\eta$-расширение:
+
+\begin{lstlisting}
+   match $e$ with {$p_i$ -> $e_i$} $\leadsto$ fun $\bar{x}$.match $e$ with {$p_i$ -> $e_i\,\bar{x}$},
+\end{lstlisting}
+
+\noindent где $\bar{x}$~--- это вектор новых переменных, отсутствующих в выражениях $e$, $e_i$, и $p_i$. Отметим, что реализация, описанная в разделе 6, исполняет это расширение для \lstinline|match|-выражений, если оно является выражением высшего порядка. Это единственный случай, когда для преобразования используется тип функциональной программы и $\eta$-расширение.
+
+Основная идея преобразования может быть проиллюстрирована на уровне типов: выражение типа $t$ в исходном языке будет преобразовано в выражение типа $\sembr{t}^t$ в реляционном расширении языка, где преобразование $\sembr{\bullet}^t$ определяется следующим образом:
+$$
+\begin{array}{rcl}
+\sembr{g}^t                     & = & g \to \goal \\
+\sembr{t_1 \to t_2}^t           & = & \sembr{t_1}^t \to \sembr{t_2}^t \\
+%\sembr{\forall \alpha. \: t} & = & \forall \alpha. \: \sembr{t}
+\end{array}
+$$
+
+Другими словами, выражение первого порядка будет преобразовано в одноместную функцию, возвращающую значения типа $\goal$. Неформальная семантика данной функции состоит в том, чтобы сопоставить аргументу исходное значение. Например, константа \lstinline|Nil| будет преобразована в функцию \lstinline|fun $q$ . $q\,$=== Nil|.
+
+Теперь рассмотрим преобразование выражений, обозначаемое $\sembr{\bullet}^c$.
+
+\begin{center}
+\begin{tabular}{rcl}
+     $\sembr{x}^c$                &=&$x$\\
+     $\sembr{\lambda x.e}^c$      &=&$\lambda x.\sembr{e}^c$\\
+     $\sembr{f\;e}^c$             &=&$\sembr{f}^c\;\sembr{e}^c$\\
+     $\sembr{\lstinline|let $\;x\;$ = $\;e_1\;$ in $\;e_2$|}^c$&=&\lstinline|let $x$ = $\sembr{e_1}^c$ in $\sembr{e_2}^c$|\\
+     $\sembr{\lstinline|let rec $\;f\;$ = $\lambda x.e_1\;$ in $\;e_2$|}^c$&=&\lstinline|let rec $f$ = $\sembr{\lambda x.e_1}^c$ in $\sembr{e_2}^c$|
+\end{tabular}
+\end{center}
+
+Первые пять правил не меняют структуру выражения, применяя преобразование к подвыражаениям.
+
+\begin{center}
+\begin{tabular}{rcl}
+$\sembr{C^k (e_1,\dots,e_k)}^c$&=&\lstinline|fun $q$.fresh ($q_1 \dots q_k$)|
+\begin{lstlisting}
+  ($\sembr{e_1}^c\; q_1$) /\
+  ...
+  ($\sembr{e_k}^c\; q_k$) /\
+  ($q$ === $\;C^n (q_1, \dots, q_k)$)
+\end{lstlisting}\\[-2mm]
+\end{tabular}
+\end{center}
+
+В случае конструктора, все выражения $e_i$ являются выражениями первого порядка. Следовательно, их реляционные образы будут одноместными функциями, возвращающими цель. Для вычисления этих значений необходимо создать набор ``свежих'' переменных (по одной, для каждого выражения) и передать их образам в качестве аргументов. Все образы с переменными соединяем оператором конъюнкции. Результатом преобразования всего конструктора также должна быть одноместная функция, возвращающая цель, поэтому окружаем абстракцией по переменной $q$ полученное выше выражение, а также связываем переменную $q$ с конструктором, примененным к созданным ранее переменным.
+
+\begin{center}
+\begin{tabular}{rcl}
+$
+\left\llbracket
+\begin{array}{l}
+\lstinline|match $\;e\;$ with| \\
+\quad \{C^{n_i}_i(x^i_1,\dots,x^i_{n_i})\; \to \;e_i \}
+\end{array}
+\right\rrbracket^c
+$&=&
+\begin{lstlisting}
+fun $q$.fresh ($q_e$)
+  ($\sembr{e}^c\;q_e$) /\
+  $\bigvee_i$ ((fresh ($q^i_1\dots q^i_{n_i}$)
+      ($q_e$ === $\; C^{n_i}_i(q^i_1,\dots,q^i_{n_i})$)/\
+      (fun $x^i_1\dots x^i_{n_i}$.$\sembr{e_i}^c$)
+        ($\equiv q^i_1$) ... ($\equiv q^i_{n_i}$) $q$
+     ))
+\end{lstlisting}\\[-2mm]
+\end{tabular}
+\end{center}
+
+Правило для преобразования сопоставления с образцом работает аналогичным образом. Во-первых, скрутини (разбираемое значение $e$) должно быть выражением первого порядка (так как оно сопоставляется конструкторам). Создадим ``свежую'' переменную $q_e$ и свяжем её со значением скрутини так же, как и в предыдущем случае. Далее, для каждой ветки создадим несколько ``свежих'' переменных $q^i_j$ (по одной для каждой переменной в образце данной ветки) и выразим сопоставление образца с помощью оператора дизъюнкции, используя эти переменные и соответствующий конструктор. Наконец, тело ветки $e_i$~--- это выражение со свободными переменными, соответствующими тем, что указаны в образце. Поэтому преобразуем выражение $e_i$ и и окружим результат абстракциями, замыкающими все эти переменные и получим функцию. Теперь необходимо связать $q^i_j$ со свободными переменными из образца. Для этого применим описанную выше функцию к
+функциям, возвращающим цель $(\equiv q^i_j)$. В конечном итоге получим функцию, возвращающую цель, которую применим ко внешней переменной $q$, олицетворяющей результат исходного сопоставления с образцом.
+
+\begin{center}
+\begin{tabular}{rcl}
+     $\sembr{\lstinline|$e_1\,$=$\,e_2$|}^c$&=&\lstinline|fun $q$.fresh ($q_1\,q_2$)|
+\begin{lstlisting}
+  $\sembr{e_1}^c\,q_1$ /\
+  $\sembr{e_2}^c\,q_2$ /\
+  (($q_1$ === $\;q_2$ /\ $q$ === $\;$true) \/
+   ($q_1$ =/= $\;q_2$ /\ $q$ === $\;$false)
+  )
+\end{lstlisting}
+\end{tabular}
+\end{center}
+
+Последнее правило следует тому же шаблону: оба аргумента полиморфного сравнения преобразуются в функции, возвращающие цель, причем их аргументы будут иметь одинаковый тип выражения первого порядка. Применим эти функции к ``свежим'' переменным и выполним разбор двух случаев: сравниваемые выражения равны, либо не равны. Отметим, что это единственный случай использования конструкции disequality constraint.
+
+Интересным свойством данного преобразования в реляционную форму является сохранение выражения неизменным в том случае, когда оно не содержит конструкторов, сравнения и сопоставления с образцом. Таким образом, множество полезных функций высшего порядка~--- применение, композиция, неподвижная точка~--- уже являются реляционными и могут быть использованы в реляционных спецификациях.
+
+Другое свойство состоит в том, что это преобразование в реляционную форму является композиционной (действительно, реляционный образ применения есть применение реляционных образов). Это означает, что реляционное преобразование совместимо с раздельной компиляцией~--- несколько исходных файлов могут быть преобразованы независимо, не теряя возможности работать должным образом при их объединении.
+
+Также, интересным является тот факт, что результат преобразования в реляционную форму исполняется детерминировано в прямом направлении. Таким образом, преобразование в реляционную форму вызывает константное замедление при прямом исполнении.
+
+\section{Доказательство статической и динамической корректности преобразования функций реляционную форму}
+
+Первая теорема, которая доказана в данном разделе, подтверждает корректность типизации преобразованной программы при условии корректности типизации исходной функциональной программы.
+
+\begin{theorem} [о статической корректности]
+\normalfont Если выражение $e$ имеет тип $t$ в исходном языке, тогда $\sembr{e}^c$ имеет тип $\sembr{t}^t$ в реляционном расширении.
+\end{theorem}
+
+Прежде чем приступить к доказательству теоремы сформулируем определение и лемму.
+
+\begin{definition}
+\normalfont Пусть $\Gamma$ - контекст, возникающий при выводе типа функциональной программы $P$ в узле $X$ синтаксического дерева программы. Тогда $\sembr{\Gamma} = \{(x : \sembr{t}^t) \mid (x:t)\in \Gamma\}$~--- реляционный образ контекста $\Gamma$.
+\end{definition}
+
+\setarrow{:}
+\begin{lemma}
+\label{var_types}
+\normalfont Пусть при выводе типа функциональной программы $P$ в узле $X$ синтаксического дерева программы имеем состояние $\typed{\Gamma}{e}{t}$. Также при выводе типа реляционной программы $\sembr{P}^c$ в узле $\sembr{X}^c$, являющемся образом узла $X$, имеем состояние $\typed{\bar{\Gamma}}{\bar{e}}{\bar{t}}$. Тогда $\sembr{\Gamma} \subset \bar{\Gamma}.$
+
+Доказано индукцией по длине пути от корня синтаксического дерева программы $P$ до узла $X$.
+\end{lemma}
+
+Данная лемма подтвержает тот факт, что при выводе типа реляционного образа будут типизированы все переменные из исходной программы корректными типами.
+
+Доказательство самой теоремы было преведено с помощью структурной индукции с использованием леммы~\ref{var_types} в базе индукции.
+
+\begin{theorem} [о частичной динамической корректности]
+\normalfont Если выражение первого порядка $e$ имеет тип $t$, а также существует значение первого порядка $v$ такое, что \mbox{$e \leadsto^f v$}, тогда \mbox{$\lstinline|fresh ($x$) ($\sembr{e}^c\;x$)| \leadsto^r (\theta,\emptyset)$}, и \mbox{$\theta(\mathfrak{s})=v$}, где $\mathfrak{s}$ -- семантическая переменная, ассоциированная с $x$ на первом шаге вычисления.
+\end{theorem}
+
+Прежде всего прокомментируем тот факт, что множество отрицательных подстановок является пустым. Пополнение данного множества возможно только при выполнении конструкции disequality constraint. Эта конструкция может быть исполнена в преобразованной программе, только если исходная программа содержит синтаксическое сравнение, примененное к своим аргументам. При исполнении преобразованной реляционной программы в прямом направлении (последний аргумент является свежей переменной, остальные аргументы полностью определены) при выполнении конструкции desequality constraint оба аргумента являются замкнутыми, что приводит к немедленному разрешению desequality constraint без пополнения изначально пустого множества отрицательных подстановок.
+
+Также отметим, что данную теорему нельзя доказать индукцией по длине вывода, ведь в случае, например, применения его левое подвыражение не является выражением первого порядка. Это ограничение можно было бы снять, если бы можно было доказать следующее обобщение:
+
+$$
+p\leadsto^f f \Rightarrow \sembr{p}^c\leadsto^r\sembr{f}^c
+$$
+
+\noindent для произвольного $p$ любого типа. Это утверждение, однако, оказалось ложным~--- выражение
+\lstinline|C ((fun x.x) A)| можно предъявить в качестве примера.
+
+Причина данной проблемы заключается в том, что при преобразовании происходит \emph{функционализация} конструкторов, сопоставления с образцом и синтаксического сравнения и, следовательно, изменяется порядок вычисления реляционного образа в сравнении с исходной функциональной программой. Таким образом, при доказательстве необходимо решить эту проблему.
+
+Во-первых, была разработана модифицированная семантика функционального языка, порядок вычисления в которой приближен к порядку вычисления реляционного образа. Данная семантика была названа \emph{откладывающей}, она откладывает вычисление конструкторов, сопоставления с образом и синтаксического сравнения. Эта семантика может быть получена из исходной функциональной семантики в два шага. Сначала необходимо рассмотреть сокращенную версию оригинальной функциональной семантики, которая обрабатывает конструкторы, сопоставления с образцом и синтаксические сравнения как вычисленные значения. Затем отложенная семантика~--- это итеративное применение сокращенной версии к аргументам этих новых значений (аргументы конструкторов или синтаксического сравнения, а также сопоставляемое значение сопоставления с образцом).
+
+Далее, отметим, что если выражение первого порядка вычисляется в некоторое значение в исходной семантике, то он также вычисляется к тому же значению в откладывающей семантике. Это свойство основано на следующих наблюдениях:
+
+\begin{itemize}
+\item \vskip-2mm свойства {\bf progress} и {\bf type preservation}~\cite{lozov-spbu:poly} для обеих семантик (могут быть доказаны стандартным способом);
+\item свойство Черча-Россера~\cite{lozov-spbu:poly, lozov-spbu:ChurchRosser} для лямбда-исчисления;
+\item тот факт, что откладывающая семантика применяет подмножество правил исходной семантики.
+\end{itemize}
+\vskip-2mm
+Теперь приступим к доказательству теоремы с помощью симуляции между исходной программой в откладывающей семантике и реляционного образа в реляционной семантики. Перед этим сформулируем несколько лемм и
+определений.
+
+\begin{lemma}
+\label{stack_split}
+\normalfont Разделим все контексты на два дизъюнктных множества~--- функциональные (1) и атомарные (2).
+\vskip-3mm
+$$
+C_f = \Box\;e\mid v\;\Box\mid\lstinline|let $x$ = $\Box$ in $e$| \eqno(1)
+$$
+\vskip-7mm
+$$
+C_g = \lstinline|match $\;\Box\;$ with $\{p_i$->$e_i\}$|\mid C^n(\bar{v},\Box,\bar{e})\mid\Box\lstinline|=e|\mid\lstinline|v=|\Box \eqno(2)
+$$
+
+Пусть $\left<{\mathcal S},\,e\right>$~--- произвольное состояние последовательности вычислений в откладывающей семантике. Тогда $\mathcal S=C_f^*C_g^*$.
+
+Другими словами, в процессе вычисления в откладывающей семантики стек контекстов можно разделить на два
+(возможно, пустых) сегмента: все атомарные контексты расположены ниже всех функциональных. Доказано индукцией по длине вывода.
+\end{lemma}
+
+\begin{definition}
+\normalfont
+Разделим все выражения исходного языка на два дизъюнктных множества~--- функциональные (3) и атомарные (4).
+$$
+e_1\,e_2\mid \lambda x.e \mid \mu f.\lambda x.e \mid \lstinline|let$\,x$=$e_1\,$in$\,e_2$| \mid \lstinline|let rec$\,f$=$\lambda x.e_1\,$in$\,e_2$| \eqno(3)
+$$
+$$
+e_1 = e_2 \mid \lstinline|match $e$ with {$p_i$ -> $e_i$ }| \mid \lstinline|C$^k$ ($e_1\dots e_k$)| \eqno(4)
+$$
+
+\end{definition}
+
+\begin{definition}
+\normalfont Расширенное преобразование выражение в подстановке $\sembr{\bullet}_\theta$ определяется следующим образом:
+$$
+\begin{array}{rcl}
+\sembr{p}_\theta&=&\sembr{p}^c\\
+\sembr{v}_\theta&=&(\lambda x.x\equiv\mathfrak{s}),\,\mbox{if}\;\;\theta(\mathfrak s)=v
+\end{array}
+$$
+
+Здесь $\theta$~--- подстановка, $p$~--- произвольное функциональное выражение, $v$~--- произвольное значение первого порядка в  исходной семантике (т. е. состав конструкторов). Заметим, что случаи в этом определении не дизъюнктны, а во втором случае может быть более одной переменной с запрошенным свойством, поэтому расширенное преобразование определяет набор реляционных выражений.
+
+\end{definition}
+
+\begin{lemma}
+\label{substitution}
+\normalfont Пусть $f$, $e$~--- два произвольных выражения в исходном языке, $\theta$~--- произвольная подстановка. Тогда
+
+$$
+\sembr{f[x\gets e]}_\theta=\sembr{f}_\theta[x\gets\sembr{e}_\theta]
+$$
+
+В данном случае равенство необходимо трактовать как равенство двух множеств. Доказано структурной индукцией.
+\end{lemma}
+
+\begin{definition}
+\normalfont Для произвольной подстановки $\theta$ определим преобразование функционального контекста
+$\sembr{\bullet}_\theta$ следующим образом:
+
+$$
+\begin{array}{rcl}
+\sembr{\Box\,e}_\theta&=&\Box\,\sembr{e}_\theta\\
+\sembr{v\,\Box}_\theta&=&\sembr{v}_\theta\,\Box\\
+\sembr{\lstinline|let $\;x\; = \;\Box\;$ in $\;e$|}_\theta&=&\lstinline|let $\;x\; = \;\Box\;$ in $\;\sembr{e}_\theta$|
+\end{array}
+$$
+
+\noindent Здесь $e$~--- произвольное функциональное выражение, $v$~--- лямбда-абстракция. Это преобразование является обобщением расширенного преобразования на случай функциональных контекстов, отсюда и схожее обозначение.
+\end{definition}
+
+\begin{definition}
+\normalfont Для произвольной семантической переменной ${\mathfrak s}_1$, ${\mathfrak s}_2$ и произвольной подстановки $\theta$ определим преобразование атомарных контекстов $\sembr{\bullet}^{{\mathfrak s}_1{\mathfrak s}_2}_\theta$ следующим образом:
+
+$$
+\begin{array}{l}
+\sembr{C^k(v_1, \ldots, v_{i-1}, \Box, e_{i+1}, \ldots, e_k)}^{{\mathfrak s}_1{\mathfrak s}_2}_\theta= \\
+\qquad \Box \; \wedge \\
+\qquad (\sembr{e_{i+1}}_\theta \; {\mathfrak s}^\prime_{i+1}) \; \wedge \\
+\qquad \ldots  \\
+\qquad (\sembr{e_k}_\theta \; {\mathfrak s}^\prime_k) \; \wedge \\
+\qquad ({\mathfrak s}_2 \equiv\; C^k({\mathfrak s}^\prime_1, \ldots, {\mathfrak s}^\prime_{i-1}, {\mathfrak s}_1, {\mathfrak s}^\prime_{i+1}, \ldots, {\mathfrak s}_k)),\,\mbox{if}\;\theta({\mathfrak s}^\prime_j)=v_j,\,j<i
+\end{array}
+$$
+
+$$
+\begin{array}{rcl}
+\sembr{\Box = e}^{{\mathfrak s}_1{\mathfrak s}_2}_\theta&=&\Box\, \wedge \\
+ & & (\sembr{e}_\theta\; {\mathfrak s}^\prime) \wedge \\
+ & & ((({\mathfrak s}_1 \equiv {\mathfrak s}^\prime) \wedge ({\mathfrak s}_2 \equiv \lstinline|true|))\, \vee \\
+ & & (({\mathfrak s}_1 \not \equiv {\mathfrak s}^\prime) \wedge ({\mathfrak s}_2 \equiv \lstinline|false|)))
+\end{array}
+$$
+
+$$
+\begin{array}{rcl}
+\sembr{v = \Box}^{{\mathfrak s}_1{\mathfrak s}_2}_\theta&=&\Box\,\wedge \\
+ & & ((({\mathfrak s}^\prime \equiv {\mathfrak s}_1) \wedge ({\mathfrak s}_2 \equiv \lstinline|true|))\, \vee \\
+ & & (({\mathfrak s}^\prime \not \equiv {\mathfrak s}_1) \wedge ({\mathfrak s}_2 \equiv \lstinline|false|))),\,\mbox{if}\;\theta({\mathfrak s})=v
+\end{array}
+$$
+
+$$
+\begin{array}{l}
+\sembr{\lstinline|match $\;\Box\;$ with \{$C^{n_i}_i$($y^i_1$, ..., $y^i_{n_i}$) -> $\;e_i$\}|}^{{\mathfrak s}_1{\mathfrak s}_2}_\theta = \\
+\qquad \Box \; \wedge \bigvee_i\\
+\qquad (\lstinline|fresh ($s^i_1 \ldots s^i_{n_i}$)| \\
+\qquad \qquad({\mathfrak s}_1 \equiv \; C_i^{n_i}(s^i_1, \ldots, s^i_{n_i})) \\
+\qquad \qquad(\lambda y^i_1. \ldots \lambda  y^i_{n_i}. \sembr{e_i}_\theta) \; (\equiv s^i_1) \ldots (\equiv s^i_{n_i})\;{\mathfrak s}_2)
+\end{array}
+$$
+
+\noindent Здесь ${\mathfrak s}^\prime$ и ${\mathfrak s}^\prime_i$~--- произвольные семантические переменные, $v_i$~--- произвольные значения в исходном языке, $e_i$~--- произвольные выражения в исходном языке.
+Также потребуем, чтобы $\theta$ была неопределена для всех указанных семантических переменных, если явно не указано противоположное.
+\end{definition}
+
+\begin{definition}
+\normalfont Для произвольной подстановки $\theta$, произвольной семантической переменной ${\mathfrak s}_m$ и функционального выражения $e$ определим преобразование стека контекстов $\sembr{\bullet}^{e,{\mathfrak s}_m}_\theta$.
+Если стек контестов не содержит функциональных контекстов и $e$~--- атомарное, то
+$$\sembr{g_m\dots g_1}^{e,{\mathfrak s}_m}_\theta=\sembr{g_m}^{{\mathfrak s}_m{\mathfrak s}_{m-1}}_\theta\dots\sembr{g_1}^{{\mathfrak s}_1{\mathfrak s}_0}_\theta.$$
+В противном случае
+$$\sembr{f_n\!\dots\! f_1g_m\!\dots\! g_1}^{e,{\mathfrak s}_m}_\theta\!=\!\sembr{f_n}_\theta\!\dots\!\sembr{f_1}_\theta(\Box\,{\mathfrak s}_m)\sembr{g_m}^{{\mathfrak s}_m{\mathfrak s}_{m-1}}_\theta\!\dots\!\sembr{g_1}^{{\mathfrak s}_1{\mathfrak s}_0}_\theta.$$
+
+\noindent Здесь ${\mathfrak s}_0\dots {\mathfrak s}_{m-1}$~--- произвольные уникальные семантические переменные.
+\end{definition}
+
+\begin{definition}
+\normalfont Для произвольной подстановки $\theta$ и произвольной семантической переменной ${\mathfrak s}_m$ определим симуляционное преобразование $\sembr{\bullet}^{{\mathfrak s}_m}_\theta$ для выражения исходного языка следующим образом:
+
+$$
+\begin{array}{rcl}
+\sembr{e_1 = e_2}^{{\mathfrak s}_m}_\theta&=& (\sembr{e_1}_\theta\; {\mathfrak s}^\prime_1) \wedge \\
+                           & & (\sembr{e_2}_\theta\; {\mathfrak s}^\prime_2) \wedge \\
+                           & & ((({\mathfrak s}^\prime_1 \equiv {\mathfrak s}^\prime_2) \wedge ({\mathfrak s}_m \equiv \lstinline|true|))\, \vee \\
+                           & & (({\mathfrak s}^\prime_1 \not \equiv {\mathfrak s}^\prime_2) \wedge ({\mathfrak s}_m \equiv \lstinline|false|)))
+\end{array}
+$$
+
+$$
+\begin{array}{rcl}
+\sembr{v = e}^{{\mathfrak s}_m}_\theta&=& (\sembr{e}_\theta\; {\mathfrak s}^\prime_2) \wedge \\
+                        & & ((({\mathfrak s}^\prime_1 \equiv {\mathfrak s}^\prime_2) \wedge ({\mathfrak s}_m \equiv \lstinline|true|))\, \vee \\
+                        & & (({\mathfrak s}^\prime_1 \not \equiv {\mathfrak s}^\prime_2) \wedge ({\mathfrak s}_m \equiv \lstinline|false|))),\,\mbox{if}\;\theta({\mathfrak s}^\prime_1)=v
+\end{array}
+$$
+
+$$
+\begin{array}{rcl}
+\sembr{v_1 = v_2}^{{\mathfrak s}_m}_\theta&=& ((({\mathfrak s}^\prime_1 \equiv {\mathfrak s}^\prime_2) \wedge ({\mathfrak s}_m \equiv \lstinline|true|))\, \vee \\
+                           & & (({\mathfrak s}^\prime_1 \not \equiv {\mathfrak s}^\prime_2) \wedge ({\mathfrak s}_m \equiv \lstinline|false|))),\,\mbox{if}\;\theta({\mathfrak s}^\prime_j)=v_j
+\end{array}
+$$
+
+$$
+\begin{array}{l}
+\sembr{C^k(v_1, \ldots, v_{i-1}, e_i, \ldots, e_k)}^{{\mathfrak s}_m}_\theta=\\
+\qquad(\sembr{e_i}_\theta \; {\mathfrak s}^\prime_i) \; \wedge \\
+\qquad\ldots  \\
+\qquad(\sembr{e_k}_\theta \; {\mathfrak s}^\prime_k) \; \wedge \\
+\qquad({\mathfrak s}_m \equiv\; C^k({\mathfrak s}^\prime_1, \ldots, {\mathfrak s}^\prime_k)),\,\mbox{if}\;\theta({\mathfrak s}^\prime_j)=v_j,\,j<i
+\end{array}
+$$
+
+$$
+\sembr{C^k(v_1, \ldots, v_k)}^{{\mathfrak s}_m}_\theta = ({\mathfrak s}_m \equiv\; C^k({\mathfrak s}^\prime_1, \ldots, {\mathfrak s}^\prime_k)),\,\mbox{if}\;\theta({\mathfrak s}^\prime_j)=v_j
+$$
+
+$$
+\sembr{C^k(v_1, \ldots, v_k)}^{{\mathfrak s}_m}_\theta = ({\mathfrak s}_m \equiv\; {\mathfrak s}^\prime),\;\mbox{if}\;\theta({\mathfrak s}^\prime)=C^k(v_1, \ldots, v_k)
+$$
+
+$$
+\begin{array}{l}
+\sembr{\lstinline|match $\;e\;$ with \{$C^{n_i}_i$($y^i_1$, ..., $y^i_{n_i}$) -> $\;e_i$\}|}^{{\mathfrak s}_m}_\theta=\\
+\qquad\sembr{e}_\theta\;{\mathfrak s}^\prime\;\wedge\;\bigvee_i\\
+\qquad(\lstinline|fresh ($s^i_1 \ldots s^i_{n_i}$)| \\
+\qquad\qquad({\mathfrak s}^\prime \equiv \; C_i^{n_i}(s^i_1, \ldots, s^i_{n_i})) \\
+\qquad\qquad(\lambda y^i_1. \ldots \lambda  y^i_{n_i}. \sembr{e_i}_\theta) \; (\equiv s^i_1) \ldots (\equiv s^i_{n_i})\;{\mathfrak s}_m)
+\end{array}
+$$
+
+$$
+\begin{array}{l}
+\sembr{\lstinline|match $\;v\;$ with \{$C^{n_i}_i$($y^i_1$, ..., $y^i_{n_i}$) -> $\;e_i$\}|}^{{\mathfrak s}_m}_\theta=\\
+\qquad\bigvee_i\\
+\qquad(\lstinline|fresh ($s^i_1 \ldots s^i_{n_i}$)| \\
+\qquad\qquad({\mathfrak s}^\prime \equiv \; C_i^{n_i}(s^i_1, \ldots, s^i_{n_i})) \\
+\qquad\qquad(\lambda y^i_1. \ldots \lambda  y^i_{n_i}. \sembr{e_i}_\theta) \; (\equiv s^i_1) \ldots (\equiv s^i_{n_i})\;{\mathfrak s}_m),\,\mbox{if}\;\theta({\mathfrak s}^\prime)=v
+\end{array}
+$$
+
+\noindent Здесь все ${\mathfrak s}^\prime$ и ${\mathfrak s}^\prime_i$~--- произвольные семантические переменные, $e$~--- произвольное выражение, $v$~--- произвольное значение в оригинальной семантике. Также потребуем, чтобы $\theta$ была неопределена для всех указанных семантических переменных, если явно не указано противоположное.
+\end{definition}
+
+\begin{definition}
+\normalfont Пусть
+\begin{itemize}
+\item \mbox{$\left<\mathcal S,\,e\right>$}~--- состояние в откладвыющей семантике;
+\item \mbox{$\left<\Sigma, \hat{\mathcal S}, \hat{e}, (\theta, \emptyset)\right>$}~---состояние ва реляционной семантике.
+\end{itemize}
+
+Назовём эти состояния {\bf связанными}, если существует следующая семантическая переменная $q_m$.\vspace{1mm}
+
+\begin{itemize}
+\item \mbox{$\hat{\mathcal S}\in\sembr{\mathcal S}^{e,{\mathfrak s}_m}_\theta$}\vspace{1mm}
+\item \mbox{$\hat{e}\in\left\{
+                          \begin{array}{lcl}
+                            \sembr{e}^{{\mathfrak s}_m}_\theta&,&
+                            \begin{array}{l}
+                            e\mbox{~--- атомарное,} \\
+                            \mathcal S\mbox{ не содержит функциональных контекстов}
+                            \end{array}\\[5mm]
+                            \sembr{e}_\theta&,&\mbox{иначе}
+                          \end{array}
+                       \right.
+            $}
+\item $\Sigma$ содержит все семантические переменные из $\hat{e}$, $\hat{\mathcal S}$, и $\theta$.
+\end{itemize}
+
+\end{definition}
+
+\begin{lemma}
+\label{constructor}
+\normalfont Пусть $v=\lstinline|C$^k$($v_1$,...,$v_k$)|$ -- значение. Тогда
+для произвольных $\Sigma$, $\mathcal S$, $\theta$, $\hat{v}\in \sembr{v}_\theta$, и
+семантической переменной ${\mathfrak s}$ такой, что ${\mathfrak s}\not\in dom(\theta)$ верно (5) или (6).
+
+$$
+\left<\Sigma\!,\mathcal S\!, (\hat{v}{\mathfrak s})\!,(\theta\!,\emptyset)\!\right>\!\leadsto^*\!\left<\Sigma^\prime,\mathcal S,{\mathfrak s}\!\equiv\!\lstinline|C$^k$(${\mathfrak s}^\prime_1$,...,${\mathfrak s}^\prime_k$)|,(\!\theta^\prime\!,\emptyset\!)\!\right>\,\mbox{и}\,\theta^\prime({\mathfrak s}^\prime_i)\!=\!v_i \eqno(5)
+$$
+
+$$
+\left<\Sigma,\,\mathcal S, (\hat{v}\,{\mathfrak s}),\, (\theta,\,\emptyset)\right>\leadsto^*\left<\Sigma,\,\mathcal S,\,{\mathfrak s}\equiv {\mathfrak s}^\prime,\,(\theta,\,\emptyset)\right>\;\mbox{и}\;\theta({\mathfrak s}^\prime)=v \eqno(6)
+$$
+
+Доказано индукцией по высоте $v$.
+\end{lemma}
+
+\begin{lemma}
+\label{evaluation_lemma}
+\normalfont Пусть $s=\left<\mathcal S=g_m\dots g_1,\,e\right>$~--- состояние в откладывающей семантике,
+$g_i$~--- атомарные контексты, $e$~--- выражение первого порядка, $\theta$~--- некоторая подстановка,
+${\mathfrak s}_m$~--- некоторая семантическая переменная, \mbox{$\hat{\mathcal{S}}\in\sembr{\mathcal S}^{e,\,{\mathfrak s}_m}_\theta$},
+\mbox{$\hat{e} \in \sembr{e}_\theta$}. Тогда существует последовательность шагов в реляционной семантике такая, что
+
+$$
+\left<\Sigma, \hat{\mathcal S}, (\hat{e} \, {\mathfrak s}_m), (\theta,\,\emptyset) \right>\leadsto^*\hat{s}
+$$
+
+\noindent и $s$ и $\hat{s}$ связаны. Это верно в предположении, что $\Sigma$ содержит все семантические переменные из $\hat{\mathcal S}$ и $\theta$. Доказательство разбором случаев для выражения $e$ с использованием Леммы~\ref{constructor}.
+\end{lemma}
+
+\begin{lemma}
+\label{connection}
+\normalfont Пусть \mbox{$s_1 \to s_2$}~--- один шаг вычисления в откладывающией семантике,
+$\hat{s_1}$~--- состояние в реляционной семантике такое, что $s_1$ и $\hat{s_1}$ связаны. Тогда
+существует последовательность шагов в реляционной семантике \mbox{$\hat{s_1}\leadsto^*\hat{s_2}$} такая,
+что $s_2$ и $\hat{s_2}$ связаны.
+
+Доказано методом разбором случаев для $s_1$ и конструктивным построением отношения симуляции~\cite{lozov-spbu:simulation1, lozov-spbu:simulation2} с использованием Лемм~\ref{substitution},~\ref{constructor},~\ref{evaluation_lemma}.
+\end{lemma}
+
+\begin{lemma}
+\label{prefix}
+\normalfont Пусть $s_0=\left<\emptyset,\,\epsilon,\,\lstinline|fresh ($x$) $(\sembr{e}^c\;x)$|,\,\iota\right>$~--- начальное состояние в реляционной семантики. Тогда существует последовательность шагов \mbox{$s_0\leadsto^*\hat{s}$} такая, что \mbox{$\left<\epsilon,\,e\right>$} (начальное состояние в откладывающей семантике) и $\hat{s}$ связаны. Немедленно следует из
+Леммы~\ref{evaluation_lemma}.
+\end{lemma}
+
+Все необходимые определения и леммы сформулированы. Теперь докажем теорему о частичной динамической корректности. Пусть $e$ -- выражение первого порядка в исходном языке, которое вычисляется в значение $v=\lstinline|C$^k$($v_1$,...,$v_k$)|$ в оригинальной семантике. Тогда выражение $e$ вычисляется к этому же значинию в откладывающей семантике:
+
+$$
+\left<\epsilon,\,e\right>\to^*\left<\epsilon,\,v\right>.
+$$
+
+По Лемме~\ref{prefix} имеем
+
+$$
+\left<\emptyset,\,\epsilon,\lstinline|fresh ($x$) $(\sembr{e}^c\;x)$|,\iota\right>\leadsto^*\hat{s},
+$$
+
+\noindent где \mbox{$\left<\epsilon,\,e\right>$} и $\hat{s}$ связаны. По Лемме~\ref{connection} существует состояние $\hat{s^\prime}$ в реляционной семантике такое, что
+
+$$
+\hat{s}\leadsto^*\hat{s^\prime},
+$$
+
+\noindent где \mbox{$\left<\epsilon,\,v\right>$} и $\hat{s^\prime}$ связаны. По определению отношения симуляции, $\hat{s^\prime}$ представимо в форме (7) или (8).
+
+$$
+\left<\Sigma,\,\epsilon,\,{\mathfrak s}_0\equiv\lstinline|C$^k$(${\mathfrak s}^\prime_1$,...,${\mathfrak s}^\prime_k$)|,\,(\theta,\,\emptyset)\right>,\,\theta({\mathfrak s}^\prime_i)=v_i \eqno(7)
+$$
+
+$$
+\left<\Sigma,\,\epsilon,\,{\mathfrak s}_0\equiv {\mathfrak s}^\prime,\,(\theta,\,\emptyset)\right>,\,\theta({\mathfrak s}^\prime)=v \eqno(8)
+$$
+
+\noindent Здесь ${\mathfrak s}_0$~--- первая семантическая переменная, введенная в $\Sigma$, и \mbox{${\mathfrak s}_0\not\in dom(\theta)$}. В обоих случаях, остается сделать один последний шаг в реляционной семантике, который и завершает это доказательство.
+
+
+
+\section{Апробация}
+
+Описанный ранее метод преобразования функциональных программ в реляционные было реализовано на языке OCaml. В качестве входного языка используется подмножество OCaml, содержащее $\lambda$-исчисление, конструкторы, сопоставление с образцом, \code{let} (\code{rec}) связывания и полиморфное сравнение значений первого порядка.
+
+При реализации были выявлены две проблемы. Во-первых, в результате преобразования присутствует множество абстракций, многие из которых могут быть применены немедленно. Для их устранения был добавлен дополнительный опциональный проход по абстрактному синтаксическому дереву, который выполняет
+$\beta$-редукции везде, где это возможно. Данная оптимизация значительно улучшает качество конвертируемых
+программ с точки зрения как удобочитаемости, так и производительности. Далее, в нашей первоначальной реализации слишком много значений преобразовывались в функции и, как результат, их тела вычисляются несколько раз с существенным ухудшением производительности. Нами была улучшена реализация путем определения важного конкретного случая и обработки его с небольшим преобразованием.
+
+Отдельно стоит отметить, что в реализации метода преобразования используется встроенная в OCanren мемоизация отношений. Это позволяет значительно ускорить время работы рекурсивных функций.
+
+\begin{figure}[h]
+  \begin{subfigure}[t]{1\textwidth}
+    \begin{lstlisting}[basicstyle=\small]
+val append : $\alpha$ list -> $\alpha$ list -> $\alpha$ list
+let rec append = fun a.fun b.
+  match a with
+  | Nil         -> b
+  | Cons (h, t) ->
+      Cons (h, append t b)
+    \end{lstlisting}
+    \vskip-4mm
+    \caption{}
+  \end{subfigure}
+  \vskip5mm
+  \begin{subfigure}[t]{1\textwidth}
+    \begin{lstlisting}[basicstyle=\small]
+val append$^o$ : (($\alpha$ llist)$^o$ -> $\goal$) -> (($\alpha$ llist)$^o$ -> $\goal$) ->
+                                     ($\alpha$ llist)$^o$ -> $\goal$
+let rec append$^o$ a b q1 =
+  fresh (q2)
+    (a q2) /\
+    (((q2 === ^Nil) /\ (b q1)) |||
+      (fresh (q3 q4)
+        (q2 === ^(Cons (q3, q4))) /\
+        (fresh (q6 q7)
+          (q6 === q3) /\
+          (q1 === ^(Cons (q6, q7))) /\
+          (append$^o$ (=== q4) b q7))))
+    \end{lstlisting}
+    \vskip-4mm
+    \caption{}
+  \end{subfigure}
+  \vskip5mm
+  \caption{Пример преобразования функции в отношение}
+  \label{relational_conversion_example}
+\end{figure}
+
+В качестве первого примера преобразования рассмотрим реализацию функции конкатенации для списков (см. рисунок~\ref{relational_conversion_example}a).
+Результат преобразования (см. рисунок~\ref{relational_conversion_example}b) несколько отличается от классического реализации реляционного отношения конкатенации списков. Основное различие происходит от функционализации примитивных значений: в то время как обычные \lstinline|append$^o$| работает со значениями-списками, преобразованный вариант использует функции, возвращающие цель. Таким образом, обычная \lstinline {append$^o$} для аргументов \lstinline|x|, \lstinline|y| и \lstinline |q| может быть выражено с помощью преобразованного в качестве \lstinline{append$^o$ (=== x) (=== y) q}.
+
+Далее представлена демонстрация возможности выполнимости реляционных форм
+в различных направлениях на следующих примерах:
+\begin{itemize}
+\item интерпретатор высшего порядка для лямбда-исчисления, принимающий в качестве аргумента функцию поиска подвыражения, к которому необходимо применить бета-редукцию;
+\item алгоритм Хиндли-Милнера~\cite{lozov-spbu:Barendregt} для вывода наиболее общего типа.
+%\item miniKanren с Disequality Constraints.
+\end{itemize}
+
+\subsection{Интерпретатор высшего порядка для лямбда-исчисления}
+
+Как было сказано во введении, одним из применений языка miniKanren является разработка реляционных интерпретаторов~\cite{lozov-spbu:quines,lozov-spbu:miniKanren,lozov-spbu:unified}. Отличительной особенностью данного интерпретатора является его аргумент высшего порядка, который используется для поиска подвыражения, к которому применима бета-редукция. Таким образом, в зависимости от этого аргумента можно получить интерпретатор с различными стратегиями вычисления: {\it call-by-name}, {\it call-by-value}, нормальный порядок редукции и др. Реализованный функциональный интерпретатор и функции редукции имеют следующую сигнатуру:
+
+\begin{lstlisting}[basicstyle=\small]
+   val eval : (term -> split) -> term -> term
+   val call_by_name  : term -> split
+   val call_by_value : term -> split
+   val normal_order  : term -> split
+\end{lstlisting}
+где \code{term} -- выражение лямбда-исчисления в нотации Де Брюэна; \code{split} -- пара из выражения и контекста. Функция высшего порядка \code{eval} принимает в качестве первого аргумента функцию, определяющую порядок редукции, в качестве второго аргумента -- выражение, которое необходимо редуцировать.
+
+После преобразования будут получены отношения со следующими сигнатурами:
+\begin{lstlisting}[basicstyle=\small]
+   val eval$^o$ : ((term$^o$ -> $\goal$) -> split$^o$ -> $\goal$) ->
+                (term$^o$ -> $\goal$) -> term$^o$ -> $\goal$
+   val call_by_name$^o$   : (term$^o$ -> $\goal$) -> split$^o$ -> $\goal$
+   val call_by_value$^o$ : (term$^o$ -> $\goal$) -> split$^o$ -> $\goal$
+   val normal_order$^o$   : (term$^o$ -> $\goal$) -> split$^o$ -> $\goal$
+\end{lstlisting}
+
+Полученное с помощью реляционного преобразования отношение позволяет непосредственно интерпретировать лямбда-выражения.
+
+\begin{lstlisting}[basicstyle=\small]
+   eval$^o$ normal_order$^o$ (=== `(fun $\dbi{0}$) $\dbi{1}$`) q $\leadsto$
+          [q $\binds$ `$\dbi{1}$`]
+   eval$^o$ call_by_name$^o$ (=== `$\dbi{0}$ ((fun $\dbi{0}$) $\dbi{1}$)`) q $\leadsto$
+          [q $\binds$ `$\dbi{0}$ ((fun $\dbi{0}$) $\dbi{1}$)`]
+   eval$^o$ call_by_value$^o$ (=== `$\dbi{0}$ ((fun $\dbi{0}$) $\dbi{1}$)`) q $\leadsto$
+          [q $\binds$ `$\dbi{0}$ $\dbi{1}$`]
+\end{lstlisting}
+
+В качестве примера рассмотрим три различных запроса с лямбда-выражениями и отношениями редукции. Во всех трех случаях запрос был успешно выполнен; для каждого лямбда-выражения была построена корректная нормальная форма, соответствующая выбранной стратегии редукции.
+
+Также реляционная форма  \lstinline|eval$^o$| позволяет генерировать из нормальных форм (возможно, бесконечный) поток выражений, из которых эта нормальная форма была получена с помощью переданного отношения, определяющего стратегию вычисления.
+
+\begin{lstlisting}[basicstyle=\small]
+   eval$^o$ normal_order$^o$ (=== q) (`fun $\dbi{0}$`) $\leadsto$ [
+       q $\binds$ `fun $\dbi{0}$`;
+       q $\binds$ `(fun $\dbi{0}$) (fun $\dbi{0}$)`;
+       q $\binds$ `fun ((fun $\dbi{1}$) $\framebox{0}$)`;
+       q $\binds$ `(fun $\dbi{0}$) ((fun $\dbi{0}$) (fun $\dbi{0}$))`; ...]
+   eval$^o$ call_by_name$^o$ (=== q) (`fun $\dbi{0}$`) $\leadsto$ [
+       q $\binds$ `fun $\dbi{0}$`;
+       q $\binds$ `(fun $\dbi{0}$) (fun $\dbi{0}$)`;
+       q $\binds$ `(fun $\dbi{0}$) ((fun $\dbi{0}$) (fun $\dbi{0}$))`;
+       q $\binds$ `(fun fun $\;\dbi{0}$) $\dbi{0}$`; ...]
+\end{lstlisting}
+
+В представленных выше запросах задана нормальная форма и стратегия
+редукции. Каждый из запросов порождает поток лямбда-выражений с
+заданной нормальной формой. В этом и последующих примерах результаты
+вычисления могут содержать свободные переменные, которые обозначаются
+числом в квадрате и интерпретируются как произвольное значение заданного
+типа.
+
+Отметим, что аргумент, определяющий стратегию редукции, породить нельзя,
+так как он является функцией высшего порядка. Данное ограничение является
+следствием ограниченности синтаксической унификации.
+
+\subsection{Вывод типов Хиндли-Милнера}
+
+Данный алгоритм~\cite{lozov-spbu:Barendregt} по лямбда-выражению вычисляет наиболее общий тип этого выражения.
+
+Функция \lstinline|type_inference|, являющаяся реализацией алгоритма вывода типов и отношение \lstinline|type_inference$^o$|, являющееся результатом преобразования \lstinline|type_inference|, имеют следующие типы:
+\begin{lstlisting}[basicstyle=\small]
+   val type_inference  : term -> typ
+   val type_inference$^o$ : (term$^o$ -> $\goal$) -> typ$^o$ -> $\goal$
+\end{lstlisting}
+
+Полученное с помощью реляционного преобразования отношение можно использовать непосредственно для вычисления типа выражения.
+
+\begin{lstlisting}[basicstyle=\small]
+   type_inference$^o$ (=== `$\lambda x \to x$`) q $\leadsto$ [q $\binds$ `$a\to a$`]
+\end{lstlisting}
+
+Данный запрос для заданного выражения порождает корректный тип. Также реляционную форму \lstinline|type_inference$^o$| можно использовать для решения проблемы населенности типа.
+
+\begin{lstlisting}[basicstyle=\small]
+   type_inference$^o$ (=== q) '$a$' $\leadsto$ $\bot$
+   type_inference$^o$ (=== q) '$a$ -> $a$' $\leadsto$ [
+       q $\binds$ 'fun $\framebox{0}$ -> $\framebox{0}$';
+       q $\binds$ 'fun $\framebox{0}$ -> (fun $\framebox{1}$ -> $\framebox{1}$) $\framebox{0}$';
+       q $\binds$ 'fun $\framebox{0}$ -> let $\framebox{1}$ = $\framebox{2}$ in $\framebox{0}$' ($\framebox{0}$ =/= $\;\;\framebox{1}$);
+       q $\binds$ '(fun $\framebox{0}$ -> $\framebox{0}$) (fun $\framebox{1}$ -> $\framebox{1}$)'; ...]
+\end{lstlisting}
+
+В первом запросе задан ненаселенный тип. Это подтверждает результат
+вычисления запроса отсутствием найденных выражений. Второй запрос
+породил бесконечный поток выражений, следовательно, заданный тип
+населен.
+
+Наконец, данную реляционную форму можно использовать для достраивания
+выражения с дыркой таким образом, чтобы оно имело заданный тип.
+
+\begin{lstlisting}[basicstyle=\small]
+   type_inference$^o$ (=== `let f = $\Box$ in f (fun x -> f x)`) `$a\to a$` $\leadsto$
+     [$\Box$ $\binds$ `fun $\framebox{0}$ -> $\framebox{0}$`; ...]
+\end{lstlisting}
+
+Данный запрос порождает выражения, которые можно подставить на место $\Box$,
+после чего выражение будет корректно типизироваться.
+
+\subsection{Выводы по апробации}
+
+Прежде всего, апробация показала, что полученная с помощью описанного в данной работе метода преобразования реляционная форма функциональной программы может быть исполнена в прямом направлении. Другими словами, с помощью реляционной формы возможно вычислить результат исходной функции. Также реляционную программу можно использовать для вычисления произвольных аргументов первого порядка исходной функции. В случае неоднозначности этих аргументов будут вычислены все все подходящие значения этих аргументов, представленные в виде ленивого потока.
+
+Однако с помощью реляционной формы нельзя вычислить аргумент высшего порядка вследствие ограничений синтаксической унификации, используемой в языке miniKanren.
+
+\section{Заключение}
+
+Подводя итог, были выделены следующие результаты:
+\begin{enumerate}
+\item[1)] описаны синтаксис, система вывода типов и операционная семантика для функционального и реляционного языков;
+\item[2)] разработано преобразование типизированных функций в реляционную форму;
+\item[3)] доказана статическая и динамическая корректность преобразования;
+\item[4)] проведена апробация метода: реализован транслятор и исследована его применимость к нескольким классическим для реляционного программирования задачам;
+\item[5)] данная работа была представлена на конференции Trends in Functional Programming 2017 и опубликована~\cite{RelConvTFP} в журнале Lecture Notes in Computer Science (Scopus).
+\end{enumerate}
+
+Таким образом, поставленная цель достигнута, а именно, разработан метод преобразования функциональных программ в реляционную форму.
+
+Во многих случаях данный
+метод позволяет избежать трудоемкого ``ручного'' переписывания
+функциональных спецификаций в реляционную форму и сосредоточиться на разработке
+реляционных спецификациях только в том случае, когда их получение из функций
+невозможно или нежелательно.
+
+Предложенный в данной работе метод преобразования применим к произвольным функциональным программам
+с ограниченным полиморфизмом. Это ограничение полиморфизма следует из ограничений языка miniKanren.
+
+Апробация показала, что полученные с помощью метода преобразования
+реляционные формы можно исполнять для вычисления одного или нескольких произвольных
+аргументов первого порядка. Более того, любой аргумент первого порядка
+можно определить частично, что позволяет гибко уточнять запрос к реляционной форме.
+
+%\setmonofont[Mapping=tex-text]{CMU Typewriter Text}
+%\bibliographystyle{plain}
+%\bibliography{diploma}
+\begin{thebibliography}{10}
+
+\bibitem{lozov-spbu:Curry}
+Curry language.
+ \newblock \url{http://www-ps.informatik.uni-kiel.de/currywiki}
+ \newblock (дата обр. 20.11.2018).
+
+\bibitem{lozov-spbu:Mercury}
+Mercury language.
+\newblock \url{https://mercurylang.org}
+\newblock (дата обр. 20.11.2018).
+
+\bibitem{lozov-spbu:mkanren}
+minikanren language.
+\newblock \url{http://minikanren.org}
+\newblock (дата обр. 20.11.2018).
+
+\bibitem{lozov-spbu:ocanren-git}
+Ocanren language.
+\newblock \url{http://github.com/dboulytchev/ocanren}
+\newblock (дата обр. 20.11.2018).
+
+\bibitem{lozov-spbu:CKanren}
+Claire~E. Alvis, Jeremiah~J. Willcock, and William~E. Byrd.
+\newblock ckanren: minikanren with constraints.
+\newblock {\em Workshop on Scheme and Functional Programming}, 2011.
+
+\bibitem{lozov-spbu:Unify}
+Franz Baader and Wayne Snyder.
+\newblock {\em Handbook of Automated Reasoning}.
+\newblock Elsevier and MIT Press, 2001.
+
+\bibitem{RW:Prolog2Java}
+M~Banbara, N~Tamura, and K~Inoue.
+\newblock Prolog cafe: A prolog to java translator system.
+\newblock {\em Vol. 4369 of Lecture Notes in Computer Science}, pages 1--11,
+  2006.
+
+\bibitem{Lambda}
+H.~P. Barendregt.
+\newblock Handbook of logic in computer science (vol. 2).
+\newblock chapter Lambda Calculi with Types, pages 117--309. Oxford University
+  Press, Inc., 1992.
+
+\bibitem{lozov-spbu:Barendregt}
+Henk Barendregt.
+\newblock {\em Lambda Calculi with Types}.
+\newblock Handbook of Logic in Computer Science, Volume II, Oxford University
+  Press, 1993.
+
+\bibitem{lozov-spbu:miniKanren}
+William~E. Byrd.
+\newblock {\em Relational Programming in miniKanren: Techniques,
+  Applications, and Implementations}.
+\newblock Indiana University, Bloomington, 2009.
+
+\bibitem{lozov-spbu:unified}
+William~E. Byrd, Michael Ballantyne, Gregory Rosenblatt, and Matthew Might.
+\newblock A unified approach to solving seven programming problems (functional
+  pearl).
+\newblock {\em Proc. ACM Program. Lang.}, 2017.
+
+\bibitem{lozov-spbu:quines}
+William~E. Byrd, Eric Holk, and Daniel~P. Friedman.
+\newblock minikanren, live and untagged: Quine generation via relational
+  interpreters (programming pearl).
+\newblock {\em Workshop on Scheme and Functional Programming}, 2012.
+
+\bibitem{RW:PrologAndJava}
+Miguel Calejo.
+\newblock Interprolog: Towards a declarative embedding of logic programming in
+  java.
+\newblock 3229:714--717, 2004.
+
+\bibitem{lozov-spbu:ChurchRosser}
+Alonzo Church and J.~B. Rosser.
+\newblock Some properties of conversion.
+\newblock {\em Transactions of the American Mathematical Society},
+  39(3):472--482, 1936.
+
+\bibitem{RW:C1}
+P.~Codognet and D.~Diaz.
+\newblock Wamcc: Compiling prolog to c.
+\newblock {\em The MIT Press}, pages 317--–331, 1995.
+
+\bibitem{lozov-spbu:TheReasonedSchemer}
+Daniel~P. Friedman, William E.Byrd, and Oleg Kiselyov.
+\newblock The reasoned schemer, 2005.
+
+\bibitem{RW:Java2Prolog}
+Miguel Gómez-Zamalloa, Elvira Albert, and Germán Puebla.
+\newblock Decompilation of java bytecode to prolog by partial evaluation.
+\newblock {\em Information and Software Technology}, 51(10):1409--1427, 2009.
+\newblock Source Code Analysis and Manipulation, SCAM 2008.
+
+\bibitem{lozov-spbu:implementation}
+Jason Hemann and Daniel~P. Friedman.
+\newblock $\mu$kanren: A minimal functional core for relational programming.
+\newblock {\em Workshop on Scheme and Functional Programming}, 2013.
+
+\bibitem{RW:C2}
+F.~Henderson and Z.~Somogyi.
+\newblock Compiling mercury to high-level c code.
+\newblock {\em In Computational Complexity}, pages 197--212, 2002.
+
+\bibitem{RW:PrologAndCSharp}
+Jonathan J.~Cook.
+\newblock P\#: A concurrent prolog for the .net framework.
+\newblock 34:815--845, 2004.
+
+\bibitem{RelConvTFP}
+P.~Lozov, A.~Vyatkin, and D.~Boulytchev.
+\newblock Typed relational conversion.
+\newblock {\em Lecture Notes in Computer Science}, 10788 LNCS:39---58, 2018.
+
+\bibitem{lozov-spbu:simulation1}
+F.~W.~Vaandrager N.~A.~Lynch.
+\newblock Forward and backward simulations: I. untimed systems.
+\newblock {\em Inf. Comput.}, 128(2):214--233, 1995.
+
+\bibitem{lozov-spbu:simulation2}
+F.~W.~Vaandrager N.~A.~Lynch.
+\newblock Forward and backward simulations, ii: Timing-based systems.
+\newblock {\em Inf. Comput.}, 128(1):1--25, 1996.
+
+\bibitem{lozov-spbu:poly}
+Benjamin Pierce.
+\newblock {\em Types and Programming Languages}.
+\newblock MIT Press, 2002.
+
+\bibitem{terehov1}
+A.~N. Terekhov, K.~Yu. Romanovskii, D.~V. Koznov, P.~S. Dolgov, and A.~N.
+  Ivanov.
+\newblock Rtst++: Methodology and a case tool for the development of
+  information systems and software for real-time systems.
+\newblock {\em Programming and Computer Software}, 25:276 -- 281, 1999.
+
+\bibitem{Felleisen}
+A.K. Wright and M.~Felleisen.
+\newblock A syntactic approach to type soundness.
+\newblock {\em Inf. Comput.}, 115(1):38--94, November 1994.
+
+\bibitem{OCLtoJS_1}
+Д.~В. Кознов.
+\newblock Методология и инструментарий
+  предметно-ориентированного
+  моделирования.
+\newblock {\em Диссертация на соискание учёной
+  степени доктора технических наук}, СПбГУ
+  --- 2016.
+
+\bibitem{OCLtoJS_2}
+Л. Ольхович and Д. Кознов.
+\newblock Метод автоматической валидации
+  uml-спецификаций на основе ocl.
+\newblock {\em Программирование}, 6:44 -- 50, 2003.
+
+\bibitem{terehov2}
+А.~Н. Терехов, К.~Ю. Романовский, Д.~В. Кознов,
+  П.~С. Долгов, and А.~Н. Иванов.
+\newblock Real: методология и case-средство для
+  разработки систем реального времени и
+  информационных систем.
+\newblock {\em Программирование}, pages 44 -- 51, 1999.
+
 \end{thebibliography}
-  

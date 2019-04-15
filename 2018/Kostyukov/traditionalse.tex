@@ -1,0 +1,115 @@
+\section{Символьное исполнение}
+\label{sec:traditional-se}
+
+\newcommand{\traditionalalgo}
+{
+\begin{algorithm}
+\scriptsize
+\caption{Классическое символьное исполнение}
+\label{algo:traditional-se}
+\begin{algorithmic}[1]
+	\Require Корректно типизированная программа $P$, написанная на языке из~\autoref{sec:language}, исследуемая функция $F$
+	\Ensure Символьное куча $F$, множество условий путей ошибочных трасс $Errors$
+	
+	\State \assign{$\sigma, Errors$}{\texttt{initSymbolicState}(\emph{F}), $\emptyset$\label{algo:line:initState}}
+	\State \Return \Call{ExecStatement}{F.body, $\sigma$, true}
+
+	\Function{ExecStatement}{stmt : Statement, $\sigma$ : SymbolicHeap, $\pi$ : PathCondition} : SymbolicHeap
+		\Switch{stmt}
+			\Case{\underline{\textsc{nop}}\,\textbf{:}}
+				\Return{$\sigma$}
+			\EndCase
+			\Case{\underline{\textsc{\{}} statements \underline{\textsc{\}}}\,\textbf{:}}
+				\ForAll{childStmt $\in$ statements}
+					\State \assign{\emph{$\sigma$}}{\Call{\emph{ExecStatement}}{\emph{childStmt}, \emph{$\sigma$}, \emph{$\pi$}}}
+				\EndFor
+				\State \Return{$\sigma$}
+			\EndCase
+			\Case{\underline{\textsc{if}} cond \underline{\textsc{then}} thenBranch \underline{\textsc{else}} elseBranch\,\textbf{:}}
+				\State \assign{\emph{c}}{\Call{\emph{Eval}}{\emph{cond}, $\sigma$}}
+				\State \Return {Branch\textsc{(}c, $\sigma$, $\pi$,\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}\textsc{(}thenBranch, \emph{fork}\textsc{(}$\sigma$\textsc{)}, $\pi'$\textsc{)},\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}\textsc{(}elseBranch, \emph{fork}\textsc{(}$\sigma$\textsc{)}, $\pi'$\textsc{))}}
+			\EndCase
+			\Case{\underline{\textsc{fail}}\,\textbf{:}}
+				\State \assign{$Errors$}{$Errors \cup \{\pi\}$}\label{algo:line:abort1}
+				\State \Return{$\sigma$}
+			\EndCase
+			\Case{x $:=$ \Call{\underline{\textsc{alloc}}}{\emph{$\text{e}_1$, \ldots, $\text{e}_\text{n}$}}\label{algo:line:heap-manipulation-begin}\,\textbf{:}}
+				\State \assign{(\emph{$\sigma'$}, \emph{freshRef})}{\texttt{allocateInHeap}\big(\emph{$\sigma$},($\text{\emph{Eval}(e}_1, \sigma\text{)},\ldots,\text{\emph{Eval}(}\text{e}_\text{n}, \sigma\text{)}$)\big)\label{algo:line:alloc}}
+				\State \Return{\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma'$, x, freshRef\textsc{\big)}\label{algo:line:write-in-alloc}}
+			\EndCase
+			\Case{x $:=$ expr\,\textbf{:}}
+				\Return{\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, x, \emph{Eval}(\emph{expr}, $\sigma$)\textsc{\big)}\label{algo:line:write-in-assign}}
+			\EndCase
+			\Case{{$\text{x}_\text{1}$, \ldots, $\text{x}_\text{n}$} $:=$ \underline{\textsc{read}}(\emph{reference})\,\textbf{:}}
+				\State \assign{\emph{r}}{\emph{Eval}(\emph{reference}, $\sigma$)}
+				\State \Return{\emph{Branch}\textsc{\Big(}$r = null$, $\sigma$, $\pi$,\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}(\underline{\textsc{fail}}, $\sigma$, $\pi'$)\label{algo:line:abort2},\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, $\text{x}_\text{1}$, \ldots, $\text{x}_\text{n}$, \texttt{readHeap}(\emph{$\sigma$}, \emph{r})\textsc{\big)\textsc{\Big)}\label{algo:line:read}}\label{algo:line:write-in-read}}
+			\EndCase
+			\Case{\underline{\textsc{write}}({\emph{reference}, \emph{$\text{e}_1$, \ldots, $\text{e}_\text{n}$}})\,\textbf{:}}
+				\State \assign{\emph{r}}{\emph{Eval}(\emph{reference}, \emph{state})}
+				\State \Return{\emph{Branch}\textsc{\Big(}$r = null$, $\sigma$, $\pi$,\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\emph{ExecStatement}({\underline{\textsc{fail}}, $\sigma$, $\pi'$})\label{algo:line:abort3},\\
+					\qquad\qquad\qquad$\lambda\,\pi'.$\texttt{\textsc{writeHeap}}\textsc{\big(}$\sigma$, r, ($\text{\emph{Eval}}(\emph{e}_1, \sigma),\ldots,\text{\emph{Eval}}(\emph{e}_\emph{n}, \sigma)$)\textsc{\big)}\textsc{\Big)}\label{algo:line:write}}\label{algo:line:heap-manipulation-end}
+			\EndCase
+			\Case{\underline{\textsc{call}}(func)\,\textbf{:}}
+				\State \assign{\emph{f}}{\emph{Eval}(\emph{func})}
+				\State \Return{\emph{Call}($f$, $\sigma$, $\pi$)}
+			\EndCase
+%		}
+%	}
+	\EndSwitch
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[t]
+\caption{Классическое символьное исполнение (продолжение)}
+\begin{algorithmic}[1]
+	\Function{Branch}{c, $\sigma$, $\pi$, then, else} : SymbolicHeap
+		\If{isSatisfiable($\pi\,\,\land$\, c)}\label{algo:line:then-branch-begin}
+			 \State \assign{\emph{$\sigma_{then}$}}{\emph{then}($\pi\,\,\land$\, c)}
+		\Else~\assign{\emph{$\sigma_{then}$}}{\emph{$\sigma$}}\EndIf
+		\If{isSatisfiable($\pi\land\neg$c)}
+			\State \assign{\emph{$\sigma_{else}$}}{\emph{else}($\pi\land\neg$c)}
+		\Else~\assign{\emph{$\sigma_{else}$}}{\emph{$\sigma$}}\EndIf\label{algo:line:else-branch-end}
+		\State \Return \Call{\texttt{\textsc{merge}}}{$\sigma_{then}$, $\sigma_{else}$}\label{algo:line:merge}
+	\EndFunction
+	\Function{Call}{f : Function, $\sigma$ : SymbolicHeap, $\pi$ : PathCondition} : SymbolicHeap\label{algo:line:call-func-begin}
+		\If{f~--- символьная функция?}
+			\State Аппроксимировать применение функции высшего порядка
+		\EndIf
+		\If{$++$counter{f} $>$ \textsc{BOUND}}
+			\State Аппроксимировать неограниченную рекурсию
+		\EndIf
+		\State \assign{$\sigma'$}{\Call{\emph{ExecStatement}}{\emph{f.body}, $\sigma$, $\pi$}}
+		\State $-$$-$\emph{counter}(\emph{f})
+		\State \Return{$\sigma'$}
+	\EndFunction\label{algo:line:call-func-end}
+\end{algorithmic}
+\end{algorithm}
+}
+
+Символьное исполнение~--- это эффективная техника исследования путей исполнения программ. Символьное исполнение отличается от \emph{конкретного} тем, что исполняет программу над \emph{символьными} значениями, которые моделируют множества всех возможных конкретных входных значений. Движки символьного исполнения поддерживают \emph{состояние} программы~--- тройку $(stmt, \sigma, \pi)$, где $stmt$~--- это текущая инструкция, $\sigma$~--- \emph{символьная память} программы (\emph{символьная куча} в нашем случае) и $\pi$~--- \emph{условие пути} текущей ветки исполнения (конъюнкция логических формул~--- предположений, необходимых, чтобы попасть в текущую ветку исполнения).
+
+В символьном исполнении существуют два ключевых подхода к исполнению программ: статическое символьное исполнение (часто используется для верификации)~\cite{koelbl2005constructing,babic2008calysto,dillig2008sound,xie2005scalable} и \emph{динамическое} символьное исполнение (обычно используется для поиска ошибок и порождения тестов)~\cite{tillmann2008pex,godefroid2005dart,bounimova2013billions}. \emph{Динамические} подходы \emph{копируют} состояние каждый раз, когда происходит разветвление; далее исполнение независимо продолжается на копиях начального состояния. Условие пути скопированного состояния будет конъюнкцией начального условия пути и соответствующего условия ветвления. \emph{Статические} подходы производят \emph{объединение состояний} в точках сочленения графа потока управления, что даёт возможность представить всю программу в виде одной логической формулы.
+
+\traditionalalgo
+
+\autoref{algo:traditional-se} описывает обобщённую реализацию движка статического символьного исполнения для демо языка из~\autoref{sec:language}. Эта реализация может быть уточнена для произвольных стратегий поиска и объединения состояний, например~\cite{kuznetsov2012efficient} или~\cite{avgerinos2014enhancing}.
+
+Алгоритм принимает функцию $F$ и сигнализирует о достижении ошибок в коде (строки~\ref{algo:line:abort1},~\ref{algo:line:abort2}~и~\ref{algo:line:abort3}) или возвращает символьное состояние, описывающее то, как функция меняет кучу. Исполнение разветвляется на условных конструкциях (строки~\ref{algo:line:then-branch-begin}"~\ref{algo:line:else-branch-end}) и объединяет получившиеся состояния в точках сочленения графа потока управления (строка~\ref{algo:line:merge}). Выражения вычисляются функцией \emph{Eval} (её реализация опущена). Она преобразует абстрактное синтаксическое дерево выражения в символьную формулу и читает именованные локации.
+
+Строки~\ref{algo:line:heap-manipulation-begin}"~\ref{algo:line:heap-manipulation-end} описывают работу с кучей. Мы формулируем алгоритм в общем виде, скрывая конкретную реализацию функций для работы с кучей: \texttt{initSymbolicState} (строка~\ref{algo:line:initState}), \texttt{readHeap} (строка~\ref{algo:line:read}), \texttt{writeHeap} (строки~\ref{algo:line:write-in-alloc},~\ref{algo:line:write-in-assign},~\ref{algo:line:write-in-read}~и~\ref{algo:line:write}), \texttt{allocateInHeap} (строка~\ref{algo:line:alloc}) и \texttt{merge} (строка~\ref{algo:line:merge}).
+
+Основная проблема масштабируемости символьного исполнения отражена в строках~\ref{algo:line:call-func-begin}"~\ref{algo:line:call-func-end}. Во-первых, алгоритм выполняет \emph{ограниченную раскрутку} рекурсии, что приводит к \emph{\ruquote{взрыву} путей исполнения} (path explosion) в случае динамического символьного исполнения и неограниченному росту размера условий верификации в статическом символьном исполнении (что даст большую нагрузку на решатель логики и скорее всего приведёт к превышению лимита времени его работы).
+Во-вторых, наиболее вероятно, что некоторые функции в программе будут вызываться более одного раза. \autoref{algo:traditional-se} исследует функцию каждый раз, когда она вызывается. Лучшим подходом было бы собирать \emph{резюме функций} и переиспользовать их, чтобы избежать затрат на исполнение и решение ограничений. Эта техника используется в \emph{композициональном символьном исполнении}~\cite{christakis2015ic,godefroid2007compositional,lin2016compositional}. Современные движки могут резюмировать ациклические фрагменты кода и невложенные циклы~\cite{xie2016proteus}. Однако точное резюмирование произвольных функций на данный момент остаётся открытой проблемой~\cite{SurveySymExec-CSUR18}.
+
+В данной работе представлен подход к реализации примитивов для работы с кучей (\texttt{initSymbolicState}, \texttt{readHeap}, \texttt{writeHeap}, \texttt{allocateInHeap} и \texttt{merge}). Этот подход позволяет:
+\begin{enumerate*}[label=\alph*)]
+    \item автоматически порождать \emph{точные условия верификации} \emph{произвольных} функций, что даёт возможность построить композициональный верификатор;
+    \item порождать условия верификации не прибегая к раскрутке рекурсии, из-за чего эти условия оказываются сравнительно компактными.
+\end{enumerate*}
+
+Подход основывается на концепции \emph{композициональной символьной памяти}. В~\autoref{sec:state} представлена формальная модель композициональной символьной памяти и доказаны некоторые её свойства. В~\autoref{sec:compositional-se} приведён пример алгоритма композиционального символьного исполнения без раскрутки рекурсии. Алгоритм исследует функцию в изоляции и порождает условия верификации, которые описывают её \emph{точное} поведение и, соответственно, могут быть переиспользованны, что позволяет избежать повторного исследования функции в будущем. Затем, в~\autoref{sec:encoding} описано сведение задачи решения этих условий верификации к задаче выполнимости ограниченных дизъюнктов Хорна.
