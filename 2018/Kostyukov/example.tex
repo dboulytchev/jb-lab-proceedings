@@ -1,0 +1,110 @@
+
+\newcommand{\pwr}{\textsc{pwr}}
+\newcommand{\mlt}{\textsc{mlt}}
+\newcommand{\fct}{\textsc{fct}}
+\newcommand{\fp}{\textsc{fp}}
+\newcommand{\Mlt}{\textsc{mlt$^{2}$}}
+\newcommand{\Pwr}{\textsc{pwr$^{2}$}}
+
+\newcommand{\fib}{\textsc{fib}}
+\newcommand{\Fib}{\textsc{fib$^{2}$}}
+
+\newcommand{\fldp}{\textsc{fld$_{+}$}}
+\newcommand{\fldppp}{\textsc{fld$_{+++}$}}
+\newcommand{\mn}{\textsc{min}}
+\newcommand{\fldm}{\textsc{fld$_{-}$}}
+\newcommand{\fldpmm}{\textsc{Pr}}
+\newcommand{\fldpmmlia}{\textsc{Pr'}}
+\newcommand{\fldpm}{\textsc{fld$_{+/-}$}}
+\newcommand{\fldlia}{\textsc{fld$^{\text{LIA}}_{+/-}$}}
+\newcommand{\evenp}{\textsc{even$_{+}$}}
+\newcommand{\splitev}{\textsc{split}}
+\newcommand{\splitfldp}{\textsc{fs}}
+
+\newcommand{\ite}{\mathit{ite}}
+\newcommand{\len}{\textsc{len}}
+\newcommand{\append}{\textsc{append}}
+\newcommand{\cons}{\mathit{cons}}
+\newcommand{\nil}{\mathit{nil}}
+
+% Two lengths of the same list
+\newcommand{\hornlengthsofsamelist}{
+\hcs{
+  \begin{aligned}
+    \len(xs, a) \gets & xs = \nil, a = 0 \cr
+    \len(xs, a) \gets & \len(xs', a') , xs = \cons(x, xs'), a = a' + 1\cr
+    \bot \gets & \len(xs, a), \len(xs, b), a \neq b
+  \end{aligned}
+  }
+}
+
+% Fold of the append result
+
+\newcommand{\hornfoldappendedlist}{
+\hcs{
+  \begin{aligned}
+    \fldp(xs, a, a') \gets & xs = \nil, a' = a \cr
+    \fldp(xs, a, a') \gets & \fldp(xs', a, a''), xs = \cons(x, xs'), a' = a'' + x \cr
+    \append(xs, ys, zs) \gets & xs = \nil, zs = ys \cr
+    \append(xs, ys, zs) \gets & \append(xs', ys, zs'), xs = \cons(x, xs'), zs = \cons(x, zs') \cr
+    \bot \gets & \fldp(xs, a, a'), \fldp(ys, b, b'), \fldp(zs, c, c'), \append(xs, ys, zs), a = 0, b = 0, c = 0,  a + b \neq c
+  \end{aligned}
+  }
+}
+
+\newcommand{\hornfoldappendedlistfinal}{
+\hcs{
+  \begin{aligned}
+    \fldp(xs, a, a', ys, b, b', zs, c, c') \gets & xs = \nil, ys = \nil, zs = \nil, a' = a, b' = b, c' = c, a = 0, b = 0, c = 0 \cr
+    \fldppp(xs, a, a', ys, b, b', zs, c, c') \gets & \fldppp(xs', a, a'', ys', b, b', zs', c, c''), \cr 
+        & xs = \nil, a' = a \cr
+        & ys = \cons(y, ys'), b' = b'' + y, \cr
+        & zs = \cons(x, zs'), c' = c'' + y, \cr
+        & a = 0, b = 0, c = 0 \cr
+    \fldppp(xs, a, a', ys, b, b', zs, c, c') \gets & \fldppp(xs', a, a'', ys', b, b'', zs', c, c''), \cr 
+        & xs = \cons(x, xs'), a' = a'' + x, \cr
+        & ys = ys', b' = b'', \cr
+        & zs = \cons(x, zs'), c' = c'' + x, \cr
+        & a = 0, b = 0, c = 0 \cr
+   \bot \gets & \fldppp(xs, a, a', ys, b, b', zs, c, c'), a + b \neq c
+  \end{aligned}
+  }
+}
+
+
+% Fold over elements on even positions of a list
+
+\newcommand{\hornevenfoldslist}{
+\hcs{
+  \begin{aligned}
+    \fldp(xs, a, a') \gets & xs = \nil, a' = a \cr
+    \fldp(xs, a, a') \gets & \fldp(xs', a, a''), xs = \cons(x, xs'), a' = a'' + x \cr
+    \splitev(xs, ys, zs) \gets & xs = \nil, ys = \nil, zs = \nil \cr
+    \splitev(xs, ys, zs) \gets & xs = \cons(x, \nil), ys = \cons (x, \nil), zs = \nil \cr
+    \splitev(xs, ys, zs) \gets & \splitev(xs', ys', zs'), xs = \cons(x, \cons(x', xs')), ys = \cons(x, ys'), zs = \cons(x', zs') \cr
+    \bot \gets &  \fldp(xs, a, a'), \fldp(ys, b, b'), \fldp(zs, c, c'), \splitev(xs, ys, zs), a = 0, b = 0, c = 0, a \neq b + c
+  \end{aligned}
+  }
+}
+
+\newcommand{\hornevenfoldslistfinal}{
+\hcs{
+  \begin{aligned}
+    \splitfldp(xs, a, a', ys, b, b', zs, c, c') \gets & xs = \nil, ys = \nil, zs = \nil, a' = a, b' = b, c' = c, a = 0, b = 0, c = 0 \cr
+    \splitfldp(xs, a, a', ys, b, b', zs, c, c') \gets & xs = \cons(x, \nil), ys = \cons(x, \nil), zs = \nil, \cr
+               & a' = a + x, b' = b + x, c' = c , a = 0, b = 0, c = 0\cr
+    \splitfldp(xs, a, a', ys, b, b', zs, c, c') \gets & \splitfldp(xs', a, a'', ys', b, b'', zs', c, c''), \cr
+         & xs = \cons(x, \cons(x', xs')), a' = a''' + x, a''' = a'' + x', \cr
+         & ys = \cons(x, ys'), b' = b'' + x , \cr
+         & zs = \cons(x', zs'),  c' = c'' + x', \cr
+         & a = 0, b = 0, c = 0 \cr
+    \bot \gets & \splitfldp(xs, a, a', ys, b, b', zs, c, c'), a \neq b
+  \end{aligned}
+  }
+}
+
+
+
+
+
+

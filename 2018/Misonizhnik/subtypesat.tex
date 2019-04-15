@@ -1,0 +1,86 @@
+\section{Задача \subtypesat{}}
+
+В этой мы формализуем задачу выполнимости ограничений на подтипирование, и покажем несколько нетривиальных примеров.
+
+В дальнейшем будем считать, что таблица классов $CT$ зафиксирована. $\mathcal{C}$ обозначает множество конструкторов из $CT$. $\Sigma=(\mathcal{C}, \{\subtype{}\})$ обозначает сигнатуру первого порядка с равенством. Функциональные символы идентифицируются конструкторами из $CT$. Для удобства применение функционального символа $C$ к аргументам $\overline{U}$ записывается в виде $\onector{C}{\overline{U}}$, или просто $CU$ в случае унарного конструктора. $\subtype{}$ --- бинарный предикатный символ, который будет записываться в инфиксной форме. Для удобства $\neg(T\subtype{}U)$ и $\neg(T = U)$ записываются как $T\notsubtype U$ и $T\neq U$.
+
+
+Пусть $I_{\subtype{}}$ будет $\Sigma$-структурой с доменом $\vert I_{\subtype{}} \vert$ для всех закрытых типов определённых $CT$, интерпретацией $\subtype{}$ будет отношение подтипирования из~\autoref{defn:subtyping}. Пусть $\mathcal{T}_{\subtype{}}^{CT}$ будет полной $\Sigma$-теорией первого порядка со структурой $I_{\subtype{}}$, например, множества всех $\Sigma$-предложений первого порядка, которые выполняются в $I_{\subtype{}}$ (мы имеем ввиду обыкновенное определение выполнимости формулы $\phi$ в структуре $I$, обозначаемой $I \vDash \phi$). Будем говорить, что данная формула $\phi$ выполнима в $I$ по модулю теории $\mathcal{T}_{\subtype{}}^{CT}$, обозначается $I\vDash_{\subtype{}}^{CT}\phi$ тогда и только тогда, когда $I\vDash \{\phi\}\cup\mathcal{T}_{\subtype{}}^{CT}$. В это случае $I$ являются \emph{моделью подтипирования} формулы $\phi$.
+
+\paragraph{Задача \subtypesat{}}{
+Дана таблица классов $CT$ и формулы $\phi$ над $\Sigma$, надо найти $I$ такую, что $I\vDash_{\subtype{}}^{CT}\phi$, или доказать, что её не существует.
+}
+
+Мы хотим показать, что, не смотря на то, что отношение подтипирования между закрытыми типами разрешимо для нерасширяющихся таблиц классов и для таблиц классов без контравариантных конструкторов, задача \subtypesat{} остаётся неразрешимой даже с такими ограничениями. Начнём с нескольких примеров, которые показывают сложность данной задачи.
+
+\begin{exmp}\label{exmp:unssatcycle}
+Рассмотрим таблицу классов
+\begin{alignat*}{3}
+    \classtableline{\onector{J}{+\xtype}}{} \\
+    \classtableline{C}{JC}
+\end{alignat*}
+и формулу
+\[
+    \phi \eqdef C \subtype \xtype \land C \subtype \ytype \land \xtype \notsubtype \ytype \land \ytype \notsubtype \xtype
+\]
+Выполнима ли $\phi$? Давайте рассмотрим различные возможные кандидатуры на интерпретацию $\interpretationf{}$. Пусть $\interpretation{}{\xtype} = C$ и $\interpretation{}{\ytype} = C$. В этом случае атом $\xtype \notsubtype \ytype$ обращается в ложь:
+\[
+    \interpretation{}{\xtype} \notsubtype \interpretation{}{\ytype} =  C \notsubtype C \Leftrightarrow \bot
+\]
+Пусть $\interpretation{}{\xtype} = C$ и $\interpretation{}{\ytype} = J\ytype'$ для некоторого $y'$.
+Тогда
+\[
+    I(\phi) = C \subtype C \land C \subtype J\ytype' \land C \notsubtype J\ytype' \land J\ytype' \notsubtype C \Leftrightarrow \bot
+\]
+Случай, когда $\interpretation{}{\xtype} = J{\xtype'}$ и $\interpretation{}{\ytype} = C$, является симметричным. В последнем варианте $I(\xtype) = J\xtype'$ и $I(\ytype) = J\ytype'$:
+\[
+    \begin{array}{l}
+    \interpretation{}{\phi} = C \subtype J\xtype' \land C \subtype J\ytype' \land J\xtype' \notsubtype J\ytype' \land J\ytype' \notsubtype J\xtype' \Leftrightarrow \\
+    JC \subtype J\xtype' \land JC \subtype J\ytype' \land J\xtype' \notsubtype J\ytype' \land J\ytype' \notsubtype J\xtype' \Leftrightarrow \\
+    C \subtype \xtype' \land C \subtype \ytype' \land \xtype' \notsubtype \ytype' \land \ytype' \notsubtype \xtype'
+    \end{array}
+\]
+Обратим внимание, что $\interpretation{}{\phi}$ является формулой $\phi$ с точностью до замены переменной. Это значит, что все кандидаты на подстановку переменных либо обращают формулу в ложь, либо приводят к формуле, к которой применимы те же самые рассуждения. Так как бесконечная цепочка $J$ не является типом, то $\phi$ невыполнима.
+
+Невыполнимость формулы $\phi$ можно интуитивно объяснить следующим образом. Выполнимость $\phi$ означала бы, что $C$ имеет два несравнимых надтипа. Множеством надтипов $C$ в точности является $\{ J^{n}C \mid n\geq 0 \}$. Но для всех $n, m$, $J^{n}C$ и $J^{m}C$ являются сравнимыми: $n \leq m$ тогда и только тогда, когда $J^{n}C\subtype{}J^{m}C$.
+\end{exmp}
+
+\begin{exmp}{\label{exmp:subtype}}
+Рассмотрим другую таблицу классов
+\begin{alignat*}{3}
+    \classtableline{E}{} \\
+    \classtableline{\onector{J}{+\xtype}}{} \\
+    \classtableline{A_1}{J^{n_1}A_1, \, J^{n_1}E}\\
+    &&\vdots \\
+    \classtableline{A_m}{J^{n_m}A_m, \, J^{n_m}E},
+\end{alignat*}
+где $m, \, n_i \geq 1$, и формулу
+\[
+    \phi \eqdef \bigwedge_{\mathclap{1 \leq i \leq m}} A_i \subtype \xtype
+\]
+Эта формула выполнима только при таких $\interpretationf{}$, что
+\[
+ \interpretation{}{\xtype} = J^{k\cdot\lcm{n_1, \ldots, n_m}}E,
+\]
+где $k \geq 1$, и $lcm(n_1, \ldots, n_m)$ является наименьшим общим кратным $n_1, \ldots, n_m$.
+\end{exmp}
+
+\begin{exmp}\label{exmp:not-coprime}
+Если мы в~\autoref{exmp:subtype} заменим запись для $E$ на
+\begin{alignat*}{3}
+    \classtableline{E}{J^{n_1\cdot \ldots \cdot n_m}E} \\
+\end{alignat*}
+то формула
+\[
+    \phi' \eqdef \phi \land E \notsubtype \xtype
+\]
+будет иметь модель тогда и только тогда, когда $n_1, \, \ldots, \, n_m$ не являются взаимнопростыми.
+\end{exmp}
+
+\begin{exmp}{\label{exmp:homsubgraph}}
+Зафиксируем таблицу классов $CT$ и конечное частично упорядоченное множество $(P, \leq_{P})$. Рассмотрим формулу
+\[
+    \phi \eqdef \bigwedge_{\mathclap{\substack{\xtype, \ytype \in P,\\ \xtype \leq_{P} \ytype}}} \xtype \subtype \ytype \land \bigwedge_{\mathclap{\substack{\xtype, \ytype \in P,\\ \xtype \nleq_{P} \ytype}}} \xtype \notsubtype \ytype
+\]
+$\phi$ имеет модель тогда и только тогда, когда существует вложение порядка $P$ во множество закрытых типов, определенное $CT$ (частичный порядок задаётся отношением подтипирования).
+\end{exmp}

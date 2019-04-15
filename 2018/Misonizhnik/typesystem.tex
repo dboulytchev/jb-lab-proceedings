@@ -1,0 +1,120 @@
+\section{Система типов\protect\footnotemark}
+\footnotetext{Эта глава частично повторяет описание системы типов из работы~\cite{kennedy2006decidability}.}
+
+В этой главе мы формализуем номинальное подтипирования с вариантностью. Типы могут быть либо типовыми переменными, обозначаемыми строчными буквами, или сконструированными типами $\ctor{C}{T}$, где $C$ является $n$-арным типовым конструктором, а $\overline{T}$ --- вектором из аргументов длины $n$. Если типовой конструктор является унарным, мы будем опускать угловые скобки: например, мы будем писать $ABCx$ вместо $\onector{A}{\onector{B}{\onector{C}{x}}}$. $C^{r}T$ обозначает $C\ldots CT$, где $C$ появляется $r$ раз. Мы рассматриваем такие типы как последовательность из $r$ типовых конструкторов $C$, закачивающеюся типом $T$. \emph{Закрытыми} типами будем называть типы, которые не содержат типовых переменных. \emph{Открытыми} типами будем называть не закрытые типы.
+
+Отношение подтипирования в номинальных системах типов с вариантностью определяется явно указанием имён надтипов и \emph{вариантностями} типовых параметров, и обычно представляются таблицей классов.
+
+\begin{defn}
+\emph{Таблица классов} --- это конечное множество записей следующего вида
+\generalclasstable{\ctor{C}{\vvariance x}}{T}{n}{}
+
+Каждая запись содержит уникальное описание типового конструктора и конечный список сконструированных типов. Типы из списка являются номинальными надтипами для всех типов, которые будут сконструированы соответствующим типовым конструктором. Левая часть записи содержит имя конструктора $C$ и его формальные типовые параметры $x_{i}$ с \emph{вариантностями} $\vvariance_i$. \(\vvariance_i\) может быть либо \(\circ\)~(инвариантность), или \(+\)~(ковариантность), или \(-\)~(контравариантность). Для упрощения нотации будем опускать $\circ$ в определении таблицы классов.
+\end{defn}
+
+\begin{Listing}
+\small{\input{Misonizhnik/dictionaryct.tex}}
+\caption{Объявление класса \texttt{Dictionary}, и соответствующая ему таблица классов.}
+\label{fig:dictionaryct}
+\end{Listing}
+
+\begin{exmp}
+На \autoref{fig:dictionaryct} показан упрощенный фрагмент таблицы классов для типа \onector{\dictionarytype}{\xtype, \ytype} --- стандартного контейнера в \dotnet{}.
+\end{exmp}
+
+$i$-ый формальный типовой параметр типового конструктора $C$ и его вариантности обозначаются $C\#i$ и $var(C\#i)$ соответственно: \(C\#i\eqdef \xtype_i\) и \(var(C\#i)\eqdef v_i\). Например, $\ienumerable\#1 = \xtype$ и $var(\ienumerable\#1) = +$.
+
+\begin{defn}
+    Подстановка --- это отображение из типовых переменных в типы, которое действует тождественно на все переменные, кроме их конечного множества. Это множество она отображает в сконструированные типы, у которых параметрами являются новые типовые переменные. \emph{Доменом} подстановки $subst$ является множество типовых переменных, отображаемое в типы. Обозначим подстановку как
+    \[
+    \unionctor{\substt{\pcpxtype_1}{{T_1}}; \, \ldots, \,  \substt{\pcpxtype_n}{{T_n}}} \, \text{и} \, \unionctor{\substt{\overline{\xtype}}{\overline{T}}},
+    \]
+    где $\pcpxtype_1,\ldots,\pcpxtype_n$ являются типовыми переменными из домена подстановки, а $T_1,\ldots, {T_n}$ являются их образами. Если домен подстановки содержит одну типовую переменную $x$, мы будем опускать скобки:
+    \[
+     \substt{\pcpxtype}{T} 
+    \]
+\end{defn}
+
+Мы используем \(\edge\) не только в таблице классов как разделитель, но и обозначаем этим символом бинарное отношение номинального подтипирования. Если таблица классов сожержит запись $\ctor{C}{\xtype}\edge T_i$, тогда $\ctor{C}{U}\edge \unionctor{\substt{\overline{\pcpxtype}}{\overline{U}}}T_i$. Транзитивное замыкание этого отношения будем обозначать как \(\edge^{+}\).
+
+Ограничим таблицы классов так, чтобы отношение \(\edge^{+}\) было ацикличным и корректным по отношению к вариантности типовых параметров. Например, вариантные типовые параметры должны встречаться только в позициях с соответствующей <<полярностью>>. Так же надтипы не должны быть непресекающимися: если $\ctor{C}{\xtype} \edge T$ и $\ctor{C}{\xtype} \edge U$, то для всех $\overline{V}$, если $\unionctor{\substt{\overline{\xtype}}{\overline{V}}}T = \unionctor{\substt{\overline{\xtype}}{\overline{V}}}U$, то $T = U$.
+
+Теперь мы можем определить отношение подтипирования.
+\begin{defn}\label{defn:subtyping}
+Отношение подтипирования для закрытых типов $\subtype$ определяется следующим набором правил:
+    \[
+        \inference[(\textrm{Var})]{\textrm{for each}\:i & T_i \subtype_{var(C\#i)}U_i}{\ctor{C}{T} \subtype \ctor{C}{U}}
+    \]
+    \[
+        \inference[(\textrm{Super})]{\ctor{C}{\xtype} \edge V & \unionctor{\substt{\overline{\pcpxtype}}{{\overline{T}}}}V \subtype \ctor{D}{U}}{\ctor{C}{T} \subtype \ctor{D}{U}} C \neq D
+    \]
+    \[
+        \inference[]{T \subtype U}{T \subtype_{+} U} \inference[]{}{T \subtype_{\circ} T} \inference[]{U \subtype T}{T \subtype_{-} U}
+    \]
+\end{defn}
+
+Правила применяются недетерминировано, так как в случае множественного наследования правило \textrm{Super} может применяться различными способами.
+
+\begin{exmp}{\label{exmp:subtyping}}
+Чтобы определить, что $\onector{\dictionarytype}{T,\, U}$ является подтипом \newline $\onector{\ienumerable}{\objecttype}$, должна быть применена следующая последовательность правил:
+\[
+\begin{array}{cll}
+    &\onector{\dictionarytype}{T,\, U} \subtype  \onector{\ienumerable}{\objecttype} \\
+    \longrightarrow & \onector{\idictionarytype}{T,\, U} \subtype  \onector{\ienumerable}{\objecttype} & by \, \textrm{Super} \\
+    \longrightarrow & \onector{\icollectiontype}{\onector{\keyvaluepairtype}{T,\, U}} \subtype  \onector{\ienumerable}{\objecttype} & by \, \textrm{Super} \\ 
+    \longrightarrow & \onector{\ienumerable}{\onector{\keyvaluepairtype}{T,\, U}} \subtype  \onector{\ienumerable}{\objecttype} & by \, \textrm{Super} \\ 
+    \longrightarrow & \onector{\keyvaluepairtype}{T,\, U} \subtype  \objecttype & by \, \textrm{Var} \\ 
+    \longrightarrow & \valuetype \subtype  \objecttype & by \, \textrm{Super} \\ 
+    \longrightarrow & \objecttype \subtype  \objecttype & by \, \textrm{Super} \\ 
+    \longrightarrow & & by \, \textrm{Var} \\ 
+\end{array}
+\]
+\end{exmp}
+
+Отношение подтипирования между закрытыми типами является отношением частичного порядка на множестве закрытых типов. Это отношение является неразрешимым, как было показано в работе~\cite{kennedy2006decidability}. Далее мы введём понятие \emph{нерасширяющегося наследования}.
+
+\begin{defn}
+\emph{Граф зависимости типовых параметров} --- это направленный граф, вершинами которого являются формальные типовые параметры, а рёбра строятся следующим образом: для каждой записи таблицы классов $\ctor{C}{\xtype} \edge T$ и для каждого подтерма $\ctor{D}{U}$ типа $T$,
+\begin{itemize}
+    \item если $U_j = \xtype_i$, то ребро из $C\#i$ в $D\#j$ является \emph{нерасширяющим}  (обозначается стрелкой с пунктиром);
+    \item если $\xtype_i$ является собственными подтермом $U_j$, то ребро из $C\#i$ в $D\#j$ является \emph{расширяющим} (обозначается сплошной стрелкой).
+\end{itemize}
+\end{defn}
+
+\begin{defn}
+Таблица классов называется \emph{расширяющейся}, если ей граф зависимости типовых параметров имеет цикл с хотя бы одним расширяющимся ребром.
+\end{defn}
+
+\begin{exmp}
+Таблица классов называется~\autoref{fig:dictionaryct} не является расширяющимся, так как граф зависимости типовых параметров~\autoref{fig:dictionaryctgraph} не содержит циклов.
+\begin{Figure}
+\begin{tikzpicture}
+  \matrix (m) [matrix of math nodes, row sep=2em,
+    column sep=3em]{
+    \dictionarytype\#1 & \idictionarytype\#1 & \keyvaluepairtype\#1 \\
+    & \icollectiontype\#1 & \ienumerable\#1 \\
+    \dictionarytype\#2 & \idictionarytype\#2 & \keyvaluepairtype\#2 \\
+    };
+  \path[-stealth]
+    (m-1-1) edge [dashed] (m-1-2)
+    (m-1-2) edge [dashed] (m-1-3)
+            edge (m-2-2)
+    (m-2-2) edge [dashed] (m-2-3)
+    (m-3-1) edge [dashed] (m-3-2)
+    (m-3-2) edge [dashed] (m-3-3)
+            edge (m-2-2);
+\end{tikzpicture}
+    \caption{Граф зависимости типовых параметров для \autoref{fig:dictionaryct}}
+    \label{fig:dictionaryctgraph}
+\end{Figure}
+\end{exmp}
+
+\begin{prop}\label{thm:nonexpansive-decidable}
+Нерасширяющееся отношение подтипирования между закрытыми типами разрешимо.
+\end{prop}
+
+\begin{prop}
+Отношение подтипирования между закрытыми типами разрешимо, если таблица классов не содержит контравариантных конструкторов.
+\end{prop}
+
+Оба результата были доказаны в работе~\cite{kennedy2006decidability}.
