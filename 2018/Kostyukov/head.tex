@@ -6,7 +6,7 @@
   \makebox[0pt][l]{\usebox\CBox}%
   \textcolor{red}{\rule[0.3\ht\CBox-#1/2]{\wd\CBox}{#1}}}
 
-\captionsetup[figure]{name=Figure}
+\captionsetup[figure]{name=Рисунок}
 
 \theoremstyle{plain}
 \newtheorem{thm}{Теорема}%[section]
@@ -21,16 +21,19 @@
 \newtheorem{exmp}{Пример}
 % \newtheorem*{proof}{Доказательство}
 
-\newcommand{\defnautorefname}{Определение}
-\newcommand{\lemautorefname}{Лемма}
-\newcommand{\remkautorefname}{Замечание}
-\newcommand{\propautorefname}{Свойство}
-\newcommand{\exmpautorefname}{Пример}
-\newcommand{\thmautorefname}{Теорема}
+\newcommand{\defnautorefname}{опр.}
+\newcommand{\lemautorefname}{лемм.}
+\newcommand{\remkautorefname}{зам.}
+\newcommand{\propautorefname}{св.}
+\newcommand{\exmpautorefname}{пр.}
+\newcommand{\thmautorefname}{теор.}
 % \renewcommand{\crlrautorefname}{Corollary}
-\renewcommand{\sectionautorefname}{Секция}
-\newcommand{\algorithmautorefname}{Алгоритм}
-\newcommand{\algorithmcfname}{Алгоритм}
+\renewcommand{\sectionautorefname}{разд.}
+\newcommand{\algorithmautorefname}{лист.}
+\newcommand{\algorithmcfname}{Листинг}
+\makeatletter
+\renewcommand{\ALG@name}{Листинг}
+\makeatother
 
 \algrenewcommand\alglinenumber[1]{\tiny #1:}
 
