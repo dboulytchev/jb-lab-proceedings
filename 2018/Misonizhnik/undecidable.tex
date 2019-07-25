@@ -103,7 +103,7 @@
 Для доказательства рассмотрим по отдельности все возможные подстановки.
 
 Так как $\phi_{0}$ является подформулой $\phi_1$, \autoref{lem:pcpconstr}~влечёт, что 
-кандидаты на подстановку в $\pcpztype$, которые не будут сразу же обращать формулу $\phi_{1}$ в ложь, содержатся в множестве $\setctor{\subst{\pcpztype}{\pcpwword{i}}; \, \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpztype}{\pcprestct}}$.
+кандидаты на подстановку в $\pcpztype$, которые не будут сразу же обращать формулу $\phi_{1}$ в ложь, содержатся в множестве \[\setctor{\subst{\pcpztype}{\pcpwword{i}}; \, \substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpztype}{\pcprestct}}\].
 
 \begin{itemize}
     \item 
@@ -124,7 +124,7 @@
                 \[
                  \pcprconstr_{0} \subtype \pcpptype \land \pcpwword{i}\pcpxtype \subtype \pcpptype
                 \]
-                Эта формула содержит атом $\pcpwword{i}\pcpxtype \subtype \pcpptype$, который не обращается в ложь только при применении подстановки $\subst{\pcpptype}{\pcpwword{i}}$ к типовой переменной $\pcpptype$. Но, по~\autoref{lem:pcpconstr}, кандидатами на подстановку в $\pcpptype$ в $\pcpptype$ являются $\setctor{\subst{\pcpptype}{\pcprconstr}; \, \substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcprconstr_{0}}}$. Следовательно, любая подстановка, содержащая $\unionctor{\subst{\pcpxtype}{\pcpwword{i}}; \, \subst{\pcpztype}{\pcpwword{i}}}$, обращает $\phi_1$ в ложь.
+                Эта формула содержит атом $\pcpwword{i}\pcpxtype \subtype \pcpptype$, который не обращается в ложь только при применении подстановки $\subst{\pcpptype}{\pcpwword{i}}$ к типовой переменной $\pcpptype$. Но, по~\autoref{lem:pcpconstr}, кандидатами на подстановку в $\pcpptype$ в $\pcpptype$ являются \[\setctor{\subst{\pcpptype}{\pcprconstr}; \, \substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcprconstr_{0}}}\]. Следовательно, любая подстановка, содержащая $\unionctor{\subst{\pcpxtype}{\pcpwword{i}}; \, \subst{\pcpztype}{\pcpwword{i}}}$, обращает $\phi_1$ в ложь.
             \item
                 Рассмотрим подстановку  $\subst{\pcpxtype}{\pcpuword{i}}$. Её применение к  $\phi_{1}$ порождает следующую конъюнкцию:
                 \[
@@ -133,8 +133,7 @@
                 Общий надтип для $\pcprconstr_{0}$ и $\pcpuword{i}$ может иметь только один головной конструктор $\pcprconstr$. Аналогично, общий надтип для  $\pcpsconstr_{0}$ и $\pcpuword{i}$ может быть сконструирован только конструктором $\pcpsconstr$. Следовательно, подстановки $\subst{\pcpptype}{\pcprconstr}$ и $\subst{\pcpqtype}{\pcpsconstr}$ не обращают формулу $\phi_{1}$ в ложь, а подстановки из множества
                 \[
                     \begin{array}{l}
-                        \unionctor{\subst{\pcpztype}{\pcpwword{i}}; \, \subst{\pcpxtype}{\pcpuword{i}}} \circ \\
-                        [1em]\\
+                        \unionctor{\subst{\pcpztype}{\pcpwword{i}}; \, \subst{\pcpxtype}{\pcpuword{i}}} \circ
                         \setctor{\substt{\pcpptype}{\pcpeconstr}; \, \substt{\pcpptype}{\pcprconstr_{0}}} \circ \setctor{\substt{\pcpqtype}{\pcpeconstr}; \, \substt{\pcpqtype}{\pcpsconstr_{0}}}
                     \end{array}
                 \] обращают $\phi_1$ в ложь.
@@ -148,7 +147,7 @@
         \[
          \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpeconstr
         \]
-        Для того чтобы формула была выполнима, подстановка должна отобразить $\pcpxtype$ в общий надтип для $\pcprestalt$ и $\pcprestart$, у которого будет надтип $\pcpeconstr$. Единственной подходящий подстановкой будет $\substt{\pcpxtype}{\pcpeconstr}$. Применение подстановки $\unionctor{\substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}}$ к $\phi_{1}$ даст формулу
+        Для того чтобы формула была выполнима, подстановка должна отобразить $\pcpxtype$ в общий надтип для $\pcprestalt$ и $\pcprestart$, у которого будет надтип $\pcpeconstr$. Единственной подходящий подстановкой будет $\substt{\pcpxtype}{\pcpeconstr}$. Применение подстановки \[\unionctor{\substt{\pcpztype}{\pcpeconstr}; \, \substt{\pcpxtype}{\pcpeconstr}}\] к $\phi_{1}$ даст формулу
         \[
             \begin{array}{l}
                 \pcprestalt \subtype \pcpeconstr \land \pcprestart \subtype \pcpeconstr \land \pcpeconstr \subtype \pcpptype \land \pcpeconstr \subtype \pcpqtype \land \\[1em]\\ \pcpeconstr \subtype \pcpeconstr \land \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcprestct \subtype \pcpeconstr,
@@ -218,37 +217,22 @@ $\phi_{1} \land \phi_{2}$ имеет очень важное свойство: �
     \pcprestalt \subtype \pcpuword{i}\pcpxtype \land
     \pcprestart \subtype \pcpuword{i}\pcpxtype \land
     \pcpuword{i}\pcpxtype \subtype \pcprconstr\pcpptype \land \\
-    [0.6em] \\
     \pcpuword{i}\pcpxtype \subtype \pcpsconstr\pcpqtype \land \pcpuword{i}\pcpxtype \subtype \pcpwword{i}\pcpztype \land \\
-    [0.6em] \\
     \pcprestblt \subtype \pcpvword{i}\pcpytype \land
     \pcprestbrt \subtype \pcpvword{i}\pcpytype \land
     \pcpvword{i}\pcpytype \subtype \pcprconstr\pcpptype \land \\
-    [0.6em] \\
     \pcpvword{i}\pcpytype \subtype \pcpsconstr\pcpqtype \land \pcpvword{i}\pcpytype \subtype \pcpwword{i}\pcpztype \land \\
-    [0.6em] \\
     \pcprconstr_{0} \subtype \pcprconstr\pcpptype \land \pcpsconstr_{0} \subtype \pcpsconstr\pcpqtype \land \pcprestct \subtype \pcpwword{i}\pcpztype \\
-    [1em] \\
     \Leftrightarrow \\
-    [1em] \\
     \pcpuword{i}\pcprestalt \subtype \pcpuword{i}\pcpxtype \land \pcpuword{i}\pcprestart \subtype \pcpuword{i}\pcpxtype \land \pcprconstr\pcpxtype \subtype \pcprconstr\pcpptype \land \\
-    [0.6em] \\
     \pcpsconstr\pcpxtype \subtype \pcpsconstr\pcpqtype \land \pcpwword{i}\pcpxtype \subtype \pcpwword{i}\pcpztype \land \\
-    [0.6em] \\
     \pcpvword{i}\pcprestblt \subtype \pcpvword{i}\pcpytype \land \pcpvword{i}\pcprestbrt \subtype \pcpvword{i}\pcpytype \land \pcprconstr\pcpytype \subtype \pcprconstr\pcpptype \land \\
-    [0.6em] \\
     \pcpsconstr\pcpytype \subtype \pcpsconstr\pcpqtype \land \pcpwword{i}\pcpytype \subtype \pcpwword{i}\pcpztype \land \\
-    [0.6em] \\
     \pcprconstr\pcprconstr_{0} \subtype \pcprconstr\pcpptype \land \pcpsconstr\pcpsconstr_{0} \subtype \pcpsconstr\pcpqtype \land \pcpwword{i}\pcprestct \subtype \pcpwword{i}\pcpztype \\
-    [1em] \\
     \Leftrightarrow \\
-    [1em] \\
     \pcprestalt \subtype \pcpxtype \land \pcprestart \subtype \pcpxtype \land \pcpxtype \subtype \pcpptype \land \pcpxtype \subtype \pcpqtype \land \pcpxtype \subtype \pcpztype \land \\
-    [0.6em] \\
     \pcprestblt \subtype \pcpytype \land \pcprestbrt \subtype \pcpytype \land \pcpytype \subtype \pcpptype \land \pcpytype \subtype \pcpqtype \land \pcpytype \subtype \pcpztype \land \\
-    [0.6em] \\
     \pcprconstr_{0} \subtype \pcpptype \land \pcpsconstr_{0} \subtype \pcpqtype \land \pcprestct \subtype \pcpztype \\
-    [0.6em] \\
     = \phi_{1} \land \phi_{2}
     \end{array}
 \]
@@ -260,7 +244,7 @@ $\phi_{1} \land \phi_{2}$ имеет очень важное свойство: �
 \]
 и упрощение полученной формулы обращает $\phi_{1} \land \phi_{2}$ в истину.
 
-Пусть  $N=\setctor{1,\ldots,n}$. $\finiteseq{N}$ будет обозначать множество конечных последовательностей из $N$. Для $J \in \finiteseq{N}, \, J = j_1 \ldots j_r$, будем обозначать $\pcpuword{J}T$ цепочку типовых конструкторов $\pcpuword{j_{1}} \ldots \pcpuword{j_{r}}T$. Аналогично определим $\pcpvword{J}T$ и $\pcpwword{J}T$. Иногда мы будем писать $J^r$, чтобы подчеркнуть, что $r$ является длинной $J$.
+Пусть  $N=\setctor{1,\ldots,n}$. $\finiteseq{N}$ будет обозначать множество конечных последовательностей из $N$. Для $J \in \finiteseq{N}, \, J = j_1 \ldots j_r$, будем обозначать $\pcpuword{J}T$ цепочку типовых конструкторов $\pcpuword{j_{1}} \ldots \pcpuword{j_{r}}T$. Аналогично определим $\pcpvword{J}T$ и $\pcpwword{J}T$. Иногда мы будем писать $J^r$, чтобы подчеркнуть, что $r$ является длиной $J$.
 \begin{thm}{\label{thm:pcpindices}}
 Формула $\phi_{1} \land \phi_{2}$ имеет множество моделей с интерпретациями $I_{J}$ такими, что
 \[
@@ -271,7 +255,7 @@ $\phi_{1} \land \phi_{2}$ имеет очень важное свойство: �
         
     \end{array}
 \]
-где $J \in \finiteseq{N}$, и $r$ является длинной $J$.
+где $J \in \finiteseq{N}$, и $r$ является длиной $J$.
 \end{thm}
 \begin{proof*}
 Как было показано, только композиции следующих подстановок не обращают формулу $\phi_{1} \land \phi_{2}$ в ложь:
@@ -317,7 +301,7 @@ $\phi_{1} \land \phi_{2}$ имеет очень важное свойство: �
 \]
 \end{lem}
 \begin{proof*}
-Докажем требуемое по индукции по $r$.
+Докажем требуемое индукцией по $r$.
 
 \begin{paragraph}{База: $r = 1$}
 \[
@@ -335,7 +319,7 @@ $\phi_{1} \land \phi_{2}$ имеет очень важное свойство: �
 \]
 \end{paragraph}
 
-\begin{paragraph}{Переход}
+\begin{paragraph}{Переход:}
 Пусть $r = k + 1$, $J = j_1 \cdot J'$, а у $J'$ длина $k$.
 \begin{align*}
     &\pcpuword{j_1}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}} \pcpeconstr \lor \pcpuword{j_1}\pcpuword{J'}\pcpeconstr \subtype \overline{\pcplword{}}\pcpdword \Leftrightarrow \\
@@ -405,16 +389,14 @@ $(\Leftarrow)$
 \[
     \begin{array}{l}
     \interpretation{J}{\phi_{J}} = \\
-    [1em] \\
+    [0.1em] \\
     \pcpdword \subtype \interpretation{J}{\pcpotype} \land \pcpuword{J}\pcpeconstr \subtype \interpretation{J}{\pcpotype} \land \pcpvword{J}\pcpeconstr \subtype \interpretation{J}{\pcpotype} \land \interpretation{J}{\pcpotype} \notsubtype \pcpeconstr = \\
-    [1em] \\
+    [0.1em] \\
     \pcpdword \subtype \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \land \pcpuword{J}\pcpeconstr \subtype \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \land \\
-    [0.6em] \\
     \pcpvword{J}\pcpeconstr \subtype \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr \land \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \notsubtype \pcpeconstr \Leftrightarrow \\
-    [1em] \\
+    [0.1em] \\
     \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \subtype \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \land
     \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr \subtype \overline{\pcpvword{j_1}} \ldots \overline{\pcpvword{j_r}}\pcpeconstr \land \\
-    [0.6em] \\
     \overline{\pcpuword{j_1}} \ldots \overline{\pcpuword{j_r}}\pcpeconstr \notsubtype \pcpeconstr \Leftrightarrow \top
     \end{array}
 \]
