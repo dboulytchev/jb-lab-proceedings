@@ -1,8 +1,8 @@
 % \newcommand\eqby[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny #1}}}{=}}}
 \newcommand\eqby[1]{\mathrel{\stackrel{\mbox{\normalfont\tiny #1}}{=}}}
 \newcommand\eqbyref[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny\eqref{#1}}}}{=}}}
-\newcommand\eqdef{\eqby{def}}
-\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+\renewcommand\eqdef{\eqby{def}}
+\renewcommand\restr[2]{{% we make the whole thing an ordinary symbol
   \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
   #1 % the function
   \vphantom{\big|} % pretend it's a little taller at normal size

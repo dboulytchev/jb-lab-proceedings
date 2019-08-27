@@ -156,8 +156,8 @@
     &\qquad where \,\, #1 \, &\subtype& \,\, #2
 }
 
-\renewcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
-\renewcommand\restr[2]{{% we make the whole thing an ordinary symbol
+\newcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
   \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
   #1 % the function
   \vphantom{\big|} % pretend it's a little taller at normal size
@@ -206,3 +206,15 @@
 
 \newcommand{\dima}[1]{$[$\textbf{\textcolor{purple}{Дима}}:~~\emph{\textcolor{darkgray}{#1}}$]$}
 \newcommand{\sasha}[1]{$[$\textbf{\textcolor{blue}{Саша}}:~~\emph{\textcolor{darkgray}{#1}}$]$}
+
+\newtheorem{defn}{Определение}
+\newtheorem{exmp}{Пример}
+\newtheorem{prop}{Утверждение}
+\newtheorem{lem}{Лемма}%[section]
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}%[section]
+\newtheorem{crlr}{Corollary}%[section]
+
+\theoremstyle{definition}
+\newtheorem{remk}{Замечание}
+\newtheorem*{remk*}{Замечание}

@@ -89,32 +89,35 @@ F { x := 42; call G; }
 	\forall x, y \in \dom{\sigma}, \aunion{\pair{\mg{x}{y}}{\sigma(x)}} = \aunion{\pair{\mg{x}{y}}{\sigma(y)}}
 \end{align}
 \end{defn}
-%
+
 \begin{defn}\label{def:empty-heap}
 Пустая куча $\emptyheap$~--- это частичная функция с областью действия $\dom{\emptyheap}=\emptyset$ (она, очевидно, удовлетворяет~\eqref{eq:store-invariant}).
 \end{defn}
-%
+
 \begin{defn}\label{def:deref}
 \emph{Чтение} локации $x$ в символьной куче $\sigma$ определяется следующим образом:
-\vspace*{-0.3in}
+%\vspace*{-0.3in}
 \begin{figure}[h]
 \begin{align}\label{eq:deref-formula}
 	\deref{\sigma}{x}&\notag=\rdbody{x}{\sigma}{\li{x}}
 \end{align}
 \end{figure}
-\vspace*{-0.4in}
+%\vspace*{-0.4in}
 \end{defn}
-%
+
 Интуитивно, чтение пытается сопоставить (возможно символьную) ссылку $x$ с каждым (возможно символьным) адресом локации в $\sigma$. Если ссылка и некоторый адрес совпали, результатом чтения будет значение, лежащее по этому адресу. Если не было найдено ни одного совпадения, возвращается символьное значение $\li{x}$.
 
 Очевидно, что при $x\in\dom{\sigma}$ $\deref{\sigma}{x}=\sigma(x)$. Одно из ограничений $\mg{x}{l}$ будет выполняться, когда как один из конъюнктов $\bigwedge_{l\in\dom{\sigma}}{\nmg{x}{l}}$ будет, наоборот, невыполним, а значит значение $\li{x}$ получиться не может.
 
 Можно сделать одно важное наблюдение о~\autoref{def:deref}. Технически множество ограничений в~\eqref{eq:deref-formula} может содержать пересечения: в куче могут быть две (или более) символьные локации, которые могут совпадать при некоторых конкретных подстановках. Инвариант кучи~\eqref{eq:store-invariant} позволяет обойти возможную проблему с совпадающими адресами: благодаря нему при совпадении ограничений не будет конфликтов между \ruquote{защищаемыми} значениями.
+
 %
 \begin{exmp}
-\allowdisplaybreaks
-Пусть $\sigma = \{ \addr{0x1} \mapsto 42; \li{x} \mapsto \aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7}) \}$. Тогда
-\begin{align*}
+%\allowdisplaybreaks
+
+  Пусть $\sigma = \{ \addr{0x1} \mapsto 42; \li{x} \mapsto \aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7}) \}$. Тогда
+
+  \begin{align*}
 &\deref{\sigma}{\addr{0x1}}=\\
 &=\Union{\paiR{\mg{\addr{0x1}}{\addr{0x1}}}{42},\paiR{\nmg{\addr{0x1}}{\addr{0x1}}\wedge\nmg{\li{x}}{\addr{0x1}}}{\li{\addr{0x1}}},\\
 &\qquad\qquad\paiR{\mg{\addr{0x1}}{\li{x}}}{\aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\\
@@ -123,15 +126,19 @@ F { x := 42; call G; }
 &\qquad\qquad\paiR{\mg{\li{x}}{\addr{0x1}}}{\\
 &\qquad\qquad\qquad\aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7})}}=42
 \end{align*}
-% \begin{align*}
+
+  % \begin{align*}
 % &\deref{\sigma}{\li{y}}=\\
 % &=\Union{\paiR{\mg{\li{y}}{\addr{0x1}}}{42},\paiR{\mg{\li{y}}{\li{x}}}{\aunion(\pair{\mg{\li{x}}{\addr{0x1}}}{42},\pair{\nmg{\li{x}}{\addr{0x1}}}{7})},\\
 % &\qquad\qquad\paiR{\nmg{\li{y}}{\addr{0x1}}\wedge\nmg{\li{y}}{\li{x}}}{\Li{\li{y}}}}\eqby{Св.\ref{prop:union-properties}}\\
 % &=\Union{\paiR{\mg{\li{y}}{\addr{0x1}}}{42},\paiR{\mg{\li{y}}{\li{x}}\wedge\nmg{\li{x}}{\addr{0x1}}}{7},\paiR{\nmg{\li{y}}{\addr{0x1}}\wedge\nmg{\li{y}}{\li{x}}}{\Li{\li{y}}}}
 % \end{align*}
+
 \end{exmp}
 %
+
 \subsection{Композиция символьных куч}
+
 \begin{defn}\label{def:expression-composition}
 \emph{Уточнение} выражения $e$ в контексте символьной кучи $\sigma : \addrset \rightarrow \termset$ обозначим $\fillterm{\sigma}{e}$ и определим следующим образом:
 \begin{enumerate}

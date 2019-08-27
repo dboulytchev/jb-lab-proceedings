@@ -1,6 +1,5 @@
 \section{Доказательства лемм}\label{apdx:proofs}
 \fontsize{8}{8}
-
 \findisassociativelemma*
 \begin{proof}
 \begin{align*}
@@ -31,7 +30,6 @@
 &=\finD{\sigma'}{x}{\compose{\tau}{\sigma}}{\find{\sigma}{x}{\tau}{d}}
 \end{align*}
 \end{proof}
-
 \readstoreinvariantlemma*
 \begin{proof}
 \begin{align*}
@@ -81,7 +79,6 @@
 &=\aunion\Pair{\fillterm{\tau}{g_i}}{\find{\sigma_i}{x}{\tau}{\deref{\tau}{x}}}
 \end{align*}
 \end{proof}
-
 \mergetermcompositionlemma*
 \begin{proof}
 Доказательство структурной индукцией по~\autoref{def:expression-composition}. Возьмём $G\eqdef g_1\vee\ldots\vee g_n$ и $M\eqdef\amerge\pair{g_i}{\sigma_i}$.
@@ -97,9 +94,8 @@ $=\aunion{\Pair{G}{\aunion{\paiR{g_i}{\deref{\sigma_i}{\fillterm{M}{x}}}}}}\eqby
 $=\aunion{\Pair{g_i}{\Deref{\sigma_i}{\aunion{\pair{g_j}{\fillterm{\sigma_j}{x}}}}}}\eqby{Lm.\ref{thm:read-union-loc}}\aunion{\Pair{g_i}{\aunion\paiR{g_j}{\Deref{\sigma_i}{\fillterm{\sigma_j}{x}}}}}\eqby{$g_i$ disj.}$\\
 $=\aunion{\paiR{g_i}{\deref{\sigma_i}{\fillterm{\sigma_i}{x}}}}=\aunion{\paiR{g_i}{\fillterm{\sigma_i}{\li{x}}}}$
 \end{enumerate}
-%
 \end{proof}
-
+\vspace{-5mm}
 \findwritelemma*
 \begin{proof}
 \begin{align*}
