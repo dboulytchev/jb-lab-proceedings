@@ -1,7 +1,7 @@
 \section{Композициональное символьное исполнение без раскрутки}
 \label{sec:compositional-se}
 
-В прошлой секции была представлена КСП, которую уже можно использовать для реализации функций \texttt{initSymbolicState}, \texttt{readHeap}, \texttt{writeHeap}, \texttt{allocateInHeap} и \texttt{merge} из~\autoref{algo:traditional-se}, и получить композициональный алгоритм для нерекурсивных функций. Однако строгость нашего представления позволяет нам пойти дальше и создать композициональный подход, не прибегающий к раскрутке рекурсии.
+В прошлом разделе была представлена КСП, которую уже можно использовать для реализации функций \texttt{initSymbolicState}, \texttt{readHeap}, \texttt{writeHeap}, \texttt{allocateInHeap} и \texttt{merge} из лист.~\ref{algo:traditional-se}, и получить композициональный алгоритм для нерекурсивных функций. Однако строгость нашего представления позволяет нам пойти дальше и создать композициональный подход, не прибегающий к раскрутке рекурсии.
 
 \subsection{Обобщённые символьные кучи}
 Основная идея состоит в том, чтобы ввести \emph{обобщённые символьные кучи}, или \emph{символы куч}. Один символ кучи представляет собой класс символьных куч и описывает то, \emph{как построить} отдельно взятую символьную кучу, а не её содержание.
@@ -30,45 +30,49 @@
 				 \mid\,\,&arith = arith \mid arith < arith \mid loc = loc \cr
 \end{align*}
 %
-Основная идея состоит в \ruquote{запоминании} источника каждого символьного значения. Такое расширение корректно: старые символьные значения $\li{x}$ теперь станут $\li{\emptyheap, x}$. Уточнение также может быть расширено: $\fillterm{\tau}{\li{\sigma, x}}=\deref{\compose{\tau}{\sigma}}{\fillterm{\tau}{x}}$. Это не нарушит свойства КСП, так как по~\autoref{thm:composition-of-read} мы имеем $\fillterm{\tau}{\deref{\sigma}{x}}=\deref{\compose{\tau}{\sigma}}{\fillterm{\tau}{x}}$.
+Основная идея состоит в \ruquote{запоминании} источника каждого символьного значения. Такое расширение корректно: старые символьные значения $\li{x}$ теперь станут $\li{\emptyheap, x}$. Уточнение также может быть расширено: $\fillterm{\tau}{\li{\sigma, x}}=\deref{\compose{\tau}{\sigma}}{\fillterm{\tau}{x}}$. Это не нарушит свойства КСП, так как по теор.~\ref{thm:composition-of-read} мы имеем $\fillterm{\tau}{\deref{\sigma}{x}}=\deref{\compose{\tau}{\sigma}}{\fillterm{\tau}{x}}$.
 
 Теперь продемонстрируем основную идею символьного исполнения без раскрутки. Пусть у нас есть рекурсивная функция
 %
 \begin{lstlisting}[style=demolang]
 F {
 	if @$g$@ then @$A$@;				// Effect of @$A$@ is @$\sigma_A$@
-	else @$B$@; call F; @$C$@; // Eff. of @$B$@ and @$C$@ are @$\sigma_B$@ and @$\sigma_C$@
+	else @$B$@; call F; @$C$@; // Effects of @$B$@ and @$C$@ are @$\sigma_B$@ and @$\sigma_C$@
 }
 \end{lstlisting}
 
-Очевидный способ вычислить эффект \texttt{F} заключается в том, чтобы раскручивать эту функцию до тех пор, пока инструкция \texttt{\textcolor{blue}{call} F;} не станет недостижимой (из-за накопившихся условий верификации). Этот процесс сойдётся для \ruquote{конечных} функций, и не завершится для рекурсивных функций с неограниченным числом итераций. Однако при помощи обобщённых куч мы можем автоматически построить \emph{уравнение на состояние} функции \texttt{F}.
+Очевидный способ вычислить эффект \texttt{F} заключается в том, чтобы раскручивать эту функцию до тех пор, пока инструкция \texttt{\textcolor{blue}{call} F;} не станет недостижимой (из-за накопившихся условий верификации). Этот процесс сойдётся для \ruquote{конечных} функций, и не завершится для рекурсивных функций с неограниченным числом итераций. Однако при помощи обобщённых куч мы можем автоматически построить \emph{уравнение над состоянием} функции \texttt{F}.
 
-Процесс построения начинается с исполнения \texttt{F} в изоляции. Исполнение разветвляется по ограничению $g$. Исследуя первую ветку, получаем состояние $\sigma_A$. Теперь последовательно исполняем вторую ветку: эффектом $B$ будет $\sigma_B$, далее следует рекурсивный вызов \texttt{\textcolor{blue}{call} F}. Вместо того, чтобы исследовать тело \texttt{F} заново, мы аппроксимируем сверху эффект \texttt{F}, обозначая его за $\GRec{\texttt{F}}$. Затем, состояние двух последовательных инструкций \texttt{$B$; \textcolor{blue}{call} F;} резюмируется композицией соответствующих состояний $\sigma = \gcompose{\sigma_B}{\GRec{\texttt{F}}}$. Далее движок исполняет $C$ на $\sigma$, получая резюме $\compose{\sigma}{\sigma_C}$ для всей второй ветки. Итоговым состоянием для $F$ будет объединение двух веток, то есть $\GMerge{\pair{g}{\sigma_A}, \pair{\neg g}{\gcompose{\sigma_B}{\gcompose{\grec{\texttt{F}}}{\sigma_C}}}}$. С другой стороны, эффект \texttt{F} обозначается просто $\GRec{\texttt{F}}$. Таким образом, мы получили уравнение
+Процесс построения начинается с исполнения \texttt{F} в изоляции. Исполнение разветвляется по ограничению $g$. Исследуя первую ветку, получаем состояние $\sigma_A$. Теперь последовательно исполняем вторую ветку: эффектом $B$ будет $\sigma_B$, далее следует рекурсивный вызов \texttt{\textcolor{blue}{call} F}. Вместо того, чтобы исследовать тело \texttt{F} заново, мы аппроксимируем сверху эффект \texttt{F}, обозначая его за $\GRec{\texttt{F}}$. Затем, состояние двух последовательных инструкций \texttt{$B$; \textcolor{blue}{call} F;} резюмируется композицией соответствующих состояний $\sigma = \gcompose{\sigma_B}{\GRec{\texttt{F}}}$. Далее алгоритм исполняет $C$ на $\sigma$, получая резюме $\compose{\sigma}{\sigma_C}$ для всей второй ветки. Итоговым состоянием для $F$ будет объединение двух веток, то есть $\GMerge{\pair{g}{\sigma_A}, \pair{\neg g}{\gcompose{\sigma_B}{\gcompose{\grec{\texttt{F}}}{\sigma_C}}}}$. С другой стороны, эффект \texttt{F} обозначается просто $\GRec{\texttt{F}}$. Таким образом, мы получили уравнение
+
 \begin{align*}
 \GRec{\texttt{F}}=\GMerge{\pair{g}{\sigma_A}, \pair{\neg g}{\gcompose{\sigma_B}{\gcompose{\grec{\texttt{F}}}{\sigma_C}}}}
 \end{align*}
 %
-которое точно описывает все поведения \texttt{F}. Тем самым мы свели задачу верификации программ с кучами к задаче решения систем уравнений над состояниями. В~\autoref{sec:encoding} показано, как можно решать такие системы при помощи решателей ограниченных дизъюнктов Хорна высших порядков.
+которое точно описывает все поведения \texttt{F}. Тем самым мы свели задачу верификации программ с кучами к задаче решения систем уравнений над состояниями. В разд.~\ref{sec:encoding} показано, как можно решать такие системы при помощи решателей ограниченных дизъюнктов Хорна высших порядков.
 
-Теперь можно потребовать, чтобы движок символьного исполнения также поддерживал функцию $rhs : \funcid \rightarrow Heap$, которая отображает идентификаторы рекурсивных функций в соответствующие правые части уравнений на состояния. Эта функция нам потребуется, чтобы определить \emph{отношение независимости}. Мы называем обобщённую кучу $\sigma$ и локацию $x$ независимыми, если обобщённая куча не содержит применений неизвестных функций, и чтение каждой определённой кучи внутри обобщённой даёт только ленивые инстанциации локации $x$. $\indeprec{\sigma}{x}{U} \eqdef$
-\begin{align*}
-% &\left\{
-    &\begin{array}{rl}
-    \big(\bigvee_{l\in \dom{\sigma}} \mg{x}{l}\big) \mbox{ невыполнимо}, \mbox{ если } \sigma\in\heapset \\[0.3em]
-	\bigwedge_{i=1}^n \indeprec{\sigma_i}{x}{U}, \mbox{ если } \sigma=\GMerge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}} \\[0.3em]
-    \indeprec{\sigma_1}{x}{U} \wedge \indeprec{\sigma_2}{x}{U}, \mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.3em]
-    \indeprec{\sigma_1}{x}{U} \wedge \indeprec{\sigma_2}{x}{U}, \mbox{ если } \sigma = \GCompose{\sigma_1}{\sigma_2}\\[0.3em]
-    \Indeprec{rhs(f)}{x}{U \cup \{f\}}, \mbox{ если } \sigma = \GRec{f} \mbox{ и } f\not\in U \\[0.3em]
-    \top, \mbox{ если } \sigma = \GRec{f} \mbox{ и } f\in U \\[0.3em]
-    \bot, \mbox{ если }\sigma=\GApp{\cdot}
-    \end{array}\\
-    % \right.\\
-&\indep{\sigma}{x} \eqdef \indeprec{\sigma}{x}{\emptyset}
-\end{align*}
+Теперь можно потребовать, чтобы алгоритм символьного исполнения также поддерживал функцию $rhs$ из $\funcid$ в $Heap$, которая отображает идентификаторы рекурсивных функций в соответствующие правые части уравнений над состояниями. Эта функция нам потребуется, чтобы определить \emph{отношение независимости}. Мы называем обобщённую кучу $\sigma$ и локацию $x$ независимыми, если обобщённая куча не содержит применений неизвестных функций, и чтение каждой определённой кучи внутри обобщённой даёт только ленивые инстанцирования локации $x$. $\indeprec{\sigma}{x}{U} \eqdef$
+% \begin{align*}
+\[
+\left\{
+    \begin{array}{rl}
+    \big(\bigvee_{l\in \dom{\sigma}} \mg{x}{l}\big) \mbox{ невыполнимо}, &\mbox{ если } \sigma\in\heapset \\[0.3em]
+	\bigwedge_{i=1}^n \indeprec{\sigma_i}{x}{U}, &\mbox{ если } \sigma=\agmerge{\pair{g_i}{\sigma_i}} \\[0.3em]
+    \indeprec{\sigma_1}{x}{U} \wedge \indeprec{\sigma_2}{x}{U}, &\mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.3em]
+    \indeprec{\sigma_1}{x}{U} \wedge \indeprec{\sigma_2}{x}{U}, &\mbox{ если } \sigma = \GCompose{\sigma_1}{\sigma_2}\\[0.3em]
+    \Indeprec{rhs(f)}{x}{U \cup \{f\}}, &\mbox{ если } \sigma = \GRec{f}, f\not\in U \\[0.3em]
+    \top, &\mbox{ если } \sigma = \GRec{f}, f\in U \\[0.3em]
+    \bot, &\mbox{ если }\sigma=\GApp{\cdot}
+    \end{array}
+    \right.\\
+\]
+\begin{flalign*}
+    &\indep{\sigma}{x} \eqdef \indeprec{\sigma}{x}{\emptyset}
+\end{flalign*}
 
 Из определения следует, что чтение независимой локации $x$ в обобщённой куче всегда даёт только $\li{\emptyheap, x}$. Мы не приводим строго доказательства этого факта, однако он очевидно следует из того, что выполнимые ограничения либо остаются выполнимыми, либо становятся невыполнимыми после уточнения в некоторой куче. Невыполнимые же ограничения могут только оставаться невыполнимыми.
 
-Отношение независимости очень важно с практической точки зрения: оно даёт возможность судить о том, меняет ли рекурсивная функция некоторую локацию в памяти. Без отношения независимости движку символьного исполнения пришлось бы трактовать каждое рекурсивное состояние $\GRec{f}$ как неизвестное, порождая недетерминированные значения при каждой операции чтения. В язык программирования со статической типизацией может быть переиспользована информация о типах: например, если рекурсивная функция модифицирует только локации типа \texttt{LinkedList}, то несмотря на то, что множество всех затронутых адресов неизвестно без раскрутки, тем не менее, например, локации типа \texttt{Tree} могут быть проигнорированы.
+Отношение независимости очень важно с практической точки зрения: оно даёт возможность судить о том, меняет ли рекурсивная функция некоторую локацию в памяти. Без отношения независимости алгоритму символьного исполнения пришлось бы трактовать каждое рекурсивное состояние $\GRec{f}$ как неизвестное, порождая недетерминированные значения при каждой операции чтения. В язык программирования со статической типизацией может быть переиспользована информация о типах: например, если рекурсивная функция модифицирует только локации типа \texttt{LinkedList}, то несмотря на то, что множество всех затронутых адресов неизвестно без раскрутки, тем не менее, например, локации типа \texttt{Tree} могут быть проигнорированы.
 
 Далее адаптируем все операции над КСП к обобщённым кучам. Чтобы избежать неопределённостей, добавим к именам старых операций индекс $^\heapset$: например, $\deref{\sigma}{x}$ теперь будет называться $\derefold{\sigma}{x}$, $\compose{\sigma}{\sigma'}$ станет $\composeold{\sigma}{\sigma'}$ и т.д.
 
@@ -79,52 +83,48 @@ F {
 \end{align*}
 %
 Заметим, что в обоих случаях четвёртым аргументом $\afind^{\heapset}$ передаётся чтение третьего аргумента. Новая версия $\afind$ будет принимать только три аргумента. Четвёртый аргумент всё ещё полезен для чтения из $\agmutate$ обобщённых куч. Расширение $\afind$ на случай обобщённых куч выглядит следующим образом $\finDnew{\sigma}{x}{\tau}\eqdef$
-
 \begin{align}\label{eq:find-new}
-%\left\{
+\left\{
     \begin{array}{rl}
-    \finDold{\sigma}{x}{\tau}{\findnew{\tau}{x}{\emptyheap}}, \mbox{ если } \sigma\in\heapset \\[0.5em]
-    \union{\pair{\compose{\tau}{g_1}}{\findnew{\sigma_1}{x}{\tau}},\ldots,\pair{\compose{\tau}{g_n}}{\findnew{\sigma_n}{x}{\tau}}}, \cr
-    \mbox{ если }\sigma=\GMerge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}} \\[0.5em]
-    \finDold{\sigma_2}{x}{\tau}{\findnew{\sigma_1}{x}{\tau}}, \mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.5em]
-    \finDnew{\sigma_2}{x}{\compose{\tau}{\sigma_1}}, \mbox{ если } \sigma = \GCompose{\sigma_1}{\sigma_2}\\[0.5em]
-    \findnew{\tau}{x}{\emptyheap}, \mbox{ если } \sigma = \GRec{f} \mbox{ и } \indep{\sigma}{x}\\[0.5em]
-    LI(\compose{\tau}{\sigma}, x), \mbox{ иначе}
+    \finDold{\sigma}{x}{\tau}{\findnew{\tau}{x}{\emptyheap}}, &\mbox{ если } \sigma\in\heapset \\[0.5em]
+    % \union{\pair{\compose{\tau}{g_1}}{\findnew{\sigma_1}{x}{\tau}},\ldots,\pair{\compose{\tau}{g_n}}{\findnew{\sigma_n}{x}{\tau}}}, \cr
+    \aunion{\pair{\fillterm{\tau}{g_i}}{\findnew{\sigma_i}{x}{\tau}}}, &\mbox{ если } \sigma=\agmerge{\pair{g_i}{\sigma_i}} \\[0.5em]
+    \finDold{\sigma_2}{x}{\tau}{\findnew{\sigma_1}{x}{\tau}}, &\mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.5em]
+    \finDnew{\sigma_2}{x}{\compose{\tau}{\sigma_1}}, &\mbox{ если } \sigma = \GCompose{\sigma_1}{\sigma_2}\\[0.5em]
+    \findnew{\tau}{x}{\emptyheap}, &\mbox{ если } \sigma = \GRec{f} \mbox{ и } \indep{\sigma}{x}\\[0.5em]
+    LI(\compose{\tau}{\sigma}, x), &\mbox{ иначе}
     \end{array}
-%    \right.%
+    \right.%
 \end{align}
 
 Такое расширение корректно согласно утверждениям: \autoref{thm:find-is-associative}, \autoref{thm:merge-find} и~\autoref{thm:read-of-write}. Записи обобщённых куч определим следующим образом (это корректно по~\autoref{thm:merge-write}) $\mutate{\sigma}{x}{v}\eqdef$
 \begin{align*}
-%\left\{
+\left\{
     \begin{array}{rl}
-    \mutateold{\sigma}{x}{v}, \mbox{ если } \sigma\in\heapset \\[0.4em]
-    \GMerge{\pair{g_1}{\mutate{\sigma_1}{x}{v}},\ldots,\pair{g_n}{\mutate{\sigma_n}{x}{v}}}, \cr
-    \mbox{ если }\sigma=\GMerge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}} \\[0.4em]
-    \GMutate{\sigma_1}{\mutateold{\sigma_2}{x}{v}}, \mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.4em]
-    \GMutate{\sigma}{\{x\mapsto v\}}, \mbox{ иначе}
+    \mutateold{\sigma}{x}{v}, &\mbox{ если } \sigma\in\heapset \\[0.4em]
+    \agmerge{\pair{g_i}{\mutate{\sigma_i}{x}{v}}}, &\mbox{ если }\sigma=\agmerge{\pair{g_i}{\sigma_i}} \\[0.4em]
+    \GMutate{\sigma_1}{\mutateold{\sigma_2}{x}{v}}, &\mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2}\\[0.4em]
+    \GMutate{\sigma}{\{x\mapsto v\}}, &\mbox{ иначе}
     \end{array}
-%    \right.%
+    \right.%
 \end{align*}
 %
 Чтобы обобщить композицию, необходимо обобщить уточнение. Для $\sigma\in Heap, \sigma'\in\heapset$ определим $\fillterm{\sigma}{\sigma'}$ как частичную функцию с областью определения $\fillterm{\sigma}{\dom{\sigma'}}$ и $(\fillterm{\sigma}{\sigma'})(\fillterm{\sigma}{x})= \fillterm{\sigma}{\sigma'(x)}$ для всех $x\in\dom{\sigma}$. Интуитивно, $\fillterm{\sigma}{\sigma'}$ это куча $\sigma'$ с ленивыми ячейками, заполненными из $\sigma$. Далее, композиция $\compose{\sigma}{\sigma'}\eqdef$
 %
 \begin{align*}
-% \left\{
+\left\{
     \begin{array}{rl}
-    \composeold{\sigma}{\sigma'}, \mbox{ если } \sigma\in\heapset,\sigma'\in\heapset \\[0.4em]
-    \GMerge{\pair{\fillterm{\sigma}{g_1}}{\compose{\sigma}{\sigma_1}},\ldots,\pair{\fillterm{\sigma}{g_n}}{\compose{\sigma}{\sigma_n}}},\\[0.4em]
-    \mbox{ если }\sigma'=\GMerge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}} \\[0.4em]
-    \GMerge{\pair{g_1}{\compose{\sigma_1}{\sigma'}},\ldots,\pair{g_n}{\compose{\sigma_n}{\sigma'}}},\\[0.4em]
-    \mbox{ если }\sigma=\GMerge{\pair{g_1}{\sigma_1},\ldots,\pair{g_n}{\sigma_n}} \\[0.4em]
-    \GMutate{\compose{\sigma}{\sigma_1}}{\fillterm{\sigma}{\sigma_2}},\mbox{ если } \sigma' = \GMutate{\sigma_1}{\sigma_2}\\[0.4em]
-    \GMutate{\sigma_1}{\amutate^{\heapset}(\sigma_2, \fillterm{\sigma}{\sigma'})}, \mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2},\sigma'\in\heapset\\[0.4em]
-    \GMutate{\sigma}{\fillterm{\sigma}{\sigma'}}, \mbox{ если } \sigma\neq\GMutate{\cdot}{\cdot}, \sigma'\in\heapset\\[0.4em]
-    \compose{(\compose{\sigma}{\sigma_1})}{\sigma_2}, \mbox{ если } \sigma'=\GCompose{\sigma_1}{\sigma_2}\\[0.4em]
-    Call(\fillterm{\sigma}{f}), \mbox{ если } \sigma'=\GApp{f}\\[0.4em]
-    \GCompose{\sigma}{\sigma'}, \mbox{ иначе}
+    \composeold{\sigma}{\sigma'}, &\mbox{ если } \sigma\in\heapset,\sigma'\in\heapset \\[0.4em]
+    \agmerge{\pair{\fillterm{\sigma}{g_i}}{\compose{\sigma}{\sigma_i}}}, &\mbox{ если } \sigma'=\agmerge{\pair{g_i}{\sigma_i}} \\[0.4em]
+    \agmerge{\pair{g_i}{\compose{\sigma_i}{\sigma'}}}, &\mbox{ если } \sigma=\agmerge{\pair{g_i}{\sigma_i}} \\[0.4em]
+    \GMutate{\compose{\sigma}{\sigma_1}}{\fillterm{\sigma}{\sigma_2}},&\mbox{ если } \sigma' = \GMutate{\sigma_1}{\sigma_2}\\[0.4em]
+    \GMutate{\sigma_1}{\amutate^{\heapset}(\sigma_2, \fillterm{\sigma}{\sigma'})}, &\mbox{ если } \sigma = \GMutate{\sigma_1}{\sigma_2},\sigma'\in\heapset\\[0.4em]
+    \GMutate{\sigma}{\fillterm{\sigma}{\sigma'}}, &\mbox{ если } \sigma\neq\GMutate{\cdot}{\cdot}, \sigma'\in\heapset\\[0.4em]
+    \compose{(\compose{\sigma}{\sigma_1})}{\sigma_2}, &\mbox{ если } \sigma'=\GCompose{\sigma_1}{\sigma_2}\\[0.4em]
+    Call(\fillterm{\sigma}{f}), &\mbox{ если } \sigma'=\GApp{f}\\[0.4em]
+    \GCompose{\sigma}{\sigma'}, &\mbox{ иначе}
     \end{array}
-    % \right.%
+    \right.%
 \end{align*}
 
 Корректность этого определения следует из~\autoref{thm:state-composition-is-associative}, \autoref{thm:merge-right-compose}, \autoref{thm:merge-left-compose}, \autoref{thm:compose-write}. В случае $\sigma'=\GApp{f}$ мы пробуем уточнить символьную функцию $f$ из $\sigma$, и в случае успеха (если она становится конкретной), функция $Call$ (определённая ниже в~\autoref{algo:compositional-se}) применяет её эффект, иначе она возвращает символьно применение $\GApp{\fillterm{\sigma}{f}}$.
@@ -133,7 +133,7 @@ F {
 
 \subsection{Алгоритм}
 
-Полученные обобщения позволяют сформулировать алгоритм композиционального символьного исполнения без раскрутки (см.~\autoref{algo:compositional-se}). Алгоритм имеет много общего с представленным ранее~\autoref{algo:traditional-se}. Отличия состоят в том, что здесь определены функции для работы с динамической памятью при помощи операций над КСП, и изменена функция $Call$.
+Полученные обобщения позволяют сформулировать алгоритм композиционального символьного исполнения без раскрутки (см. лист.~\ref{algo:compositional-se}). Алгоритм имеет много общего с представленным ранее на лист.~\ref{algo:traditional-se}. Отличия состоят в том, что здесь определены функции для работы с динамической памятью при помощи операций над КСП, и изменена функция $Call$.
 %
 \begin{algorithm}
 \caption{Композициональное символьное исполнение без раскрутки}
@@ -186,7 +186,7 @@ F {
 Применения высшего порядка и рекурсивные вызовы порождают соответствующие символы обобщённых куч (строки~\ref{algo:line:generalized-ho-app},~\ref{algo:line:generalized-rec-app}). Исследованные состояния запоминаются в $rhs$, а найденные ошибки в $errs$ (в настоящей реализации это могут быть базы данных условий верификации). Если функция ещё не была исследована, алгоритм исследует её в изоляции и запоминает её эффект (строки~\ref{algo:line:exploration-start}---\ref{algo:line:exploration-end}), иначе алгоритм переиспользует уже посчитанный эффект. Воспроизведение эффекта происходит за счёт вычисления обобщённой композиции (строка~\ref{algo:line:effect-compose}) и обновления информации об ошибках (строка~\ref{algo:line:effect-errors}). Композиция с $\agmerge\pair{\pi}{\sigma}$ позволяет отсечь ветки, не достижимые при текущем ограничении пути $\pi$.
 
 \begin{exmp}\label{EXMP:HEAP-OF-PROG}
-Рассмотрим применение~\autoref{algo:compositional-se} к функции \texttt{Test} из~\autoref{exmp:prog}.
+Рассмотрим применение алгоритма с лист.~\ref{algo:compositional-se} к функции \texttt{Test} из разд.~\ref{exmp:prog}.
 
 Исполнение начинает с $\emptyheap$, $\dom{errs}=\dom{rhs}=\emptyset$ и разветвляется по ограничению $g = (\li{\emptyheap, node} \neq null)$. Ветка, <<защищённая>> ограничением $\neg g$, сразу обрывается с итоговым состоянием $\emptyheap$. Другая ветка исполняется с ограничением пути $g$. Содержимое кучи $\emptyheap$ в $\li{\emptyheap, node}$ считывается (заметим, что чтение не терпит неудачу, т.к. $g\wedge \neg g$ невыполнимо) и записывается по трём именованным локациям, далее первый элемент кортежа перезаписывается в $0$, что даёт
 \begin{align*}
@@ -221,13 +221,13 @@ F {
 &=\agmerge{\paiR{g}{\gcompose{(\compose{\sigma_1}{\sigma_3})}{\grec{\texttt{Inc}}}}}
 \end{align*}
 
-Последнее равенство вытекает из того, что $\fillterm{\sigma_1}{g'}=\big(\deref{\sigma_1}{\deref{\sigma_1}{node}.1} = 0\big) = \big(\deref{\sigma_1}{\li{\emptyheap, node}.1} = 0\big) = (0 = 0) = \top$ and $\fillterm{\sigma_1}{g} = g$. Далее движок читает \texttt{newValue}, получая
+Последнее равенство вытекает из того, что $\fillterm{\sigma_1}{g'}=\big(\deref{\sigma_1}{\deref{\sigma_1}{node}.1} = 0\big) = \big(\deref{\sigma_1}{\li{\emptyheap, node}.1} = 0\big) = (0 = 0) = \top$ and $\fillterm{\sigma_1}{g} = g$. Далее алгоритм читает \texttt{newValue}, получая
 \begin{align*}
 &\deref{\sigma_4}{\li{\emptyheap, node}.2}=\\
 &\quad=\aunion{\pair{g}{\Li{\gcompose{(\compose{\sigma_1}{\sigma_3})}{\grec{\texttt{Inc}}}, \li{\emptyheap, node}.2}}}
 \end{align*}
 
-\texttt{oldValue} и $\GRec{\texttt{Inc}}$ независимы, так что движок читает \texttt{oldValue} из $\sigma_1$. Наконец, движок запоминает условие пути для \texttt{\textcolor{blue}{fail}}, которое выглядит следующим образом
+\texttt{oldValue} и $\GRec{\texttt{Inc}}$ независимы, так что алгоритм читает \texttt{oldValue} из $\sigma_1$. Наконец, алгоритм запоминает условие пути для \texttt{\textcolor{blue}{fail}}, которое выглядит следующим образом
 \begin{align}\label{exmp:fail-pc}
 &g \wedge \Li{\gcompose{(\compose{\sigma_1}{\sigma_3})}{\grec{\texttt{Inc}}}, \li{\emptyheap, node}.2}=\\\notag
 &\quad=\Li{\emptyheap, \li{\emptyheap, node}.2}
