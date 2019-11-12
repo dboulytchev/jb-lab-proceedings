@@ -1,4 +1,4 @@
-\renewcommand{\algorithmcfname}{Алгоритм}
+%\renewcommand{\algorithmcfname}{Алгоритм}
 
 \title{Оптимизация алгоритмов синтаксического анализа, основанных на матричных операциях}
 
@@ -15,7 +15,7 @@
 \maketitle
 
 \begin{abstract}
-В данной работе предлагается модификация агоритма Вэлианта (матричного алгоритма синтаксического анализа), позволяющая более эффективно использовать возможности параллельных вычислений при реализации. Доказана корректность алгоритма, получены оценки временной сложности для классического синтаксического анализа и для задач поиска подстроки.
+В данной работе предлагается модификация агоритма Валианта (матричного алгоритма синтаксического анализа), позволяющая более эффективно использовать возможности параллельных вычислений при реализации. Доказана корректность алгоритма, получены оценки временной сложности для классического синтаксического анализа и для задач поиска подстроки.
 \end{abstract}
 
 \section*{Введение}
@@ -101,44 +101,43 @@ $f(P_{i, j}) = \{A | \exists A \rightarrow BC \in R : (B, C) \in P_{i, j}\}.$
 
 % Algorithm1
 \begin{algorithm}[!ht]
-\SetAlgoNoLine
-\KwIn{Грамматика $G = (\Sigma, N, R, S), w = a_{1} \dots a_{n}, n \geq 1, a_{i} \in \Sigma$, где  $n + 1 = 2^k$}
-\underline{main()}{:}{
+\hspace*{\algorithmicindent} \textbf{Вход:} {Грамматика $G = (\Sigma, N, R, S), w = a_{1} \dots a_{n}, n \geq 1, a_{i} \in \Sigma$, где  $n + 1 = 2^k$}
+\begin{algorithmic}[1]
+\Procedure{main}{}
+ \State{$compute(0, n + 1)$}
+ \Comment{accept if and only if $S \in T_{0, n}$}
+\EndProcedure
 
- \textit{compute(0, n + 1)\;}
- accept if and only if $S \in T_{0, n}$
- \linebreak
- }
+\Procedure{compute}{l, m}
 
-\underline{compute(\textit{l, m})}{:}{
+ \If {$m - l \geq 4$}
+     \State{\textit{compute(l, $\frac{l+m}{2}$)}}
+     \State{\textit{compute($\frac{l+m}{2}$, m)}}
+ \EndIf
+ \State{\textit{complete(l, $\frac{l+m}{2}$, $\frac{l+m}{2}$, m)}}
+ \EndProcedure
 
- \If {$m - l \geq 4$}{
-     \textit{compute(l, $\frac{l+m}{2}$)\;
-     compute($\frac{l+m}{2}$, m)}}
- \textit{complete(l, $\frac{l+m}{2}$, $\frac{l+m}{2}$, m)}
- \linebreak
- }
+\Procedure{complete}{l, m, $l^\prime$, $m^\prime$}
 
-\underline{complete(\textit{l, m}, $l^\prime$, $m^\prime$)}{:}{
-
- \lIf {$m - l = 4$ and $m = l^\prime$}{$T_{l, l + 1} = \{A | A \rightarrow a_{l+ 1} \in R\}$}
- \lElseIf{$m - l = 1$ and $m < l^\prime$}{ $T_{l, l'} = f(P_{l, l'})$}
- \ElseIf{$m - l > 1$}{
-    $\textit{leftgrounded} = (l, \frac{l+m}{2}, \frac{l+m}{2}, m), \textit{rightgrounded} = (l', \frac{l'+m'}{2}, \frac{l'+m'}{2}, m')$,
-
-    $\textit{bottom} = (\frac{l+m}{2}, m, l', \frac{l'+m'}{2}), left = (l, \frac{l+m}{2}, l', \frac{l'+m'}{2})$,
-
-    $\textit{right} = (\frac{l+m}{2}, m, \frac{l'+m'}{2}, m'), top = (l, \frac{l+m}{2}, \frac{l'+m'}{2}, m')$\;
-    \textit{complete(bottom)}\;
-    $P_{\textit{left}} = P_{\textit{left}} \cup (T_{\textit{leftgrounded}} \times T_{\textit{bottom}})$\;
-    \textit{complete(left)}\;
-    $P_{\textit{right}} = P_{\textit{right}} \cup (T_{\textit{bottom}} \times T_{\textit{rightgrounded}})$\;
-    \textit{complete(right)}\;
-    $P_{\textit{top}} = P_{\textit{top}} \cup (T_{\textit{leftgrounded}} \times T_{\textit{right}})$\;
-    $P_{\textit{top}} = P_{\textit{top}} \cup (T_{\textit{left}} \times T_{\textit{rightgrounded}})$\;
-    \textit{complete(top)}
-    }
- }
+ \If {$m - l = 4$ and $m = l^\prime$}
+  $T_{l, l + 1} = \{A \mid A \rightarrow a_{l+ 1} \in R\}$
+ \ElsIf{$m - l = 1$ and $m < l^\prime$}{ $T_{l, l'} = f(P_{l, l'})$}
+ \ElsIf{$m - l > 1$}
+    \State{$\textit{leftgrounded} = (l, \frac{l+m}{2}, \frac{l+m}{2}, m)$}
+		\State{$\textit{rightgrounded} = (l', \frac{l'+m'}{2}, \frac{l'+m'}{2}, m')$}
+		\State{$\textit{bottom, left} = (\frac{l+m}{2}, m, l', \frac{l'+m'}{2}), (l, \frac{l+m}{2}, l', \frac{l'+m'}{2})$}
+    \State{$\textit{right, top} = (\frac{l+m}{2}, m, \frac{l'+m'}{2}, m'), (l, \frac{l+m}{2}, \frac{l'+m'}{2}, m')$}
+    \State{\textit{complete(bottom)}}
+    \State{$P_{\textit{left}} = P_{\textit{left}} \cup (T_{\textit{leftgrounded}} \times T_{\textit{bottom}})$}
+    \State{\textit{complete(left)}}
+    \State{$P_{\textit{right}} = P_{\textit{right}} \cup (T_{\textit{bottom}} \times T_{\textit{rightgrounded}})$}
+    \State{\textit{complete(right)}}
+    \State{$P_{\textit{top}} = P_{\textit{top}} \cup (T_{\textit{leftgrounded}} \times T_{\textit{right}})$}
+    \State{$P_{\textit{top}} = P_{\textit{top}} \cup (T_{\textit{left}} \times T_{\textit{rightgrounded}})$}
+    \State{\textit{complete(top)}}
+  \EndIf
+\EndProcedure
+\end{algorithmic}
 \caption{Алгоритм Валианта}
 \label{algo:valiant}
 \end{algorithm}
@@ -183,55 +182,47 @@ $f(P_{i, j}) = \{A | \exists A \rightarrow BC \in R : (B, C) \in P_{i, j}\}.$
 $P_{i, j} =  \{ (B, C) | \exists k, (m \le k < l'), a_{i + 1} \dots a_{k} \in L_G(B), a_{k + 1} \dots a_{j} \in L_G(C)\} $ для всех $i$, $j$, таких что $l \leq i < m$, $l' \leq j < m'$.
 
 
-\begin{algorithm}[!h]
-\SetAlgoNoLine
-\KwIn{$G = (\Sigma, N, R, S), w = a_{1} \dots a_{n}, n + 1 = 2^p, a_{i} \in \Sigma$}
-\underline{main()}{:}{
+\begin{algorithm}[!ht]
+\hspace*{\algorithmicindent} \textbf{Вход:} {$G = (\Sigma, N, R, S), w = a_{1} \dots a_{n}, n + 1 = 2^p, a_{i} \in \Sigma$}
+\begin{algorithmic}[1]
+\Procedure{main}{}
+ \For {$l \in \{1, \ldots, n \}$}{$T_{l, l + 1} = \{A \mid A \rightarrow a_{l + 1} \in R\}$}
+ \EndFor
+ \For{$1 \le i < p - 1 $}
+   \State{\textit{layer = constructLayer($i$)}}
+   \State{\textit{completeVLayer(layer)}}
+ \EndFor
+\EndProcedure
 
- \lFor {$l \in \{1, \ldots, n \}$}{$T_{l, l + 1} = \{A \mid A \rightarrow a_{l + 1} \in R\}$}
- \For{$1 \le i < p - 1 $}{
- \textit{layer = constructLayer($i$)}\;
- \textit{completeVLayer(layer)}
- }
- }
+\Procedure{constructLayer}{i}
+ \State{$\{(k2^i, (k+1)2^i, (k + 1)2^i, (k+2)2^i) \mid 0 \le k < 2^{p - i} - 1\}$}
+\EndProcedure
 
-\underline{constructLayer(i)}{:}{
- \BlankLine
- $\{(k2^i, (k+1)2^i, (k + 1)2^i, (k+2)2^i) \, |\, 0 \le k < 2^{p - i} - 1\}$
- \BlankLine
-    }
-\underline{completeLayer(M)}{:}{
-\BlankLine
-\If {$\forall (l, m, l', m') \in M \quad (m - l = 1)$}{\lFor{$ (l, m, l', m') \in M$}{$T_{l, l'} = f(P_{l, l'})$}}
-\Else{
-\textit{completeLayer($\{\textit{bottom(subm)}\, |\,\textit{subm} \in M \})$}\;
-\textit{completeVLayer(M)}
-}
-\BlankLine
-}
+\Procedure{completeLayer}{M}
+\If {$\forall (l, m, l', m') \in M \quad (m - l = 1)$}{\For{$ (l, m, l', m') \in M$}{$T_{l, l'} = f(P_{l, l'})$}\EndFor}
+\Else
+\State{\textit{completeLayer($\{\textit{bottom(subm)}\, |\,\textit{subm} \in M \})$}}
+\State{\textit{completeVLayer(M)}}
+\EndIf
+\EndProcedure
 
-\underline{completeVLayer(M)}{:}{
- \BlankLine
- $\textit{multiplicationTasks}_1 = \linebreak
-    \{\textit{left(sm)}, \textit{leftgrounded(sm)}, \textit{bottom(sm)}\,
-    |\,\textit{sm} \in M \} \cup \linebreak  \{\textit{right(sm)}, \textit{bottom(sm)}, \textit{rightgrounded(sm)}\, |\,\textit{sm} \in M\}$\;
- \BlankLine
- \textit{multiplicationTask$_2$} = $\{\textit{top(sm)}, \textit{leftgrounded(sm)}, \textit{right(sm)}\, |\,\textit{sm} \in M\}$\;
- \BlankLine
- \textit{multiplicationTask$_3$} = $\{\textit{top(sm)}, \textit{left(sm)}, \textit{rightgrounded(sm)}\, |\,\textit{sm} \in M\}$\;
- \BlankLine
- \textit{performMultiplications(multiplicationTask$_1$)}\;
- \textit{completeLayer($\{\textit{left(sm)}\, |\,sm \in M \} \cup \{\textit{right(sm)}\, |\,\textit{sm} \in M \}$)}\;
- \textit{performMultiplications(multiplicationTask$_2$)}\;
- \textit{performMultiplications(multiplicationTask$_3$)}\;
- \textit{completeLayer($\{top(sm)\, |\,sm \in M \}$)}
+\Procedure{completeVLayer}{M}
+ \State{$m_1 = \{\textit{left(sm)}, \textit{leftgrounded(sm)}, \textit{bottom(sm)} \mid \textit{sm} \in M \}$}
+ \State{$\textit{mltTsk}_1 = m_1 \cup  \{\textit{right(s)}, \textit{bottom(s)}, \textit{rightgrounded(s)} \mid \textit{s} \in M\}$}
+ \State{\textit{mltTsk$_2$} = $\{\textit{top(sm)}, \textit{leftgrounded(sm)}, \textit{right(sm)} \mid \textit{sm} \in M\}$}
+ \State{\textit{mltTsk$_3$} = $\{\textit{top(sm)}, \textit{left(sm)}, \textit{rightgrounded(sm)} \mid \textit{sm} \in M\}$}
+ \State{\textit{performMultiplications(mltTsk$_1$)}}
+ \State{\textit{completeLayer($\{\textit{left(sm)} \mid sm \in M \} \cup \{\textit{right(sm)} \mid \textit{sm} \in M \}$)}}
+ \State{\textit{performMultiplications(mltTsk$_2$)}}
+ \State{\textit{performMultiplications(mltTsk$_3$)}}
+ \State{\textit{completeLayer($\{top(sm) \mid sm \in M \}$)}}
+\EndProcedure
 
- }
- \BlankLine
-
- \underline{performMultiplication(tasks)}{:}{\\
- \lFor{$ (m, m1, m2) \in \textit{tasks}$}{$P_{m} = P_{m} \cup (T_{m1} \times T_{m2})$}
- }
+\Procedure{performMultiplication}{tasks}
+ \For{$ (m, m1, m2) \in \textit{tasks}$}{$P_{m} = P_{m} \cup (T_{m1} \times T_{m2})$}
+ \EndFor
+\EndProcedure
+\end{algorithmic}
 
 \caption{Алгоритм Явейн}
 \label{algo:modified}
@@ -276,14 +267,14 @@ $P_{i, j} =  \{ (B, C) | \exists k, (m \le k < l'), a_{i + 1} \dots a_{k} \in L_
 
 \begin{proof}
 
-\textit{performMultiplications(multiplicationTask$_1$)} добавит к каждому P$_{i,j}$ все пары
+\textit{performMultiplications(mltTsk$_1$)} добавит к каждому P$_{i,j}$ все пары
 $(B, C)$, такие что $\exists k$, $(\frac{l+m}{2} \le k < l')$, $a_{i + 1} \dots a_{k} \in L_{G}(B)$, $a_{k + 1} \dots a_{j} \in L_{G}(C)$ для всех $(i, j)$ $\in leftsublayer(M)$
 и
 $(B, C)$, такие что $\exists k$, $(m \le k < \frac{l'+m'}{2})$, $a_{i + 1} \dots a_{k} \in L_{G}(B)$, $a_{k + 1} \dots a_{j} \in L_{G}(C)$ для всех $(i, j)$ $\in rightsublayer(M)$.
 Теперь, так как все ограничения соблюдены, можно вызвать \textit{completeLayer(leftsublayer(M) $\cup$ rightsublayer(M))} и она вернет корректно заполненные \textit{leftsublayer(M) $\cup$ rightsublayer(M)}.
 
 Далее функция \textit{performMultiplications}, вызванная от аргументов
-\textit{multiplicationTask$_2$} и \textit{multiplicationTask$_3$}, к каждому P$_{i,j}$ добавит все пары
+\textit{mltTsk$_2$} и \textit{mltTsk$_3$}, к каждому P$_{i,j}$ добавит все пары
 $(B, C)$, такие что $\exists k$, $(\frac{l+m}{2} \le k < m)$, $a_{i + 1} \dots a_{k} \in L_{G}(B)$, $a_{k + 1} \dots a_{j} \in L_{G}(C)$
 и все пары
 $(B, C)$, такие что $\exists k$, $(l' \le k < \frac{l'+m'}{2})$, $a_{i + 1} \dots a_{k} \in L_{G}(B)$, $a_{k + 1} \dots a_{j} \in L_{G}(C)$
@@ -367,7 +358,7 @@ $T_{i,j}$ для всех $i$ и $j$ таких, что $l \leq i < j < m$ и $l
 Таким образом, $\sum_{n=1}^{calls_i}{|M|} = 2^{i} - 1 + 3 \times (2^{2(i - 1) - 1} - 2^{(i - 1) - 1}) + 4 \times (2^{2(i - 2) - 1} - 2^{(i - 2) - 1}) - (2^{i - 2} - 1) = 2^{2i - 1} - 2^{i - 1}$.
 
 Теперь мы знаем, что $\sum_{n=1}^{calls_{i-1}}{|M|} = 2^{2(i - 1) - 1} - 2^{(i - 1) - 1}$, и можем доказать второе утверждение. Посчитаем количество перемножений матриц размера $2^{p - i} \times 2^{p - i}$.
-Процедура \textit{performMultiplications} вызывается 3 раза, $|multiplicationTask1| = 2 \times 2^{2(i - 1) - 1} - 2^{(i - 1) - 1}$ и $|multiplicationTask2|$ = $|multiplicationTask3| = 2^{2(i - 1) - 1} - 2^{(i - 1) - 1}$. То есть, количество перемножений подматриц размера $2^{p - i} \times 2^{p - i}$ равно $ 4 \times (2^{2(i - 1) - 1} - 2^{(i - 1) - 1}) = 2^{2i - 1} - 2^{i}$.
+Процедура \textit{performMultiplications} вызывается 3 раза, $|mltTsk_1| = 2 \times 2^{2(i - 1) - 1} - 2^{(i - 1) - 1}$ и $|mltTsk_2|$ = $|mltTsk_3| = 2^{2(i - 1) - 1} - 2^{(i - 1) - 1}$. То есть, количество перемножений подматриц размера $2^{p - i} \times 2^{p - i}$ равно $ 4 \times (2^{2(i - 1) - 1} - 2^{(i - 1) - 1}) = 2^{2i - 1} - 2^{i}$.
 \end{proof}
 
 \begin{theorem}

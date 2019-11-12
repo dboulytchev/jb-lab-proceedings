@@ -5,7 +5,7 @@
 \usepackage[T2A]{fontenc}
 \usepackage{amsmath}
 \usepackage{tikz}
-\usetikzlibrary{arrows, matrix}
+\usetikzlibrary{arrows, matrix,automata,positioning}
 
 \usepackage{pgfplots}
 \usepackage{sidecap}
@@ -18,7 +18,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{algpseudocode}
-\usepackage[ruled, linesnumbered, noend]{algorithm2e}
+\usepackage{algorithm}
 \usepackage[compatibility=false]{caption}
 \captionsetup{labelfont=bf}
 \DeclareCaptionType{Listing}[Листинг]
@@ -75,6 +75,7 @@
 \algtext*{EndProcedure}% Remove "end function" text
 \algrenewcommand\algorithmicindent{1.0em}%
 
+\DeclareMathAlphabet\mathzapf       {T1}{pzc} {mb} {it}
 
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
