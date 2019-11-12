@@ -6,13 +6,19 @@
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{arrows, matrix}
+
+\usepackage{pgfplots}
+\usepackage{sidecap}
+\usepackage{soul}
+\usepackage{xcolor}
+
 \usepackage{indentfirst}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{algpseudocode}
-\usepackage{algorithm}
+\usepackage[ruled, linesnumbered, noend]{algorithm2e}
 \usepackage[compatibility=false]{caption}
 \captionsetup{labelfont=bf}
 \DeclareCaptionType{Listing}[Листинг]
@@ -197,7 +203,7 @@ basewidth={0.5em,0.5em},
 columns=fixed,
 fontadjust=true,
 morestring=[b]",
-literate={->}{{$\:\:\:\to\:\:\:$}}1 
+literate={->}{{$\:\:\:\to\:\:\:$}}1
 %{\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
 }
 
