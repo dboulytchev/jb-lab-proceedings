@@ -1,0 +1,588 @@
+\section{Модель памяти}
+
+Данная глава описывает разработанный метод моделирования операций с памятью. В этом методе можно выделить два шага: символьное выполнение операций с памятью и последующее кодирование полученных результатов в SMT-решатель. Дальнейшее описание модели памяти разделено на пять подразделов. Первые два отвечают за устройство памяти в платформе .NET, а именно структуры данных и существующие операции с ними. Третий подраздел описывает представление этих структур в виртуальной машине. Четвёртый и пятый разделы представляют символьное исполнение операций в безопасном и небезопасном контексте соответственно. В шестом разделе описано кодирование в SMT-решатель.
+
+\subsection{Структуры данных в платформе .NET}
+
+Данные, которыми оперирует платформа .NET можно разделить на четыре блока.
+\begin{enumerate}
+    \item \emph{Стек}~--- это область памяти, имеющая структуру LIFO. В ней размещаются аргументы и локальные переменные метода, которые являются примитивными типами и структурами, а также массивы, выделенные на стеке с помощью инструкции \lstinline[language=csharp]{stackalloc}.
+    \item \emph{Динамически распределяемая память}. В ней размещаются ссылочные типы (например, экземпляры классов пользователя, массивы, строки и т. д.).
+    \item В \emph{статической памяти} хранятся статические члены классов и структур.
+    \item \emph{Пул интернирования}~--- это хэш-таблица, используемая для хранения строк, над которыми было произведено интернированние.
+\end{enumerate}
+
+Далее отдельно рассмотрим структуры данных, которые могут находится внутри каждого из этих блоков. Начнём описание представления данных с простых типов (англ. simple types), после чего рассмотрим более сложные структуры данных.
+
+\subsubsection{Простые типы}
+Согласно спецификации CIL (Common Intermediate Language) языка платформы .NET~\cite{ecmatg3}, простые типы (англ. simple types) состоят из численных типов (англ. numeric types) и типа \lstinline[language=csharp]{bool}.
+
+\subsubsection{Структуры}
+Структуры, как и простые типы, входят являются типами-значениями (англ. value types), однако по своему устройству напоминают классы. Они содержат поля и методы, но не поддерживают наследование. Полями структуры могут выступать любые типы, в том числе массивы. Для полей-массивов в памяти структуры лежит только ссылка на него, так как массив является ссылочным типом. Однако в небезопасном контексте полем структуры может также быть \textbf{массив фиксированного размера} (англ. fixed sized buffer). Элементы такого массива расположены непосредственно в структуре, а не по ссылке. Его ограничениями являются линейность, индексация с нуля, принадлежность типа элементов к простым типам, а также наличие ключевого слова \lstinline[language=csharp]{fixed} в объявлении.
+
+Другой особенностью структур в .NET является возможность при объявлении структуры указать конкретный способ размещения её полей в памяти. Это делается с помощью атрибута \lstinline[language=csharp]{StructLayout}. Существует три способа размещения полей: последовательное (sequential), ручное (explicit), или автоматическое (auto). Первый используется в структурах по-умолчанию, располагая поля в памяти по порядку. С помощью ручного способа можно задать каждому полю конкретное смещение в байтах внутри структуры. Это позволяет пересекать поля в памяти, что ведёт к реинтерпретации данных. Третий способ размещает поля не специфицированным образом, на усмотрение CLR (Common Language Runtime). Помимо размещения полей в памяти атрибут \lstinline[language=csharp]{StructLayout} позволяет при помощи поля Size установить размер структуры больше, чем суммарный размер её полей. В таком случае при выделении структуры будет предоставлена дополнительная память. Также данный атрибут содержит поле Pack, позволяющее изменять выравнивание полей структуры.
+
+\subsubsection{Классы}
+Класс является схожим со структурой представлением данных, главным отличием которого является принадлежность к ссылочным типам, т.е. расположение в динамической памяти. Как и в случае со структурой, при объявлении нового класса можно использовать атрибут \lstinline[language=csharp]{StructLayout}. Отметим, что для классов по умолчанию используется автоматический режим размещения полей.
+
+\subsubsection{Массивы}
+В платформе .NET существует класс \lstinline[language=csharp]{System.Array}, от которого нельзя явно унаследоваться, однако любой привычный тип массива, например, \lstinline[language=csharp]{int[]}, является его наследником. В данном классе находятся общие операции для массивов любого типа. Помимо этих операций, у класса \lstinline[language=csharp]{System.Array} есть статический метод \lstinline[language=csharp]{CreateInstanse}, который позволяет во время исполнения программы создать массив любой размерности, указав при этом нижние границы и длины каждой из размерностей.
+\subsubsection{Строки}
+Строка в платформе .NET представляет собой неизменяемый ссылочный тип, а именно экземпляр класса \lstinline[language=csharp]{System.String}, особенностью которого является сравнение по содержимому строки, а не по ссылке. В данном классе отдельно хранится длина и массив символов строки.
+
+\subsection{Операции с памятью в рамках безопасного контекста}
+
+Основными операциями с памятью в данном контексте являются выделение, чтение и запись. Помимо них также существует механизм интернирования строк.
+
+\paragraph{Выделение.} Операция выделения размещает указанные данные в памяти. Её можно разбить на три случая: выделение типа-значения (структура, простые типы) на \textbf{стеке}, выделение ссылочного типа (массива, строки, экземпляра класса) в \textbf{динамической памяти}, выделение класса или структуры со всеми статическими полями в \textbf{статической памяти}.
+
+\paragraph{Чтение.} Операция чтения позволяет получить значение, которое уже существует в памяти. Можно выделить следующие применения операции: чтение значения простого типа, чтение структуры, чтение поля структуры, чтение поля экземпляра класса, чтение элемента массива, чтение значения статического поля.
+
+\paragraph{Запись.} Данная операция позволяет обновить уже существующее в памяти значение и применяется в одном из следующих случаев: обновление значения простого типа, обновление структуры, запись значения в поле структуры, в поле экземпляра класса, в элемент массива, в статическое поле.
+
+\paragraph{Интернирование строк.} Интернирование~--- механизм, который позволяет одинаковым объектам представлять собой одну область в памяти, т.е. одинаковые данные хранятся в памяти только в одном экземпляре. Платформа .NET предоставляет встроенную поддержку интернирования строк. Для реализации этого механизма в памяти программы находится хэш-таблица, называемая \emph{пулом интернирования}, ключами которой являются хэши строк, а значениями~--- ссылки на строки. По умолчанию данный механизм выполняется только для строковых литералов. Для интернирования нелитеральных строк в платформе .NET существуют операции явного взаимодействия с пулом интернирования: \lstinline[language=csharp]{String.Intern}, \lstinline[language=csharp]{String.IsInterned}. Первая операция позволяет поместить строку в хэш-таблицу следующим образом: если указанная строка уже находится в пуле интернирования, метод возвращает ссылку на эту строку, в противном случае~--- добавляет строку в пул и возвращает ссылку на неё. Вторая операция (\lstinline[language=csharp]{String.IsInterned}) проверяет, находится ли строка в хэш-таблице: если указанная строка присутствует в пуле, то возвращается ссылка на неё из данной таблицы, иначе возвращается \lstinline[language=csharp]{null}.
+
+\subsubsection{Операции с памятью в рамках небезопасного контекста}
+
+Наличие небезопасного контекста (т. е. ключевого слова \lstinline[language=csharp]{unsafe}) позволяет в явном виде использовать указатели для взаимодействия с памятью. Основными операциями в данном случае будут следующие: создание указателя на область памяти, адресная арифметика, приведение типа указателя, разыменование указателя. В совокупности данные операции позволяют совершать реинтерпретацию данных. Например, создаётся указатель на область памяти, к нему прибавляется или вычитание число и/или приводится типа этого указателя, после чего следует разыменование данного указатель. 
+
+Далее отдельно разобрана каждая операция, после чего рассмотрен \lstinline[language=csharp]{stackalloc}.
+
+\paragraph{Создание указателя.}
+Согласно спецификации CIL тип указателя должен удовлетворять грамматике~\eqref{eq:grammar}, при условии, что $struct~type$ не является обобщенным типом и содержит только поля типа $unmanaged~type$. Помимо данных ограничений для создания указателя на область в динамической памяти, необходимо использовать ключевое слово \lstinline[language=csharp]{fixed}, которое не позволяет сборщику мусора перемещать данную область памяти.
+
+\begin{align}\label{eq:grammar}
+	\mathit{pointer~type}::=\,\,&\mathit{unmanaged~type}^* \mid \mathtt{void}^* \cr
+    \mathit{unmanaged~type} ::=\,\,&\mathit{simple~type} \mid \mathit{enum~type} \cr
+					  \mid &\mathit{pointer~type} \mid \mathit{struct~type} \cr
+\end{align}
+
+\paragraph{Адресная арифметика.}
+В данный класс операций входит прибавление и вычитание числа из указателя, вычитание указателей друг из друга, а также сравнение указателей между собой. Результатом первых двух операций является указатель того же типа на новую локацию. Результат вычитания указателей~--- это значение типа \lstinline[language=csharp]{long}.
+
+\paragraph{Приведение типов указателей.}
+В платформе .NET тип любого указателя можно привести к \lstinline[language=csharp]{void*}, любому типу указателя, а также к целым типам (англ. integral types): \lstinline[language=csharp]{sbyte}, \lstinline[language=csharp]{byte}, \lstinline[language=csharp]{short}, \lstinline[language=csharp]{ushort}, \lstinline[language=csharp]{int}, \lstinline[language=csharp]{uint}, \lstinline[language=csharp]{long}, \lstinline[language=csharp]{ulong}. Результат приведения типа указателя к одному из целых типов является не специфицированным (implementation-defined), т. е. зависит от архитектуры, версии CLR и т.д. Необходимо отметить, что операция приведения типа указателя никак не изменяет значение этого указателя.
+
+\paragraph{Разыменование указателя.}
+Данная операция возвращает данные, которые адресует указатель T*, рассмотренные с помощью типа T. Разыменование void* влечёт ошибку во время компиляции, в то время, как применение этой операции к указателю null приводит к не специфицированному поведению (implementation-defined behavior). Также к такому поведению приводит разыменование указателя, адресующего область памяти, часть которой не имеет известного размещения. Примером такой ситуации является разыменование области памяти за границами массива, который располагается на стеке. Однако таким случаем не является разыменование указателя, адресующего память за границами массива фиксированного размера, который располагается внутри структуры с конкретным размещением полей, при условии того, что адресуемая область памяти не выходит за границы структуры.
+
+\paragraph{Stackalloc.}
+Массив является ссылочным типом и по умолчанию выделяется в динамической памяти. Однако в небезопасном контексте операция stackalloc позволяет разместить массив на стеке. На такие массивы действуют те же ограничения, что и на массив фиксированного размера, а именно: линейность, индексация с нуля, принадлежность типа элементов к простым типам.
+
+% -------------------------------- Моделирование --------------------------------
+
+\subsection{Представление данных в символьной памяти}
+
+Согласно модели памяти Бурсталла-Борната, элементы составных объектов (например, поля структур, элементы массивов), представляются отдельно в моделируемой памяти. Разработанный способ моделирования операций с памятью модифицирует данную идею, обозначая содержимое составных объектов как семантически отделённую область памяти, которую далее будем называть \emph{логическим блоком}. Помимо содержимого составных объектов, такой областью памяти также являются следующие блоки данных: динамическая и статическая память, стек и пул интернирования. Заметим, что внутри логического блока <<динамическая память>> может лежать логический блок <<содержимое структуры>>, внутри которого также может располагаться логический блок <<элементы массива фиксированного размера>>. Данное замечание демонстрирует \emph{иерархичность} логических блоков, т. е. наличие иерархии, построенной на основе вложенности одного блока в другой. Следовательно, представление логического блока в символьной виртуальной машине также должно обладать этим свойством. Символьная память, в частности представление логического блока, будет описана далее. Данная символьная память оперирует термами, т. е. языком символьной виртуальной машины, который будет описан в разделе~\ref{terms}.
+
+\subsubsection{Символьная память}
+
+Представлением любого логического блока в символьной виртуальной машине является \emph{символьная куча}. Термы ($term$) и локации ($loc$) описаны в разделе~\ref{terms}.
+\begin{defn}
+\emph{Символьная куча}~--- это частичная функция ${\sigma : \addrset \rightarrow \termset}$.
+\end{defn}
+
+\begin{defn}\label{def:empty-heap}
+Пустая куча $\emptyheap$~--- это частичная функция с областью определения $\dom{\emptyheap}=\varnothing$.
+\end{defn}
+
+Представлением всей памяти программы в целом является разработанная символьная память $M$, которая состоит из следующих элементов, которые далее будем называть \emph{верхнеуровневыми символьными блокомами}.
+\begin{itemize}
+    \item S : $\mathit{varName} \rightarrow \mathit{term}$~--- символьная куча с именами объявленных на стеке переменных в качестве адресов, которая описывает стек программы.
+    \item DM : $\mathit{term} \rightarrow \mathit{term}$~--- символьная куча с термами в качестве адресов, которая описывает динамическую память программы.
+    \item SM : $\mathit{type} \rightarrow \mathit{term}$~--- символьная куча адресуемая типами, имеющими статические поля, которая описывает статическую память программы.
+    \item IP : $\mathit{term} \rightarrow \mathit{term}$~--- символьная куча с термами строк в качестве адресов, которая описывает хэш-таблицу <<пул интернирования>> программы.
+\end{itemize}
+
+Основной особенностью разработанной символьной памяти помимо иерархичности является \emph{поддержка неопределённости данных}, которая выражается в двух свойствах. Первым является наличие символьных значений, о которых пойдёт речь в следующем разделе, в качестве локаций. Второе свойство~--- это выполнение операций с памятью в условиях отсутствия знаний о некоторых локациях. 
+Это значит, что отсутствие локации в куче означает лишь отсутствие знаний об этой локации. 
+То есть символьная память может не знать о существующих локациях, например, если в анализируемую функцию передаётся связный список, длина которого заранее не известна, а значит и число звеньев, выделенных в памяти, не определено во время анализа. Данная ситуация показана на~\autoref{example1}. Про способ выполнения операций с локациями, о которых отсутствует информация при анализе, будет упомянуто в разделах, описывающих операции с памятью.
+
+\begin{listing}[H]
+\begin{lstlisting}[language=csharp]
+public static int LastValue(LinkedList<int> list)
+{
+    return list.Last.Value;
+}
+\end{lstlisting}
+\caption{Пример функции со связным списком}
+\label{example1}
+\end{listing}
+
+\subsubsection{Язык символьной виртуальной машины}
+\label{terms}
+
+При символьном исполнении программы внутри логических блоков может возникать неопределённость данных, например, при наличие символьных значений внутри.
+\emph{Термы}~--- внутренний язык символьной виртуальной машины, который задаётся следующей грамматикой:
+\begin{figure}[H]
+\begin{align*}
+	\mathit{term} ::=\,\,&\mathit{error} \mid \texttt{CONCRETE} \mid \texttt{SYMBOL} \mid \mathit{expr} \cr
+        \mid\,\,&\mathit{ref} \mid \mathit{union} \mid \mathit{logicalBlock} \cr
+	\mathit{error} ::=\,\,&\texttt{ERROR}(\text{название ошибки}) \cr
+    \mathit{fql} ::=\,\,& \langle \mathit{loc} \rangle ^* \cr
+    \mathit{loc} ::=\,\,& \mathit{varName} \mid \mathit{type} \mid \mathit{fieldName} \mid \mathit{term} \cr
+    \mathit{ref} ::=\,\,&\texttt{REF}(\mathit{fql}) \cr
+	\mathit{expr} ::=\,\,&\texttt{EXPRESSION}(\mathit{operation}, \langle term \rangle ^+) \cr
+    \mathit{logicalBlock} ::=\,\,& \texttt{LB}(\sigma, pl) \cr
+    \mathit{union} ::=\,\,&\texttt{UNION}(\pair{guard}{term}^*) \cr
+	\mathit{guard} ::=\,\,&\top \mid \bot \mid expr \cr
+\end{align*}
+\vspace*{-0.6in}
+\end{figure}
+
+Вначале разберём простые случаи терма. \texttt{ERROR} является представлением исключений программы. \texttt{CONCRETE}~--- конкретное значение простого типа, например, 3 или 'а'. \texttt{SYMBOL}~--- это символьной значение, т. е. абстракция над конкретным значением, используемая в символьном исполнении. Терм \texttt{EXPRESSION} представляет произвольные выражения, например, $a + b + c$, где $operation$~--- это сложение, а операндами являются термы $a$, $b$, и $c$.
+
+В силу свойства иерархичности символьной памяти любую локацию программы можно представить с помощью $fql$ (fully qualified location), которая состоит из набора адресов ($loc$) внутри представлений логических блоков. С помощью пустого набора локаций описывается пустая ссылка \lstinline[language=csharp]{null}. Локациями могут быть имена переменных, объявленных на стеке ($varName$), типы, имеющие статические поля ($type$), имена полей структур ($fieldName$), а также термы, адресующие, например, динамическую память. Примером такой последовательности адресов может быть следующая: \\$\langle ClassName, Struct, AnotherStruct, Field \rangle$. В примере $fql$ начинается со статической памяти, где у класса $ClassName$ есть статическое поле $Struct$, которое является структурой, также имеющей структуру $AnotherStruct$ в качестве своего поля, у которой есть поле $Field$.
+
+Таким образом, терм \texttt{REF}, используя $fql$, обозначает ссылки на область памяти (например, для ссылочных типов). Указатели в виртуальной машине представлены с помощью терма \texttt{PTR}, который включает $fql$, а также сдвиг в байтах от данной локации.
+
+\texttt{UNION}~--- это синтаксическая конструкция статического символьного исполнения, позволяющая объединять результаты символьного исполнения веток программы, которые <<защищены>> логическими формулами условий пути $guard$, обеспечивающими попадание в эти ветки. Т.е. $x = \union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}$ т.и т.т., когда $(g_1 \land x = v_1) \lor \ldots \lor (g_n \land x = v_n)$.
+
+Более сложным термом является \texttt{LB}, который описывает составные объекты, содержащие логический блок. Примерами составных объектов являются экземпляр класса или структуры, а также массив.
+
+
+\paragraph{Представление составных объектов.}
+Терм \texttt{LB}$(s,pl)$ описывает составные объекты в символьной виртуальной машине. Внутри себя данный терм содержит символьную кучу $s$ (англ. store) и физическое размещение элементов $pl$ (англ. physical layout). Символьная куча $s$ является представлением содержимого составного объекта, т. е. логического блока этого объекта. В случае класса или структуры, ключами данной кучи являются названия полей ($fieldName$), а значениями~--- термы ($term$) этих полей. Если логическим блоком является массив, то в куче $s$ хранятся нижние границы, длины и элементы, а ключами являются неповторяющиеся термы. Выделим особый случай, когда полем структуры является массив фиксированного размера. Такой массив представляется в данной модели, как структура, поля которой~--- это элементы массива. Такое представление возможно, так как массив имеет конкретный неизменяемый размер. Второй элемент \texttt{LB}, физическое размещение $pl$, отвечает за расположение его элементов в памяти и является функцией. Она принимает окно ($term \times \mathbb{N}$), с которым рассматривается данный блок \texttt{LB}. Первым элементом окна является байт начала, а вторым~---размер окна. Результатом такой функции служит набор локаций, которые могут быть рассмотрены с помощью окна, в паре с их смещением в байтах, относительно начала блока. Формальное описание формул $pl$ для структур и классов находится на~\autoref{fig:fieldsPL}, а для массивов~--- на~\autoref{fig:arrayPL}.
+
+\begin{figure}
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+    \notag{
+        \mathit{fieldsPL(type)(w)} \eqdef \Big\langle\paiR{\mathit{name(f_1)}}{\mathit{pl(f_1)}}, \dots, \paiR{\mathit{name(f_n)}}{\mathit{pl(f_n)}} \Big\rangle
+    } \\
+    \notag{
+        \langle \mathit{f_1}, \dots, \mathit{f_n} \rangle \eqdef \mathit{fields(type)}
+    } \\
+    \notag{
+        \mathit{pl(f_i)} \eqdef
+            \begin{cases}
+                \mathit{offset_i},&\mathit{isSequential(type)} \cr
+                \mathit{getExplicitOffset(f_i)},&\mathit{isExplicit(type)} \cr
+            \end{cases}
+    } \\
+    \notag{
+        \mathit{offset_1} \eqdef \mathit{pack}\big(0\big) \quad \dots \quad \mathit{offset_n} \eqdef \mathit{pack}\big(\mathit{offset_{n-1}} + \mathit{size_{n-1}})\big)
+    } \\
+    \notag{
+        \mathit{size_i} \eqdef \mathit{sizeOf(f_i)}
+    }
+\end{mymathbox}
+\normalsize
+\caption{Физическое размещение полей в структурах}
+\label{fig:fieldsPL}
+\end{figure}
+
+\begin{figure}
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+    \notag{
+        \mathit{arrayPL(type)}(\pair{b}{s}) \eqdef \Big\langle\paiR{\mathit{ind_0}}{\mathit{ind_0} \times \mathit{esize}}, \dots, \paiR{\mathit{ind_n}}{\mathit{ind_n} \times \mathit{esize}} \Big\rangle
+    } \\
+    \notag{
+        \mathit{ind_0} \eqdef \mathit{ind} \quad \dots \quad \mathit{ind_n} \eqdef \mathit{ind + n}
+    } \\
+    \notag{
+        \mathit{esize} \eqdef \mathit{sizeOfElems(i)} \quad \mathit{ind} \eqdef \mathit{b} \bdiv \mathit{esize} \quad \mathit{n} \eqdef \mathit{(s + esize - 1)} \bdiv \mathit{esize}
+    }
+\end{mymathbox}
+\normalsize
+\caption{Физическое размещение элементов в массивах} \label{fig:arrayPL}
+\end{figure}
+
+\paragraph{Представление строк.}
+Строка в символьной виртуальной машине представляется как терм \texttt{LB} с двумя полями: $m\_FirstChar$ и $m\_StringLength$. В первом поле находится терм \texttt{LB}, содержащий символы строки. Во втором поле~--- длина строки. В случае конкретной строки длина представлена в виде терма \texttt{CONCRETE}, а в случае символьной~--- \texttt{SYMBOL}.
+
+\subsection{Моделирование операций с памятью в рамках безопасного контекста}
+В данном разделе в терминах языка символьной виртуальной машины описано выполнение операций с символьной памятью в рамках безопасного контекста. Среди данных операций: выделение объекта, чтение, запись, а также интернирование. До описания операций приведём набор обозначений, представленный на~\autoref{fig:ref:notations}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{\mathit{[x_1;x_n]} \eqdef \langle x_1, \dots, x_n \rangle \qquad\qquad \mathit{null} \eqdef \texttt{REF}(\langle\rangle)
+} \\
+\notag{\mathit{NRE} \eqdef \texttt{ERROR}(\var{NullReferenceException}) \qquad \mathit{ite(c, t, e)} \eqdef \Union{\pair{c}{t}, \pair{\neg c}{e}}
+} \\
+\notag{
+    \forall l \in \dom{\sigma} \cup \{x\} : \sigma[x \mapsto t](l) \eqdef
+    \begin{cases}
+        t, &\mg{l}{x} \cr
+        \sigma(l), &\nmg{l}{x}
+    \end{cases}
+} \\
+\notag{
+    \mathit{union}\pair{g_i}{h_i}(l) \eqdef \texttt{UNION}\langle \mathit{g_i, h_i(l)} \rangle
+}
+\end{mymathbox}
+\normalsize
+\caption{Обозначения} \label{fig:ref:notations}
+\end{figure}
+
+\subsubsection{Выделение объекта}
+Наиболее простой операцией является "alloc" (выделение) -- добавляет в верхнеуровневый символьный блок (стек, статическая память, динамическая память) значение с указанным ключом. Подробная формализация данной операции представлена на \autoref{fig:alloc}.
+
+Основной является функция $alloc$, которая принимает символьную кучу $\sigma$, а также тип выделяемого объекта $type$. Результатом данной функции является символьная куча, которая отличается от $\sigma$ только ранее не встречающейся локацией $fresh$. По этой локации располагается терм, созданный функцией $createTerm$. Значение ключа $fresh$ зависит от места выделения объекта: для стека ключом является имя переменной, для динамической памяти~--- терм, а для статической памяти~--- тип со статическими полями.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{\mathit{alloc}(\sigma, \mathit{type}) \eqdef \sigma\left[\mathit{fresh} \mapsto \mathit{createTerm(type)}\right], fresh \notin \dom{\sigma}
+} \\
+\notag{\mathit{createTerm(type)} \eqdef
+    \begin{cases}
+        \texttt{CONCRETE},&\mathit{type}~$--- простой тип$ \cr
+        \texttt{LB}\big(\mathit{createFields(type), fieldsPL} \big),&\mathit{type}~$--- структура или класс$ \cr
+        \texttt{LB}\big(\emptyheap, \mathit{arrayPL}\big),&\mathit{type}~$--- массив$ \cr
+    \end{cases}
+} \\
+\notag{
+    \forall f \in \mathit{fields(type)} : \mathit{createFields(type)(f)} \eqdef \mathit{createTerm}\big(\mathit{typeOf(f)}\big)
+}
+\end{mymathbox}
+\normalsize
+\caption{Операция выделения} \label{fig:alloc}
+\end{figure}
+
+\subsubsection{Чтение значения}
+
+До описания операции чтения, введём функцию \emph{инстанциации}, которая является модификацией идеи~\cite{khurshid2003generalized}, взятой из символьного исполнения. Представленные на \autoref{fig:inst} функции позволяют создать значение в указанной локации.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+    \notag{\mathit{Inst(x)} \eqdef
+        \begin{cases}
+            DI(x),& x~$--- локация со значением по-умолчанию$ \cr
+            LI(x),& x~$--- локация с ленивым значением$ \cr
+        \end{cases}
+    } \\
+    \notag{LI(x) \eqdef
+        \begin{cases}
+            \texttt{SYMBOL}, & x~$--- простой тип$\cr
+            \texttt{LB}(\emptyheap, fieldsPL), & x~$--- структура или класс$\cr
+            \texttt{LB}(\emptyheap, arrayPL), & x~$--- массив$\cr
+        \end{cases}
+    }
+\end{mymathbox}
+\normalsize
+\caption{Ленивая инстанциация} \label{fig:inst}
+\end{figure}
+
+В зависимости от информации, известной о локации $x$, в функции $Inst$ создаётся либо значение по-умолчанию, либо так называемая <<ленивая ячейка>>. Инстанциация значения по-умолчанию $DI(x)$ применяется в случае доступа к элементам, нижним границам или длинам массива, который был объявлен, однако не инициализирован. Создание <<ленивой ячейки>> $LI(x)$ происходит, когда знания о локации $x$ до этого отсутствовали. Результатом выполнения функции $LI$ является либо символьной значение ($\texttt{SYMBOL}$), либо логический блок с пустой символьной кучей, информации о значениях которой ещё нет. С помощью данных функций при описании операций чтения и записи обеспечивается поддержка символьной памятью неопределённости данных.
+
+Так как чтение значения из любого блока памяти сводится к чтению по ссылке, то необходимо описать данную операцию только для термов \texttt{REF} и \texttt{UNION}. Формулы для такой операции приведены на~\autoref{fig:read}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    \mathit{read(ref)} \eqdef
+    \begin{cases}
+        \mathit{NRE},&\mathit{ref = null} \cr
+        \texttt{UNION}\langle g_i, \mathit{read(ref_i)} \rangle, &ref = \texttt{UNION}\langle \mathit{g_i, ref_i} \rangle \cr
+        \Deref{\xi(M)}{\mathit{fql}}, &\mathit{ref} = \texttt{REF}(\mathit{fql}) \cr
+    \end{cases}
+} \\
+\notag{
+    \deref{\sigma}{[l_1;l_n]} \eqdef
+    \texttt{UNION}\Big(\big\{\paiR{\mg{l_1}{l}}{\readTerm\big(\sigma(l), [l_2; l_n]\big)} \mid l\in\dom{\sigma} \big\}
+} \\
+\notag{
+    \qquad\qquad\qquad\qquad\quad\quad\cup\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{l_1}{l}}}{\readTerm\big(\mathit{Inst(l_1)}, [l_2; l_n]\big)}\Big)
+} \\
+\notag{
+readTerm\big(t, fql\big) \eqdef
+    \begin{cases}
+        t,&\mg{n}{0} \cr
+        \mathit{readStore}\big(\sigma,\mathit{fql}\big),&n > 0 \land \mg{t}{\texttt{LB}(\sigma, pl)} \cr
+        \texttt{UNION}\langle g_i, \mathit{readTerm(t_i, fql)} \rangle,& n > 0 \land t = \texttt{UNION}\langle g_i, t_i \rangle \cr
+    \end{cases}
+}
+\end{mymathbox}
+\normalsize
+\caption{Операция чтения} \label{fig:read}
+\end{figure}
+
+Среди формул данной операции основной является $read$. В зависимости от первого элемента $fql$ внутри ссылки $ref$ она определяет чтение какого блока памяти вызвать: \texttt{S}, \texttt{DM}, \texttt{SM}, \texttt{IP}. Среди особых случаев находятся $ref = null$, который бросает исключение, и $ref = \texttt{UNION}$, который рассматривает ветки из объединённого терма. С помощью функции $\xi(M)$ возвращается необходимый блок, из которого далее происходит чтение в функции $readStore$. Необходимо заметить, что в случае $\xi(M) = DM$ в условие пути интерпретатора добавляется $l_1 \neq 0$ для корректного чтения. Функция $readStore$ рассматривает всевозможные локации символьной кучи и для каждой вызывает $readTerm$, который при необходимости вновь вызывает чтение $readStore$, спускаясь вглубь терма.
+
+\subsubsection{Запись значения}
+
+Операция записи описывается аналогично операции чтения, изменяя при этом символьную память $M$. Формулы этой операции представлены на \autoref{fig:write}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{write(\var{ref}, v) \eqdef
+    \begin{cases}
+        \mathit{with_{DM}}\big(M,DM(M)[\mathit{fresh} \mapsto NRE]\big),&\var{ref} = \mathit{null} \cr
+        \mathit{with_{\xi}}\Big(M,\mathit{union}\big\langle \mathit{g_i, write(ref_i,v)} \big\rangle\Big),&\var{ref} = \texttt{UNION}\langle \mathit{g_i, ref_i} \rangle \cr
+        \mathit{with_{\xi}}\Big(M,\mathit{writeStore}\big(\xi(M),\mathit{fql},v\big)\Big),&\var{ref} = \texttt{REF}(\mathit{fql})
+    \end{cases}
+} \\
+\notag{update(\sigma,[l_1;l_n],v)(l) \eqdef
+    \Ite{\mg{l_1}{l}}{\writeTerm\big(\sigma(l),[l_2;l_n],v\big)}{\sigma(l)}
+} \\
+\notag{\mutate{\sigma}{[l_1;l_n]}{v} \eqdef
+    \begin{cases}
+        \sigma\Big[l_1 \mapsto \writeTerm\big(\sigma(l),[l_2;l_n],v\big)\Big],&l_1 \in \dom{\sigma} \cr
+        \mathit{update}\Big( \sigma[l_1 \mapsto \mathit{inst}], [l_1;l_n], v\Big),&l_1 \notin \dom{\sigma}
+    \end{cases}
+} \\
+\notag{
+    \mathit{inst} \eqdef \texttt{UNION}\big(\paiR{\bigwedge_{\mathclap{l\in\dom{\sigma}}}{\nmg{l_1}{l}}}{\mathit{Inst}(l_1)}\big)
+} \\
+\notag{
+    \mathit{writeTerm}\big(t, [l_1;l_n], v\big) \eqdef
+    \begin{cases}
+        v,&n = 0 \cr
+        \texttt{UNION}\big\langle g_i, \mathit{writeTerm(t_i, fql,v)} \big\rangle,& n > 0 \land t = \texttt{UNION}\langle \mathit{g_i, t_i} \rangle \cr
+        \texttt{LB}\Big(\mathit{writeStore}\big(\sigma,[l_1; l_n],v\big), pl\Big),&n > 0 \land t = \texttt{LB}(\sigma, pl)
+    \end{cases}
+}
+\end{mymathbox}
+\normalsize
+\caption{Операция записи} \label{fig:write}
+\end{figure}
+
+Главной функцией среди данных формул является $\mathit{write}$, которая принимает ссылку $\mathit{ref}$ и записываемое значение $v$. Аналогично случаю чтения, вначале рассматривается случай пустой ссылки, который выделяет в динамической памяти по ранее не встреченному адресу $\mathit{fresh}$ исключение. Запись по ссылке $ref = \texttt{UNION}$ ведёт к записи по каждой ветке и объединению результатов. В остальных случаях выбирается необходимый блок памяти, производится запись в него ($writeStore$), после чего он обновляется с помощью функции $with_{\xi}$. Когда локация $l_1$ уже находится в куче, результатом работы функции $\mathit{writeStore}$ является обновление данной локации. В противоположном случае, обновляются все существующие значения, а также добавляется то, которого в куче до этого не было ($inst$). Аналогично чтению, запись выполняется, рекурсивно спускаясь по иерархии символьных куч.
+
+\subsubsection{Интернирование}
+Операции интернирования \lstinline[language=csharp]{String.Intern} и \lstinline[language=csharp]{String.IsInterned} сводятся к операциям чтения и записи в символьную кучу <<пул интернирования>>. Формулы данных операций представлены на~\autoref{fig:intern} и \autoref{fig:isInterned}. Указанные операции чтения и записи в пул интернирования описаны на~~\autoref{fig:internHelp}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    \mathit{intern(strRef)} \eqdef \paiR{\mathit{read_{IP}}\big(\mathit{read(strRef),strRef}\big)}{\mathit{write_{IP}}\big(\mathit{read(strRef),strRef}\big)}
+}
+\end{mymathbox}
+\normalsize
+\caption{Операция intern} \label{fig:intern}
+\end{figure}
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    \mathit{isInterned(strRef)} \eqdef \mathit{read_{IP}}\big(\mathit{read(strRef),null}\big)
+}
+\end{mymathbox}
+\normalsize
+\caption{Операция isInterned} \label{fig:isInterned}
+\end{figure}
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    \mathit{read_{IP}(str, li)} \eqdef \Union{\big\{\paiR{\mg{str}{l}}{ip(l)} \mid l\in\dom{ip} \big\} \cup\paiR{\bigwedge_{\mathclap{l\in\dom{ip}}}{\nmg{str}{l}}}{li}}
+} \\
+\notag{
+    \mathit{write_{IP}(str, strRef)}\eqdef with_{IP}\big(M,ip\left[str \mapsto \mathit{strRef}\right]\big) \qquad ip \eqdef IP(M)
+}
+\end{mymathbox}
+\normalsize
+\caption{Вспомогательные формулы механизма интернирования} \label{fig:internHelp}
+\end{figure}
+
+\subsection{Моделирование операций с памятью в рамках небезопасного контекста}
+
+В данном разделе в терминах языка символьной виртуальной машины описано выполнение операций с символьной памятью в рамках небезопасного контекста. Среди данных операций: создание указателя, адресная арифметика, приведение типов указателей, выделение массива на стеке, а также разыменование указателя, которая используется в двух случаях: чтение и запись по указателю. Наиболее объёмными являются операции чтения и записи, их мы разберём подробно. Для удобства описания введём обозначения на~\autoref{fig:ptr:notations}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    UB \eqdef \texttt{ERROR}(\var{UndefinedBehaviour})
+} \\
+\notag{
+    \mathit{null_{ptr}} \eqdef \texttt{PTR}(\langle \rangle, \mathit{offset})
+}
+\end{mymathbox}
+\normalsize
+\caption{Обозначения} \label{fig:ptr:notations}
+\end{figure}
+
+
+\paragraph{Создание указателя.} Данная операция сводится к построению $\mathit{fql}$ и дальнейшему созданию терма $\texttt{PTR}\mathit{(fql, 0)}$.
+
+\paragraph{Адресная арифметика.} Все операции из данного класса сводятся к арифметическим операциям над термом $\mathit{offset}$, который находятся внутри терма $\texttt{PTR}\mathit{(fql, offset)}$.
+
+\paragraph{Приведение типов указателей.} Эти операции сводится к изменению типа у терма \texttt{PTR}, с которым рассматривается область памяти. Мы не концентрируемся на данном аспекте модели памяти в этой работе.
+
+\paragraph{Выделение массива на стеке с помощью stackalloc.} Это сводится к операции выделения на стеке $\mathit{alloc}(\texttt{S}, \mathit{type})$, где $\mathit{type}$~--- это тип выделяемого массива.
+
+\subsubsection{Разыменование указателя}
+При выполнении данной операции могут возникнуть реинтерпретиции данных, что добавляет сложности моделированию. Из-за этого в грамматику термов добавляется два случая: $\mathit{slice}$ и $\mathit{combine}$.
+
+\begin{figure}[H]
+\begin{align*}
+	\mathit{term} ::=\,\,& \dots \quad \mathit{slice} \mid \mathit{combine} \cr
+	\mathit{slice} ::=\,\,&\texttt{SLICE}\mathit{(term,term,term)} \cr
+	\mathit{combine} ::=\,\,&\texttt{COMBINE}\langle \mathit{term} \rangle ^* \cr
+\end{align*}
+\vspace*{-0.6in}
+\end{figure}
+
+Случай $\texttt{SLICE}(t,from,to)$ позволяет взять часть терма $t$, начиная с байта $from$ по байт $to$, где $from$ и $to$ являются термами. $\texttt{COMBINE}( \langle term \rangle ^*)$ служит для соединения нескольких термов в единую последовательность байт. С помощью данных термов на~\autoref{fig:ptr:read} описана операция чтения по указателю.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+    \notag{\mathit{read_{ptr}(p)} \eqdef
+    	\begin{cases}
+    	    \mathit{UB}, &p = \mathit{null_{ptr}} \cr
+    	    \texttt{UNION}\langle \mathit{g_i, read_{ptr}(p_i)} \rangle, &p = \texttt{UNION}\langle \mathit{g_i, p_i} \rangle \cr
+    	    \mathit{readStore_{ptr}(fql)}, &p = \texttt{PTR}\mathit{(fql, offset)} \cr
+    	\end{cases}
+	} \\
+	\notag{
+        \mathit{readStore_{ptr}([l_1;l_n])} \eqdef
+        \texttt{UNION}\Big(\big\{\paiR{\mathit{isAligned_i}}{\mathit{readTerm_{ptr}}\big(\mathit{block_i}, \pair{b_i}{s_{ptr}}\big)} \mid i \in \left[1, n\right]\big\}
+    } \\
+    \notag{
+        \qquad\quad\cup\paiR{\bigwedge_{\mathclap{i\in\left[1,n\right]}}{\neg \mathit{isAligned_i}}}{UB}\Big)
+	} \\
+    \notag{\mathit{readTerm_{ptr}(t, w)} \eqdef 
+    	\begin{cases}
+    	    \mathit{readSimple_{ptr}(t, w)},&t~$--- простой тип$ \cr
+    	    \mathit{readBlock_{ptr}}(\sigma,pl,w),&t = \texttt{LB}(\sigma,pl) \land \mathit{hasPL(t)} \cr
+    	    UB,&t = \texttt{LB}(\sigma,pl) \land \neg \mathit{hasPL(t)} \cr
+    	\end{cases}
+	} \\
+    \notag{\mathit{readSimple_{ptr}}(t, \pair{b}{s}) \eqdef \texttt{SLICE}\big(\mathit{t,max(b, 0),min(b+s, sizeOf(t))}\big)
+    } \\
+    \notag{\mathit{readBlock_{ptr}}(\sigma,pl,\pair{b}{s}) \eqdef \mathit{ite(inGap, UB, combine)}
+    }
+\end{mymathbox}
+\normalsize
+\caption{Операция чтения по указателю} \label{fig:ptr:read}
+\end{figure}
+
+Главной функцией этой операции является $\mathit{read_{ptr}}$. Она рассматривает все возможные случаи указателя, после чего вызывает функцию $\mathit{readStore_{ptr}}$, основной задачей которой является определить, на какой логический блок указывает $p$. По нахождении необходимого блока происходит чтения окна из терма этого блока, которое выполняется с помощью рекурсивного спуска по терму. Вспомогательные функции для этой операции описаны на~\autoref{fig:ptr:readHelp}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    \mathit{isAligned_i} \eqdef \mathit{hasPL_i} \land b_i \geq 0 \land b_i + \mathit{size} \leq \mathit{size_i}
+} \\
+\notag{
+    \mathit{ref_i} \eqdef \texttt{REF}([l_1;l_i]) \quad \mathit{block_i} \eqdef \mathit{read(ref_i)} \quad \mathit{size_i} \eqdef \mathit{sizeOf(block_i)}
+} \\
+\notag{
+    \mathit{hasPL_i} \eqdef \mathit{hasPL(block_i)} \quad \mathit{s_{ptr}} \eqdef \mathit{sizeOfPtr(p)}
+} \\
+\notag{
+    b_1 \eqdef \mathit{pl(l_2) + b_2} \quad \dots \quad b_n \eqdef \mathit{offset}
+} \\
+\notag{
+    \mathit{inGap} \eqdef \bigvee_{\mathclap{\pair{s}{e}\in \mathit{gap}}} s < e \land b \leq s \land b+s \geq s \quad \mathit{gap} \eqdef \{ \mathit{gap_i} \mid i \in [0,m] \}
+} \\
+\notag{
+    \mathit{gap_0} \eqdef \pair{0}{o_1} \quad \dots \quad \mathit{gap_{m-1}} \eqdef \pair{\mathit{end_{m-1}}}{o_m} \quad \mathit{gap_m} \eqdef \pair{\mathit{end_m}}{\mathit{sizeOf(t)}}
+} \\
+\notag{
+    \mathit{combine} \eqdef \texttt{COMBINE}\Big(\big\{ \mathit{readTerm_{ptr}}\big(\mathit{old_i},\pair{b-o_i}{s}\big) \mid i \in [1,n] \big\}\Big)
+} \\
+\notag{
+    \big[\pair{l_1}{o_1};\pair{l_n}{o_m}\big] \eqdef pl\big(\pair{b}{s}\big) \quad \mathit{old_i} \eqdef \mathit{readStore}(\sigma,l_i) \quad \mathit{end_i} \eqdef o_i + \mathit{sizeOf(old_i)}
+}
+\end{mymathbox}
+\normalsize
+\caption{Вспомогательные формулы для чтения по указателю} \label{fig:ptr:readHelp}
+\end{figure}
+
+Операция записи по указателю мало отличается от операции чтения. Её особенность является отсутствие изменений в куче, если встретилось не специфицированное поведение (undefined behaviour). Формулы данной операции находятся на~\autoref{fig:ptr:write}. Вспомогательные формулы для неё описаны на~\autoref{fig:ptr:writeHelp}.
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+    \notag{write_{ptr}(p,v) \eqdef
+	\begin{cases} 
+        M,                      &\mathit{p = null_{ptr}} \cr
+        \mathit{union}\big\langle \mathit{g_i,write_{ptr}(p_i,v)} \big\rangle,&p = \texttt{UNION}\langle \mathit{g_i, p_i} \rangle \cr
+        \mathit{write}\big(\mathit{ref_1, writeStore_{ptr}(fql, v)}\big),&p = \texttt{PTR}\mathit{(fql, offset)} \cr
+	\end{cases}
+    } \\
+    \notag{
+        \mathit{writeStore_{ptr}([l_1;l_n], v)} \eqdef
+        \texttt{UNION}\Big(\big\{\paiR{\mathit{isAligned_i}}{level_i} \mid i \in \left[1, n\right]\big\}
+    } \\
+    \notag{
+        \qquad\qquad\qquad\qquad\qquad\quad\cup\paiR{\bigwedge_{\mathclap{i\in\left[1,n\right]}}{\neg \mathit{isAligned_i}}}{UB}\Big)
+    } \\
+    \notag{\mathit{writeTerm_{ptr}(t, w, v)} \eqdef
+    	\begin{cases}
+            \mathit{writeSimple_{ptr}(t, w, v)},&t~$--- простой тип$ \cr
+            \texttt{LB}\big(\mathit{writeBlock_{ptr}}(\sigma,pl,w,v), pl\big),&t = \texttt{LB}(\sigma,pl) \land \mathit{hasPL(t)} \cr
+            t,&t = \texttt{LB}(\sigma,pl) \land \neg \mathit{hasPL(t)} \cr
+    	\end{cases}
+    } \\
+    \notag{
+        \mathit{writeSimple_{ptr}}(t, \pair{b}{s}, v) \eqdef \texttt{COMBINE} \Big(\big\langle \mathit{left, v, right} \big\rangle\Big)
+    } \\
+    \notag{
+        \mathit{writeBlock_{ptr}}(\sigma, pl, \pair{b}{s}, v)(l) \eqdef \sigma[l_1 \mapsto \mathit{updated_1} \quad \dots \quad l_n \mapsto \mathit{updated_n}]
+    }
+\end{mymathbox}
+\normalsize
+\caption{Операция записи по указателю}    
+\label{fig:ptr:write}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\tiny
+\setlength{\jot}{1pt}
+\begin{mymathbox}
+\notag{
+    \mathit{level_i} \eqdef \mathit{writeTerm}\Big(\mathit{block_1}, \left[l_2;l_i\right], \mathit{writeTerm_{ptr}}\big(\mathit{block_i}, \pair{b_i}{s_{ptr}}, v\big)\Big)
+} \\
+\notag{
+    \mathit{left} \eqdef \texttt{SLICE}\Big(t, 0, \mathit{min}\big(b, \mathit{sizeOf(t)}\big)\Big) \quad \mathit{right} \eqdef \texttt{SLICE}\big(\mathit{t, max(b+s, 0), sizeOf(t)}\big)
+} \\
+\notag{
+    \mathit{updated_i} \eqdef \mathit{ite}\Big(\mathit{inGap, old_i, writeTerm_{ptr}}\big(\mathit{old_i}, \pair{b-o_i}{s}, v_i\big)\Big)
+} \\
+\notag{
+    v_i \eqdef \mathit{readTerm_{ptr}}\big(v, \paiR{o_i-b}{\mathit{sizeOf(old_i)}}\big)
+}
+\end{mymathbox}
+\normalsize
+\caption{Вспомогательные формулы для записи по указателю}
+\label{fig:ptr:writeHelp}
+\end{figure}
+
+\subsection{Кодирование в SMT-решатель}
+
+В данном разделе будет описан способ кодирования внутреннего языка символьной виртуальной машины (см. раздел \ref{terms}) в язык SMT-решателей, т. е. теории логики первого порядка. Благодаря вышеописанному формализму, результатами операций могут является только термы простых типов (т. е. результатом не может быть, например, терм \texttt{LB}). Таким образом, только они могут появляться в условии пути, а значит кодировать в решатель необходимо только такие термы. В разработанном кодировании можно выделить два случая: трансляция в условиях безопасного контекста и небезопасного контекста.
+
+\paragraph{Кодирование в безопасном контексте.} В данном случае в программе отсутствуют операции с указателями, а значит, нет необходимости транслировать термы $\texttt{SLICE}(term, from, to)$ и $\texttt{COMBINE}(\langle term \rangle ^*)$. Таким образом, в качестве теории логики первого порядка была выбрана арифметика. Линейность и множество констант теории (целые или вещественные числа) зависят от кодируемого терма. Наиболее простыми случаями для кодирования являются термы \texttt{CONCRETE} и \texttt{SYMBOL}, которые транслируются в конкретные числа и константы (неизвестные данные, для которых необходимо найти интерпретацию) соответственно. Терм $\union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}$ кодируется с помощью введения новой переменной $x$ и добавления ограничений на неё $(g_1 \land x = v_1) \lor \ldots \lor (g_n \land x = v_n)$.
+
+\paragraph{Кодирование в небезопасном контексте.} В данном случае в программе могут появляться операции с указателям, а, следовательно, термы $\texttt{SLICE}(term, from, to)$ и $\texttt{COMBINE}(\langle term \rangle ^*)$. В качестве теории логики первого порядка была выбрана теория битовых векторов. Терм $\texttt{SLICE}(term, from, to)$ кодируется с помощью операции <<взятие подвектора>>, а терм $\texttt{COMBINE}(\langle term \rangle ^*)$ представляется с помощью нескольких операций <<конкатенация двух бит-векторов>>. Остальные простые случаи терма кодируются следующим образом: \texttt{CONCRETE}~--- число в теории битовых векторов, \texttt{SYMBOL}~--- константа в теории битовых векторов,  $\union{\pair{g_1}{v_1},\ldots,\pair{g_n}{v_n}}$~--- новая переменная $x$ со следующими ограничениям: $(g_1 \land x = v_1) \lor \ldots \lor (g_n \land x = v_n)$.

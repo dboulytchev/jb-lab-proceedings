@@ -1,0 +1,61 @@
+%\newcommand{\csharp}[1]{\mintinline{csharp}{#1}}
+
+\newcommand{\pex}{\textsc{Pex}}
+\newcommand{\predator}{\textsc{Predator}}
+\newcommand{\dotnet}{\textsc{.NET}}
+\newcommand{\clang}{\textsc{C}}
+\newcommand{\vsharp}{\textsc{V\#}}
+
+\newcommand\addrset{loc}
+\newcommand\termset{term}
+\newcommand\guardset{guard}
+
+\newcommand\eqby[1]{\mathrel{\stackrel{\mbox{\normalfont\tiny #1}}{=}}}
+\newcommand\eqdef{\eqby{def}}
+
+\newcommand\aite{ite}
+\newcommand\ite[3]{\aite(#1,#2,#3)}
+\newcommand\Ite[3]{\aite\big(#1,#2,#3\big)}
+\newcommand\pair[2]{\langle#1, #2\rangle}
+\newcommand\paiR[2]{\big\langle#1, #2\big\rangle}
+\newcommand\mg[2]{#1=#2}
+\newcommand\nmg[2]{#1\neq#2}
+\newcommand\li[1]{LI(#1)}
+\let\emptyheap\varepsilon
+\newcommand\agrec{Rec}
+\newcommand\agmerge{Merge}
+\newcommand\agcompose{\bigcirc}
+\newcommand\GRec[1]{\agrec\big(#1\big)}
+\newcommand\GMerge[1]{\agmerge\big(#1\big)}
+\newcommand\GCompose[2]{#1\agcompose#2}
+\newcommand\agho{App}
+\newcommand\gapp[1]{\agho(#1)}
+\newcommand\GApp[1]{\agho\big(#1\big)}
+\newcommand\aunion{\texttt{UNION}}
+\newcommand\union[1]{\aunion\big(#1\big)}
+\newcommand\Union[1]{\aunion\Big(#1\Big)}
+\newcommand\aderef{readStore}
+\newcommand\readTerm{readTerm}
+\newcommand\writeTerm{writeTerm}
+\newcommand\afind{find}
+\newcommand\find[5]{\afind(#1,#2,#3,#4,#5)}
+\newcommand\finD[5]{\afind\big(#1,#2,#3,#4,#5\big)}
+\newcommand\Find[5]{\afind\Big(#1,#2,#3,#4,#5\Big)}
+\newcommand\deref[2]{\aderef(#1,#2)}
+\newcommand\Deref[2]{\aderef\big(#1,#2\big)}
+\newcommand\compose[2]{#1\circ#2}
+\newcommand\lmbd[2]{\lambda #1.#2}
+\newcommand\lmbdx[1]{\lambda x.#1}
+\newcommand\dom[1]{dom(#1)}
+\newcommand\Dom[1]{dom\big(#1\big)}
+
+\newcommand\Li[1]{LI\big(#1\big)}
+\newcommand\amutate{writeStore}
+\newcommand\amutateStack{writeStack}
+\newcommand\mutate[3]{\amutate(#1,#2,#3)}
+\newcommand\mutateStack[4]{\amutateStack(#1,#2,#3,#4)}
+\newcommand\rdbodyext[6]{\Union{\big\{\paiR{#4\mg{#1}{#5}}{#6\big(#2(#5), xs\big)} \mid #5\in\dom{#2} \big\}\\&\qquad\qquad\qquad\cup\paiR{#4\bigwedge_{\mathclap{#5\in\dom{#2}}}{\nmg{#1}{#5}}}{#6\big(#3, xs\big)}}}
+\newcommand\rdbody[4]{\rdbodyext{#1}{#2}{#3}{}{l}{#4}}
+\newcommand\wrtbody[6]{\Union{&\paiR{\mg{#1}{#2}}{\writeTerm\big(#3,#4,#6\big)},
+    \\&\paiR{\nmg{#1}{#2}}{\writeTerm\big(#5(#1),#4,#6\big)}}}
+\newcommand{\var}[1]{\mathit{#1}}
