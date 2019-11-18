@@ -84,6 +84,11 @@
 \usepackage{array}
 \usepackage{thmtools}
 
+% Kostitsin
+\usepackage{setspace}
+\usepackage[theorems,skins]{tcolorbox}
+% ---------
+
 \newcommand{\cd}[1]{\texttt{#1}}
 
 \lstdefinelanguage{ocanren}{
@@ -152,6 +157,13 @@ language=ocanren
   \setlength\@tempdima{\algorithmicindent}%
   \Statex\hskip\dimexpr#1\@tempdima\relax}
 \algdef{S}[IF]{IfNoDo}[1]{\algorithmicif\ #1}%
+% Kostitsin
+\newcommand*{\bdiv}{%
+  \nonscript\mskip-\medmuskip\mkern5mu%
+  \mathbin{\operator@font div}\penalty900\mkern5mu%
+  \nonscript\mskip-\medmuskip
+}
+% ---------
 \makeatother
 
 \lstdefinelanguage{Scala}{
