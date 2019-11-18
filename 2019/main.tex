@@ -5,7 +5,13 @@
 \usepackage[T2A]{fontenc}
 \usepackage{amsmath}
 \usepackage{tikz}
-\usetikzlibrary{arrows, matrix}
+\usetikzlibrary{arrows, matrix,automata,positioning}
+
+\usepackage{pgfplots}
+\usepackage{sidecap}
+\usepackage{soul}
+\usepackage{xcolor}
+
 \usepackage{indentfirst}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -69,6 +75,7 @@
 \algtext*{EndProcedure}% Remove "end function" text
 \algrenewcommand\algorithmicindent{1.0em}%
 
+\DeclareMathAlphabet\mathzapf       {T1}{pzc} {mb} {it}
 
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -209,7 +216,7 @@ basewidth={0.5em,0.5em},
 columns=fixed,
 fontadjust=true,
 morestring=[b]",
-literate={->}{{$\:\:\:\to\:\:\:$}}1 
+literate={->}{{$\:\:\:\to\:\:\:$}}1
 %{\\}{{$\lambda$}}1 {=>}{{$\Rightarrow\:\:$}}1
 }
 
