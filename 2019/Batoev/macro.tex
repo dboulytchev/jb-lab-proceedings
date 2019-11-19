@@ -1,0 +1,223 @@
+\newcommand\eqbyref[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny\eqref{#1}}}}{=}}}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+\newcommand\encircle[1]{%
+  \tikz[baseline=(X.base)] 
+    \node (X) [draw, shape=circle, inner sep=0] {\strut #1};}
+
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+\let\emptyheap\epsilon
+
+\newcommand\abs[1]{\left|#1\right|}
+\newcommand\pair[2]{\langle#1, #2\rangle}
+\newcommand\paiR[2]{\big\langle#1, #2\big\rangle}
+\newcommand\Pair[2]{\Big\langle#1, #2\Big\rangle}
+\newcommand\PAIR[2]{\bigg\langle#1, #2\bigg\rangle}
+\newcommand\conv[2]{\llbracket#1\rrbracket_{#2}}
+\newcommand\convtau[1]{\conv{#1}{\tau}}
+
+\newcommand\dom[1]{dom(#1)}
+\newcommand\Dom[1]{dom\big(#1\big)}
+
+\newcommand\addr[1]{\texttt{\small{#1}}}
+\newcommand\gls[2]{gls(#1,#2)}
+\newcommand\papplytw[2]{#1\,\,#2}
+\newcommand\papplyt[3]{#1\,\,#2\,\,#3}
+\newcommand\papply[4]{#1\,\,#2\,\,#3\,\,#4}
+\newcommand\papplyf[5]{#1\,\,#2\,\,#3\,\,#4\,\,#5}
+
+\newcommand\fancyname{$\iota$-calculus}
+
+\newcommand\fillterm[2]{#1\bullet#2}
+\newcommand\indep[2]{indep(#1,#2)}
+\newcommand\indeprec[3]{indep_{rec}(#1,#2,#3)}
+\newcommand\Indeprec[3]{indep_{rec}\big(#1,#2,#3\big)}
+\newcommand\agmutate{Write}
+\newcommand\amerge{merge}
+\newcommand\agmerge{Merge}
+\newcommand\agcompose{\bigcirc}
+\newcommand\agrec{Rec}
+\newcommand\agho{App}
+\renewcommand\merge[1]{\amerge(#1)}
+\newcommand\Merge[1]{\amerge\big(#1\big)}
+\newcommand\merges[1]{\amerge\{#1\}}
+\newcommand\Merges[1]{\amerge\big\{#1\big\}}
+\newcommand\gmerge[1]{\agmerge(#1)}
+\newcommand\GMerge[1]{\agmerge\big(#1\big)}
+\newcommand\gcompose[2]{#1\agcompose#2}
+\newcommand\GCompose[2]{#1\agcompose#2}
+\newcommand\gapp[1]{\agho(#1)}
+\newcommand\GApp[1]{\agho\big(#1\big)}
+\newcommand\grec[1]{\agrec(#1)}
+\newcommand\GRec[1]{\agrec\big(#1\big)}
+\newcommand\gmutate[2]{\agmutate(#1,#2)}
+\newcommand\GMutate[2]{\agmutate\big(#1,#2\big)}
+\newcommand\heapset{\Sigma}
+\newcommand\mergeold[1]{\amerge^{\heapset}(#1)}
+\newcommand\composeold[2]{#1\circ^\Sigma #2}
+\newcommand\funcid{func\_id}
+\newcommand\id{id}
+
+
+\newcommand{\assign}[2]{#1 $\leftarrow$ #2}
+\newcommand{\kwd}[1]{\textbf{#1}}
+\newcommand{\kwdnop}{\kwd{nop}}
+\newcommand{\kwdread}{\kwd{read}}
+\newcommand{\kwdwrite}{\kwd{write}}
+\newcommand{\kwdite}[3]{\kwd{if}\,#1\,\kwd{then}\,#2\,\kwd{else}\,#3}
+\newcommand{\kwdand}{\kwd{and}}
+\newcommand{\kwdor}{\kwd{or}}
+\newcommand{\kwdnot}{\kwd{not}}
+\newcommand{\kwdtry}{\kwd{try}}
+\newcommand{\kwdfail}{\kwd{fail}}
+\newcommand{\kwdcatch}{\kwd{catch}}
+\newcommand{\kwdnew}{\kwd{alloc}}
+\newcommand{\kwdcall}{\kwd{call}}
+\newcommand{\kwdlet}{\kwd{let}}
+
+\newcommand\attention[1]{$[$\textbf{\textcolor{purple}{attention}}:~~\emph{\textcolor{darkgray}{#1}}$]$}
+\newcommand\todo{\textcolor{purple}{<...>}}
+
+\newcommand{\ruquote}[1]{<<#1>>}
+
+\newcommand{\HoareTriple}[3]{\{\,#1\,\}\,#2\,\{\,#3\,\}}
+
+\newcommand\abody{Body}
+\newcommand\body[1]{\abody{}(#1)}
+
+
+%%% Toy language grammar
+% \newcommand{\kwd}[1]{\textbf{\boldmath#1}}
+\newcommand\toyident{ident}
+\newcommand\toylabel{label}
+\newcommand\toyFieldAccess{Location}
+\newcommand\toyAssign[2]{#1\,\kwd{:=}\,#2}
+\newcommand\toygotoname{\kwd{goto}}
+\newcommand\toygoto[1]{\toygotoname\,\{#1\}}
+\newcommand\toyfail{\kwd{fail}}
+\newcommand\toynewname{\kwd{new}}
+\newcommand\toynew[1]{\toynewname\,\{#1\}}
+\newcommand\toyFieldName{FieldName}
+\newcommand\toyhalt{\kwd{halt}}
+
+%%% CSE algorithm
+\newcommand\cseeval[2]{Eval(#1, #2)}
+
+%%% A Hack for aligning **inside** frac
+\makeatletter
+\newlength{\negph@wd}
+\DeclareRobustCommand{\negphantom}[1]{%
+  \ifmmode
+    \mathpalette\negph@math{#1}%
+  \else
+    \negph@do{#1}%
+  \fi
+}
+\newcommand{\negph@math}[2]{\negph@do{$\m@th#1#2$}}
+\newcommand{\negph@do}[1]{%
+  \settowidth{\negph@wd}{#1}%
+ \hspace*{-\negph@wd}% % for TESTING
+%   \hspace*{\negph@wd}% % for TESTING
+}
+\makeatother
+
+\newcommand{\demolang}{демо-язык}
+
+
+%define a marking command
+\newcommand*{\tikzmk}[1]{\tikz[remember picture,overlay,] \node (#1) {};\ignorespaces}
+%define a boxing command, argument = colour of box
+\newcommand{\boxit}[1]{
+    \tikz[remember picture,overlay]{
+        \node[yshift=3pt,fill=#1,opacity=.25,fit={
+            ($(A)+(.005\linewidth,.1\baselineskip)$)($(B)+(.8\linewidth,.8\baselineskip)$)
+        }] {};
+    }
+    \ignorespaces
+}
+\newcommand{\makeBorder}[0]{\tikz[remember picture,overlay]\draw($(A)+(.005\linewidth,.1\baselineskip)$)($(B)+(.85\linewidth,.8\baselineskip)$);}
+\newcommand{\mkBorder}[0]{\tikz[remember picture,overlay]\draw(A.south west)rectangle(B.north east);}
+% \newcommand{\boxit}[1]{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=#1,opacity=.30,fit={($(A)+(.05\linewidth)$)($(B)+(.85\linewidth,.8\baselineskip)$)}] {};}\ignorespaces}
+%define some colours according to algorithm parts (or any other method you like)
+\colorlet{pink}{red!40}
+\colorlet{blue}{cyan!60}
+
+% \usetikzlibrary{arrows}
+\definecolor {processblue}{cmyk}{0.96,0,0,0}
+\definecolor {processgreen}{cmyk}{1,0,1,0}
+\definecolor {processred}{cmyk}{0, 0.84, 0.80, 0.19}
+\definecolor {processyellow}{cmyk}{0, 0, 1, 0}
+
+\newcommand{\dima}[1]{$[$\textbf{\textcolor{blue}{dima}}:~~\emph{\textcolor{blue}{#1}}$]$}
+\newcommand{\kostya}[1]{$[$\textbf{\textcolor{orange}{kostya}}:~~\emph{\textcolor{orange}{#1}}$]$}
+\newcommand{\ra}[0]{\rightarrow}
+\newcommand{\xra}[0]{\xrightarrow}
+\newcommand{\append}[2]{#1 \cup \{#2\}}
+\newcommand{\mathGreen}[1]{\colorbox{green!25}{$#1$}}
+\newcommand{\mkGreen}[1]{\colorbox{green!25}{#1}}
+
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+
+\renewcommand*{\algorithmcfname}{Листинг}
+\renewcommand{\lstlistingname}{Листинг}% Listing -> Листинг
+
+\lstloadlanguages{C,C++,csh,Java}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\lstset{
+    language=csh,
+    basicstyle=\footnotesize\ttfamily,
+    numbers=left,
+    numberstyle=\tiny,
+    numbersep=5pt,
+    tabsize=2,
+    extendedchars=true,
+    breaklines=true,
+    frame=b,
+    stringstyle=\color{blue}\ttfamily,
+    showspaces=false,
+    showtabs=false,
+    xleftmargin=17pt,
+    framexleftmargin=17pt,
+    framexrightmargin=5pt,
+    framexbottommargin=4pt,
+    commentstyle=\color{green},
+    morecomment=[l]{//}, %use comment-line-style!
+    morecomment=[s]{/*}{*/}, %for multiline comments
+    showstringspaces=false,
+    morekeywords={ abstract, event, new, struct,
+    as, explicit, null, switch,
+    base, extern, object, this,
+    bool, false, operator, throw,
+    break, finally, out, true,
+    byte, fixed, override, try,
+    case, float, params, typeof,
+    catch, for, private, uint,
+    char, foreach, protected, ulong,
+    checked, goto, public, unchecked,
+    class, if, readonly, unsafe,
+    const, implicit, ref, ushort,
+    continue, in, return, using,
+    decimal, int, sbyte, virtual,
+    default, interface, sealed, volatile,
+    delegate, internal, short, void,
+    do, is, sizeof, while,
+    double, lock, stackalloc,
+    else, long, static,
+    enum, namespace, string, assert,},
+    keywordstyle=\color{cyan},
+    identifierstyle=\color{black},
+    backgroundcolor=\color{white},
+}
+
+
+% Higlight line
+% \def\HiLi{\leavevmode\rlap{\hbox to \hsize{\color{green!30}\leaders\hrule height .8\baselineskip depth .5ex\hfill}}}
+\newlength\myboxwidth
+
+\setlength{\myboxwidth}{\dimexpr\textwidth-3\fboxsep}
