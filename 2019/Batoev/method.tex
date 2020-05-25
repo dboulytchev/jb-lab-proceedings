@@ -1,0 +1,291 @@
+\section{Метод описания путей в графе потока управления}
+В данном разделе будет описана формальная теория, необходимая для нового алгоритма композиционального символьного исполнения, который не раскручивает отношение перехода. Основной объект~--- это способ описания всех путей в графе потока управления, начинающихся из стартовой вершины, с использованием механизма введения \emph{рекурсивных символов для множества путей}, которые будут соответствовать \emph{рекурсивным символам куч} $\GRec{\cdot}$ из определения обобщенных куч. Метод похож на интервальный анализ графов, но распространяется на случай \emph{нередуцируемых} графов.
+Необходимо ввести минимальное количество таких символов, чтобы не затруднять будущую работу нижележащего решателя, но в то же время сохранить полноту и корректность описания путей.
+
+\begin{defn}
+Граф потока управления --- это четверка ($V_G$, $E_G$, $start$, $exit$), где:
+\begin{itemize}
+    \item $V_G$ --- это множество вершин графа, каждая из которых соответствует инструкции программы;
+    \item $E_G$ --- это множество ориентированных ребер $e = (u, v)$ графа, каждое ребро обозначает способность передачи управления от вершины $u$ к вершине $v$;
+    \item $start$ --- это стартовая вершина(инструкция), в которую не входит ни одно ребро графа;
+    \item $exit$ --- это финальная вершина(инструкция), из которой не выходит ни одного ребра графа.
+\end{itemize}
+\end{defn}
+
+\subsection{Основные понятия}
+Для произвольного графа потока управления, построенного по программе,
+занумеруем вершины при помощи обратного обхода (Post Order DFS), который присваивает каждой вершине время посещения по формуле:
+$$time(v) = |V_G| - |\{u \in V_G| \mbox{для вершины u уже вычислено time(u)}\}|.$$
+
+\begin{defn}\label{backEdges}
+Ребро $e = (u,v)$, соединяющее вершины $u$ \emph{и} $v$, называется \emph{обратным}, если $time(u) \geq time(v)$. 
+Если ребро не является \emph{обратным}, то оно называется \emph{прямым}.
+Обозначим $beg(e) = u$, а $end(e) = v$.
+Множество обратных ребер обозначим $BE$.
+\end{defn}
+
+\begin{defn}\label{recursiveVertex}
+Вершина $s$ называется \emph{рекурсивной}, если $\exists e \in E_G$, что $e$ --- обратное \emph{и} $end(e) = s$. 
+Множество \emph{рекурсивных} вершин обозначим $RV$.
+\end{defn}
+
+\begin{defn}
+Путем $p$ в графе $G$ будем называть последовательность ребер $e_1...e_n$ такую,
+что $\forall i$ $ 1 \leq i \leq n - 1$ $end(e_i) = beg(e_{i+1})$.
+Началом пути $beg(p)$ обозначим вершину $beg(e_1)$.
+Концом пути $end(p)$ обозначим вершину $end(e_n)$.
+Иногда удобно представлять путь в графе в виде последовательности вершин:
+$v_1 \ra v_2 \ra ... \ra v_n \ra v_{n + 1}$ такой, что $\forall i$ $1 \leq i \leq n$ $v_i = beg(e_i)$ и $v_{i+1} = end(e_i)$.
+\end{defn}
+
+\begin{defn}
+Путь, состоящий из 0 ребер, называется \emph{пустым}.
+Будем обозначать его $\varepsilon$.
+\end{defn}
+
+\begin{defn}
+Пусть даны два пути $p_1$ и $p_2$ в графе $G$.
+Если $end(p_1) = beg(p_2)$, то можно определить конкатенацию путей $p_1$ и $p_2$, обозначаемую $p_1 \circ p_2$ и представляющую путь, содержащий все ребра пути $p_1$, за которыми следуют ребра $p_2$.
+
+Заметим, что пустой путь $\varepsilon$ является нейтральным элементов по отношению к операции конкатенации.
+\end{defn}
+
+\begin{defn}
+Дана вершина графа $v$.
+Дано множество путей $P_1$, что все пути заканчиваются на вершине $v$.
+Дано множество путей $P_2$, что все пути начинаются с вершины $v$.
+Тогда определим конкатенацию множеств путей $P_1$ и $P_2$ таким образом:
+$$P_1 \circ P_2 = \{p_1 \circ p_2 \quad | \quad p_1 \in P_1, p_2 \in P_2 \}.$$
+\end{defn}
+
+\subsection{Метод}
+Введем определения, для которых докажем необходимые леммы для получения формулы всех путей в CFG.
+
+
+\begin{defn}
+Если длина пути $p = v_0 \ra v_1 \ra ... \ra v_n \ra v_{n+1}$ больше, либо равна 2, то будем называть серединой пути множество вершин \\
+$\{v_i \mid 1 \leq i \leq n$\}. Если длина пути меньше 2, то середина пути --- $\varnothing$.
+\end{defn}
+
+\begin{defn}
+$\Pi(u,v,D)$ --- символ для множества путей, начинающихся в вершине $u$, заканчивающихся в вершине $v$ \emph{и} не проходящих через \emph{рекурсивные}
+вершины множества $D$ в середине пути. Это множество путей строится с помощью следующих правил.
+\begin{itemize}
+    \item Если в графе есть ребро $(u,v)$, то путь, состоящий из одного ребра, добавляется во множество путей $\Pi(u,v,D)$ (см. правило~\ref{eq:I}).
+    \item Если есть ребро $(u,t)$, где $t \neq v$ и $t \notin RV$, то конкатенация ребра $(u,t)$ и путей $\Pi(t,v,D)$ добавляется к множеству путей $\Pi(u,v,D)$ (см. правило~\ref{eq:II}).
+    \item Если есть ребро $(u,t)$, где $t \neq v$, $t \in RV$ \emph{и} $t \notin D$, то конкатенация ребра $(u,t)$ и $Rec(t,\append{D}{t}) \circ \Pi(t,v,\append{D}{t})$ добавляется к множеству путей $\Pi(u,v,D)$ (см. правило~\ref{eq:III}), где $Rec(t,\append{D}{t})$ --- множество циклов из $t$ в $t$, не проходящих через
+    \emph{рекурсивные} вершины из множества $\append{D}{t}$ в середине пути, а $\Pi(t,v,\append{D}{t})$ --- множество путей из $t$ в $v$, не проходящих через \emph{рекурсивные} вершины из множества $\append{D}{t}$ в середине пути. 
+\end{itemize}
+
+$Rec(u,D)$ --- рекурсивный символ для множества циклов из вершины $u$ в вершину $u$, не проходящих через вершины из множества $D$ в середине пути, которые построены по правилу~\ref{eq:IV}.
+\begin{itemize}
+    \item Пустой путь $\varepsilon$ принадлежит множеству $Rec(u,D)$.
+    \item Конкатенация путей $\Pi(u,u,D)$ и циклов $Rec(u,D)$ добавляется к множеству циклов $Rec(u,D)$. 
+\end{itemize}
+
+\begin{subequations}
+    % \begin{empheq}[box=\widefbox]
+    \begin{alignat}{1}
+    \Pi(u,v,D) = {}  & \bigcup_{(u,v) \in E_G}\{(u,v)\} \qquad \cup \tag{I}\label{eq:I}\\
+                     & \bigcup_{\substack{t \notin RV \\ t \neq v \\(u,t) \in E_G}}(u,t) \circ \Pi(t,v,D) \qquad \cup \tag{II}\label{eq:II} \\
+                     & \bigcup_{\substack{t \in RV \\ t \neq v \\(u,t) \in E_G \\ t \notin D}}(u,t) \circ Rec(t,\append{D}{t}) \circ \Pi(t,v,\append{D}{t}) \tag{III}\label{eq:III} \\
+    Rec(u,D) ={}     & \{\varepsilon\} \cup \Pi(u,u,D) \circ Rec(u,D) \tag{IV}\label{eq:IV}
+    \end{alignat}
+    % \end{empheq}
+\end{subequations}
+\end{defn}
+
+\begin{lemma}
+\label{lemma:evident}
+$\forall p \in \Pi(u,v,D)$ начало пути $beg(p) = u$ \emph{и} конец пути $end(p) = v$.
+\end{lemma}
+\begin{proof}
+Очевидно.
+\end{proof}
+
+\begin{lemma}
+\label{lemma:length}
+$\forall u,v,D$ верно, что $\varepsilon \notin \Pi(u,v,D)$.
+\end{lemma}
+\begin{proof}
+Очевидно, поскольку согласно правилам~(\ref{eq:I} -- \ref{eq:III}), любой путь $p \in \Pi(u,v,D)$ начинается с ребра $(u,t)$.
+\end{proof}
+
+\begin{lemma}
+\label{lemma:reduction}
+Пусть дан путь $p = s_1 \ra ... \ra s_n$ такой, что $\forall i > 1 \hspace{5mm} s_i \neq s_1$. \\
+Тогда $p \in Rec(s_1,D) \circ \Pi(s_1, s_n, D) \iff p \in \Pi(s_1,s_n,D)$.
+\end{lemma}
+
+\begin{proof}
+\emph{Достаточность.} Очевидно, поскольку $\varepsilon \in Rec(s_1,D)$. \\
+\emph{Необходимость.} Раскроем определение $Rec(s_1,D)$.\\
+\begin{equation}
+    \begin{aligned}
+    Rec(s_1,D) \circ & \Pi(s_1,s_n,D) = \\ 
+                     & \begin{cases} 
+            \Pi(s_1,s_n,D) \\
+            \Pi(s_1,s_1,D) \circ Rec(s_1,D) \circ \Pi(s_1, s_n,D)
+            \end{cases}
+    \end{aligned}
+\end{equation}
+Согласно леммам~\ref{lemma:evident}~,~\ref{lemma:length} $\forall p \in \Pi(s_1, s_1,D) \circ Rec(s_1,D) \circ \Pi(s_1, s_n,D)$
+вершина $s_1$ встречается в $p$ как минимум два раза, но по условию, $s_1$ встречается только один раз.
+Следовательно, единственная возможность --- $p \in \Pi(s_1,s_n,D)$.
+\end{proof}
+
+% \kostya{Дать отдельное определение для длины пути?}
+\begin{lemma}
+\label{lemma:main}
+Пусть даны множество $D$ такое, что $D \subseteq RV$, и путь $p = s_1 \ra ... \ra s_n$, удовлетворяющий условиям:
+\begin{enumerate}
+    \item длина $p \geq 1$;
+    \item $s_n = exit$ или $s_n \in D$;
+    \item $\forall i < n, \hspace{5mm} s_i \notin D \setminus \{s_1\}$.
+\end{enumerate}
+% $s_n$ является либо финальной вершиной, либо \emph{рекурсивной} ($s_n \in RV$) и
+% $\forall i < n \hspace{5mm} s_i \notin D \setminus \{s_1\} \land s_i = s_n \implies s_i = s_1$.
+Тогда верно следующее.
+\begin{itemize}
+    \item Если $s_1 \notin RV$, то $p \in \Pi(s_1,s_n,D)$.  
+    \item Если $s_1 \in RV$, то $p \in Rec(s_1,D) \circ \Pi(s_1,s_n,D)$.  
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Индукция~\#1 по длине пути $p$. 
+База: длина пути равна 1. Тогда $p = s_1 \ra s_n \in \{(s_1,s_n)\} \subseteq \Pi(s_1,s_n,D)$.
+Если $s_1 \in RV$, то $p \in Rec(s_1,D) \circ \Pi(s_1,s_n,D)$, поскольку $\varepsilon \in Rec(s_1,D)$.
+
+Индукционный переход.
+\begin{itemize}
+    \item Пусть $p = s_1 \ra v \ra ... \ra s_n$, и предположим, что вершина $s_1$ встречается в пути $p$ ровно 1 раз.
+    \begin{itemize}
+        \item Если вершина $v \notin RV$, то по И.П.~\#1, путь $v \ra ... \ra s_n \in \Pi(v,s_n,D)$, и, по правилу~(\ref{eq:II}), имеем $p \in \Pi(s_1,s_n,D)$, 
+        так как $v \neq s_n$.
+        \item Пусть вершина $v \in RV$. Тогда по условию (3) можно сделать вывод, что $v \notin D$.
+        Поскольку для всех вершин $u$, кроме последней, в пути $v \ra ... \ra s_n$ выполнено 
+        $u \notin \append{D}{v} \setminus \{v\}$, так как среди них нет $s_1$,
+        то по И.П.~\#1, верно, что $v \ra ... \ra s_n \in Rec(v,\append{D}{v}) \circ \Pi(v, s_n,\append{D}{v})$, а значит, по правилу~(\ref{eq:III}), 
+        $p \in \Pi(s_1, s_n, D)$, так как $v \neq s_n$.
+    \end{itemize}
+    Если вершина $s_1 \in RV$, то $p \in Rec(s_1,D) \circ \Pi(s_1,s_n,D)$, поскольку $\varepsilon \in Rec(s_1,D)$.
+    
+    \item Пусть $p = s_1 \ra v \ra ... \ra s_1 \ra ... \ra s_n$ и $s_1 \in RV$.
+          Обозначим $p \equiv q \circ p'$, где $q \equiv s_1 \ra ... \ra s_1$, а
+          $p' \equiv s_1 \ra ... \ra s_n$ такой, что вершина $s_1$ встречается в пути $p'$ ровно один раз, если $s_n \neq s_1$, или ровно два раза, если $s_n = s_1$. Если $s_1 \neq s_n$, то по И.П.~\#1, $p' \in Rec(s_1,D) \circ \Pi(s_1,s_n,D)$, откуда по лемме~\ref{lemma:reduction},
+          $p' \in \Pi(s_1,s_n,D)$. Если $s_n = s_1$, то рассмотрим подробнее путь $p'$.
+          \begin{itemize}
+            \item $p' \equiv s_1 \ra s_1$, откуда $q' \in \{(s_1,s_1)\} \subseteq \Pi(s_1,s_1,D)$.
+            \item $p' \equiv s_1 \ra v_1 \ra ... \ra v_m \ra s_1$ такой, что $v_1 \notin RV$.
+                  Так как $\forall 1 \leq i \leq m$ верно, что $v_i \notin D$, то 
+                  по И.П.~\#1, путь $v_1 \ra ... \ra v_m \ra s_1 \in \Pi(v_1, s_1, D)$, а, по правилу~(\ref{eq:II}), получаем, что
+                  $p' \in \Pi(s_1,s_1,D)$, так как $v_1 \neq s_1$.
+            \item $p' \equiv s_1 \ra v_1 \ra ... \ra v_m \ra s_1$ такой , что $v_1 \in RV$.
+                Так как $\forall 1 \leq i \leq m$ верно, что $v_i \notin \append{D}{v_1} \setminus \{v_1\}$, то 
+                по И.П.~\#1, путь $v_1 \ra ... \ra v_m \ra s_1 \in Rec(s_1,\append{D}{v_1}) \circ \Pi(v_1,s_n,\append{D}{v_1})$,
+                а, по правилу~(\ref{eq:II}), получаем, что $p' \in \Pi(s_1,s_1,D)$, так как $v_1 \neq s_1$.
+        \end{itemize}
+        Осталось показать, что $q \in Rec(s_1,D)$.
+        Индукция~\#2 по длине q. База $q \equiv \varepsilon$ --- очевидно. \\
+        Переход. Пусть $q \equiv q' \circ q''$, где $q' \equiv s_1 \ra ... \ra s_1$ и содержит только два вхождения $s_1$, 
+        а $q'' \equiv s_1 \ra ... \ra s_1$ является остатком пути $q$.
+        Но по И.П.~\#2, получаем, что $q'' \in Rec(s_1, D)$. 
+        Аналогично получаем, что $q' \in \Pi(s_1,s_1,D)$. Тогда согласно правилу~(\ref{eq:IV}), получаем, что $q \in Rec(s_1,D)$.
+        Но тогда $p \equiv q \circ p' \in Rec(s_1,D) \circ \Pi(s_1,s_n,D)$.
+    \item Пусть $p = s_1 \ra v \ra ... \ra s_1 \ra ... \ra s_n$ и $s_1 \notin RV$. Покажем, что $v \neq s_n$.
+    Пусть это не так и $v = s_n$. Тогда единственная возможность --- $s_n \in D$, потому что из вершины $exit$ не исходит ребер.
+    Но в таком случае не выполняется условие (3) для пути $p$ в вершине $v$, потому что $D \setminus \{s_1\} = D$. Пришли к противоречию, значит, $v \neq s_n$.
+        Если вершина $v \notin RV$, то по И.П.~\#1, получаем, что $v \ra ... \ra s_1 \ra ... \ra s_n \in \Pi(v,s_n,D)$ и, по правилу~(\ref{eq:II}),
+        $p \in \Pi(s_1, s_n, D)$.
+        Если вершина $v \in RV$, то по И.П.~\#1, для $D := \append{D}{v}$ получаем, что $v \ra ... \ra s_1 \ra ... \ra s_n \in Rec(v, \append{D}{v}) \circ \Pi(v,s_n,\append{D}{v})$ и, по правилу~(\ref{eq:III}), $p \in \Pi(s_1,s_n,D)$.
+\end{itemize}
+\end{proof}
+
+\begin{theorem}[Пути в графе]
+\label{theo:main}
+$p = start \ra ... \ra exit$ --- путь в графе $G$ тогда и только тогда, когда $p \in \Pi(start,exit,\varnothing)$. 
+\end{theorem}
+
+\begin{proof}
+\emph{Достаточность.} Очевидно. \\
+\emph{Необходимость.}\\
+Воспользуемся условиями леммы~\ref{lemma:main}.
+\begin{itemize}
+    \item Так как $start \neq exit$, то длина пути $p \geq 1$.
+    \item $\forall i < n, \hspace{5mm} s_i \notin \varnothing \setminus \{start\}$.
+    \item Последняя вершина равна $exit$.
+    \item $start \notin RV$.
+\end{itemize}
+Тогда получаем, что $p \in \Pi(start,exit,\varnothing)$.
+\end{proof}
+
+Таким образом, получено описание всех путей в графе потока управления\ref{theo:main}, на основе которого будет придуман алгоритм композиционального символьного исполнения без раскрутки отношения перехода.
+
+
+\subsection{Пример}
+Покажем, как можно описать все пути в графе потока управления при помощи итеративного построения $\Pi$ и $Rec$ на конкретном примере.
+% Формальное описание этого метода представлено в \autoref{apdx:paths}.
+
+На рисунке ниже представлен пример графа потока управления программы с вложенными циклами. Для простоты изложения номер вершины $v$ равен времени $time(v)$. На рисунке вершины $1$ и $2$ являются \emph{рекурсивными}. Ниже представлено описание всех путей в графе из 0 в 5, использующее рекурсивные символы.
+%
+\begin{alignat*}{3}
+&\Pi(0, 5, \emptyset) = (0,1) \circ Rec(1,\{1\}) \circ (1,2) \circ Rec(2,\{1,2\}) \circ (2,3) \circ (3,4) \circ (4,5) \\
+&Rec(1,\{1\})         = (1,2) \circ Rec(2,\{1,2\}) \circ (2,3) \circ (3,4) \circ (4,1) \circ Rec(1,\{1\}) \cup \{\varepsilon\} \\
+&Rec(2,\{1,2\})       = (2,3) \circ (3,2) \circ Rec(2,\{1,2\}) \cup \{\varepsilon\}
+\end{alignat*}
+
+\begingroup
+\begin{wrapfigure}{l}{0.1\textwidth}
+% \vspace{-7mm} 
+\centering
+\begin{tikzpicture}
+[-latex ,auto ,node distance =4 cm and 5cm ,
+semithick ,
+state/.style ={ circle ,top color =white , bottom color = processgreen!20 ,
+draw,processgreen , text=blue , minimum width =1 cm},
+yellowstate/.style ={ circle ,top color =white , bottom color = processyellow!20 ,
+draw,processyellow , text=blue , minimum width =1 cm},
+redstate/.style ={ circle ,top color =white , bottom color = processred!20 ,
+draw,processred , text=blue , minimum width =1 cm}]
+\begin{scope}[every node/.style={circle,thick,draw,scale=0.6},scale=1.2]
+    \node[state] (0) at (0,0) {\texttt{0}};
+    \node[redstate] (1) at (0,-1) {\texttt{1}};
+    \node[redstate] (2) at (0,-2) {\texttt{2}};
+    \node[state] (3) at (0,-3) {\texttt{3}};
+    \node[state] (4) at (0,-4) {\texttt{4}};
+    \node[state] (5) at (0,-5) {\texttt{5}};
+\end{scope}
+\begin{scope}[>={stealth[black]},
+          every node/.style={fill=white, circle,scale=0.6},
+          every edge/.style={draw=black ,thick,scale=0.6}]
+    \path [->] (0) edge node {} (1);
+    \path [->] (1) edge node {} (2);
+    \path [->] (2) edge node {} (3);
+    \path [->] (3) edge[bend left] node {} (2);
+    \path [->] (3) edge node {} (4);
+    \path [->] (4) edge[bend left] node {} (1);
+    \path [->] (4) edge node {} (5);
+\end{scope}
+\end{tikzpicture}
+\end{wrapfigure}
+
+$\Pi(0,5,\emptyset)$~--- все пути из вершины 0 в вершину 5.
+При переходе по ребру $(0,1)$ метод попадает в вершину $1$. Так как она \emph{рекурсивная} (поскольку лежит в $RV$), метод вводит для неё символ $Rec(1,\{1\})$ и начинает создавать \emph{рекурсивное} описание этого символа.
+% Согласно определению $Rec(1,\{1\}) = \Pi(1,1,\{1\})$ 
+
+Это описание начинается с перехода в вершину 2 и введения рекурсивного символа для неё. Поскольку были посещены обе \emph{рекурсивные} вершины, то при создании символа $Rec(2,\{1,2\})$ множество $D = \{1,2\}$.
+Рекурсивное определение для $Rec(2,\{1,2\})$ достаточно просто: все пути из 2 в 2, не проходящие через $D = \{1,2\}$ в середине пути,~--- это повторения пути $(2,3) \circ (3,2)$.
+Кроме того, любое множество $Rec(\cdot, \cdot)$ путей из себя в себя содержит пустой путь $\varepsilon$.
+
+Далее, продолжается описание $Rec(1,\{1\})$: после перехода из 1 в 2 происходит конкатенация пути $(1,2)$ и путей $Rec(2,\{1,2\})$ из 2 в себя, а к множеству $D$ добавляется вершина 2.
+После этого путь, возвращающийся в вершину 1, очевиден: $(2,3) \circ (3,4) \circ (4,1)$.
+
+Затем процесс возвращается к описанию $\Pi(0,5,\emptyset)$. После перехода по ребру $(0,1)$ и создания символа $Rec(1,\{1\})$ к множеству D добавляется вершина 1.
+% Таким образом, метод уже не будет посещать её.
+Затем происходит переход по ребру $(1,2)$ и добавление соответствующего символа $Rec(2,\{1,2\})$, а также к множеству $D$ добавляется 2. 
+Поскольку описание для симвлова $Rec(2,\{1,2\})$ уже было построено при построении описания $Rec(1,\{1\})$, то метод не будет строить его заново. 
+Далее следует тривиальный путь до вершины 5: $(2,3) \circ (3,4) \circ (4,5)$.
+\endgroup
+
+

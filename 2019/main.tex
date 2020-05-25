@@ -5,13 +5,11 @@
 \usepackage[T2A]{fontenc}
 \usepackage{amsmath}
 \usepackage{tikz}
-\usetikzlibrary{arrows, matrix,automata,positioning}
 
+\usetikzlibrary{arrows,matrix,automata,positioning,fit,calc}
 \usepackage{pgfplots}
 \usepackage{sidecap}
 \usepackage{soul}
-\usepackage{xcolor}
-
 \usepackage{indentfirst}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -40,6 +38,19 @@
 \usepackage[inference]{semantic}
 
 \usepackage[pdfencoding=auto]{hyperref}
+
+%%% Batoev
+\usepackage{color}
+\usepackage{etoolbox} % provides AtBeginEnvironment
+\usepackage{chngcntr}
+\usepackage{calc}
+\usepackage[noresetcount, boxed, linesnumbered, algo2e]{algorithm2e}
+% for proofs, theorems and definitions
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{lipsum}
+% multiple columns
+\usepackage{multicol}
+
 
 %%% Kostyukov
 \usepackage{hyperref}

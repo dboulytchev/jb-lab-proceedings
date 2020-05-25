@@ -1,0 +1,228 @@
+\section{Алгоритм композиционального символьного исполнения}
+
+% Легко заметить, что рекурсивные символы и их описания, порождаемые приведённым методом, соответствуют обобщённым кучам и уравнениям на состояния. 
+Благодаря соответствию между рекурсивными символами и их описаниями, с одной стороны, и обобщёнными кучами $\GRec{id}$ и $\body{id}$, с другой стороны, можно 
+получить \emph{алгоритм автоматической проверки достижимости ошибок в программах с произвольными графами потока управления}, не раскручивающий отношение перехода. Для алгоритма важно понятие \emph{состояния исполнения} и уникального идентификатора $id$.
+
+\begin{defn}
+\emph{Состояние исполнения}~--- это кортеж $(l,pc,\sigma,D)$, где $l$~--- номер инструкции,
+$pc$~--- \emph{условие пути} (\foreignlanguage{english}{path condition}~--- символьная формула, описывающая ограничения на достижимость инструкции), $\sigma$~--- символьная (возможно, обобщённая) куча, являющаяся отображением из локаций в символьные выражения, $D$~--- множество посещённых рекурсивных вершин.
+
+\emph{Уникальный идентификатор $id$}~--- это $(l,D)$, где $l$~--- номер инструкции, которая является рекурсивной вершиной в CFG, а $D$~--- множество посещенных рекурсивных вершин.
+\end{defn}
+
+Новый алгоритм описан в стиле алгоритма классического символьного исполнения из раздела \textsc{Обзор}. Для того чтобы продемонстрировать разницу между последним, новые части алгоритма представлены на зеленом фоне. Необходимые для алгоритма множества состояний $Body(\cdot,\cdot)$, описывающие поведения циклических фрагментов графа потока управления, и множество $RV$ \emph{рекурсивных вершин}, определенных в прошлом разделе, объявлены глобально. Аналогично, чтобы не загромождать описание алгоритмов, посчитаем, что функция $\sim$ определения эквивалентности двух отображений (символьных куч) определена глобально.
+
+Основу алгоритма представляет функция $Exec$, которая может быть вызвана либо от \emph{начальной} (см. стр.~\ref{alg:start_vertex}), 
+либо от \emph{рекурсивной} вершины (стр.~\ref{alg:start_recursive_state}). В первом случае её результатом является  множество путей, приводящих к ошибкам (стр.~\ref{alg:print_errors}).
+Во втором случае результатом является множество символьных куч $Body(l_0,D_0)$, описывающее поведение циклического участка графа потока управления:
+в стр.~\ref{alg:deal_with_new_state_start}~--~\ref{alg:add_recursive_state} 
+происходит добавление \emph{обобщённого состояния}, представляющего собой композицию \emph{построенного состояния} $\sigma'$ с \emph{рекурсивным состоянием} $Rec(l_0,D_0)$, 
+а в конце функции (стр.~\ref{alg:epsilon_equation_start}) добавляется завершающее состояние для случая, 
+когда исполнение не вернулось в \emph{рекурсивную} вершину $l_0$,
+соответствующее \emph{пустому пути} $\varepsilon$ из определения рекурсивных символов в методе описания путей в графе.
+
+
+Согласно схеме алгоритм выбирает следующее состояние исполнения из рабочего множества ($pickNext$), 
+исполняет соответствующую инструкцию, порождая новые состояния исполнения 
+(стр.~\ref{alg:execute_instruction_start}~--~\ref{alg:execute_instruction_end}), и добавляет их в рабочее множество, 
+объединяя в одно те состояния исполнения, у которых равны номера инструкций $l$ и множества \emph{посещенных} рекурсивных вершин $D$
+(стр.~\ref{alg:merge_start}~--~\ref{alg:merge_end}).
+Стоит заметить, что предлагаемый алгоритм не раскручивает циклы, 
+а вводит \emph{символы рекурсивных куч} $Rec(l_0, D_0)$ (стр.~\ref{alg:enter_recursive_symbol})
+и множества обобщённых куч $Body(l_0,D_0)$ (стр.~\ref{alg:start_recursive_state}) для их описания.
+Все $Body(\cdot,\cdot)$ используются для определения выполнимости ограничений пути 
+(стр.~\ref{alg:sat1},~\ref{alg:sat2},~\ref{alg:sat3}).
+
+%%% листинг алгоритма
+\begin{figure}
+\begin{algorithm2e}[H]
+    \caption{Алгоритм композиционального символьного исполнения}
+    \label{algorithm:exec}
+    % \scriptsize
+    \small
+    \setcounter{AlgoLine}{0}
+    \SetKw{Yield}{yield}
+    \SetKw{Break}{break}
+    \SetKwProg{Procedure}{Function}{}{end}
+    \SetKwProg{Fn}{Function}{}{}
+    \SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
+    \SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
+    \SetKwFor{For}{foreach}{do}{}
+    \SetKw{Continue}{continue}
+    \SetKwFunction{eval}{Eval}
+    \SetAlgoSkip{}
+    \SetKwInOut{Data}{Данные}
+    \SetKwInOut{Input}{Вход}
+    \SetKwInOut{Output}{Выход}
+    \assign{$\forall l \in RV, \forall D \quad Body(l,D)$}{$\emptyset$}\;
+    \Return \text{$\textsc{Exec}(start,\emptyset)$}\;\label{alg:start_vertex}
+    \Fn{\textsc{Exec}($l_0$ : Vertex, $D_0$ : Vertex set)}{
+        % \assign{$pc_r, \sigma_r$}{$(\bot,\emptyheap)$}\;
+        \assign{$W$}{$\{(l_0,\top,\emptyheap,D_0)\}$}; \assign{$Errors$}{$\emptyset$}\;
+        \While{$W\neq\emptyset$}{\label{alg:while_start}
+            \assign{$(l,pc,\sigma,D), W$}{$pickNext(W)$}\;
+            \assign{$S$}{$\textsc{ExecuteInstruction}(l, pc, s)$}\;
+    %       \tcp{Объединим состояния с эквивалентными из множества $W$}
+            \ForAll{$(l', pc', \sigma') \in S$}{
+                \assign{$W$}{$\textsc{HandleState}(W, l',pc',s', D, l_0, D_0)$}\;
+            }
+        }\label{alg:while_end}
+        
+        \tikzmk{A}
+        \If{$l_0 \in RV$}{
+           \assign{$guard_{\emptyheap}$}{$\top$}\;\label{alg:epsilon_equation_start}
+           \ForAll{$(\cdot,pc,\cdot,\cdot) \in Body(l_0,D_0)$}{
+               \assign{$guard_{\emptyheap}$}{$guard_{\emptyheap} \land \lnot pc$}\;
+           }
+
+           \assign{$Body(l_0,D_0)$}{$\textsc{Join}(Body(l_0,D_0), l_0, guard_{\emptyheap}, \emptyheap, D_0)$}\;\label{alg:epsilon_equation_end}
+        }
+        \Else{
+        \tikzmk{B}
+        \boxit{green}
+            \text{\texttt{print} $Errors$}\label{alg:print_errors}\;
+        }
+    }
+\end{algorithm2e}
+\end{figure}
+
+Приведем дальше краткое описание вспомогательных функций.
+Аналогично разделу Обзор функция \textsc{ExecuteInstruction} символьно исполняет инструкции демонстрационного языка. Единственное изменение~--- это новая реализация (которая не приводится в этой статье) функции $SAT$ для определения выполнимости ограничений: трансляция полученных множеств состояний для циклических участков графа $Body(\cdot,\cdot)$ в дизъюнкты Хорна и непосредственное решение этих ограничений с помощью Хорн-решателя.
+
+\begin{figure}
+\begin{algorithm2e}[H]
+    \caption{Модифицированная функция \textsc{ExecuteInstruction}}
+    \label{algorithm:execute_instruction}
+    % \scriptsize
+    \small
+    % \setcounter{AlgoLine}{0}
+    \SetKw{Yield}{yield}
+    \SetKw{Break}{break}
+    \SetKwProg{Procedure}{Function}{}{end}
+    \SetKwProg{Fn}{Function}{}{}
+    \SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
+    \SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
+    \SetKwFor{For}{foreach}{do}{}
+    \SetKw{Continue}{continue}
+    \SetKwFunction{eval}{Eval}
+    \SetAlgoSkip{}
+    \SetKwInOut{Data}{Данные}
+    \SetKwInOut{Input}{Вход}
+    \SetKwInOut{Output}{Выход}
+
+    \Fn{\textsc{ExecuteInstruction}($l_0$, $pc$, $\sigma$)}{
+        \assign{$S$}{$\emptyset$}\;
+        \Switch{$instr(l)$}{\label{alg:execute_instruction_start}
+            \uCase{\textsc{\texttt{$v$ := $e$}}\qquad \texttt{// присваивание}}{
+                \assign{$S$}{$\{(succ(l),pc, \GMutate{\sigma}{\emptyheap[v\mapsto e]})\}$}\;
+            }
+            \uCase{$if(e)$ goto $l'$ \qquad \texttt{// условный переход}}{
+                \If{$SAT(\mkGreen{Body}, \sigma, pc \land e)$}{\label{alg:sat1}
+                    \assign{$S$}{\{($l'$, $pc \land e$, $\sigma$)\}}\;
+                }
+                \If{$SAT(\mkGreen{Body}, \sigma, pc \land \neg e)$}{\label{alg:sat2}
+                    \assign{$S$}{$S\cup\{(succ(l), pc \land \neg e, \sigma$)\}}\;
+                }
+            }
+            \uCase{$assert(e)$ \qquad \texttt{// проверка}}{
+                \If{$SAT(\mkGreen{Body}, \sigma, pc \land \neg e)$}{\label{alg:sat3}
+                    \assign{$Errors$}{$Errors \cup \{(\sigma, pc \land \neg e)\}$}
+                }
+                \lElse{\assign{$S$}{$\{(succ(l),pc,\sigma)\}$}}
+            }
+            \uCase{halt\qquad \texttt{// завершение программы}}{}
+
+        }\label{alg:execute_instruction_end}
+        \Return S
+    }
+\end{algorithm2e}
+\end{figure}
+
+Новая функция \textsc{HandleState} анализирует полученное состояние и решает, что с ним дальше делать.
+\begin{itemize}
+    \item Добавить состояние, символьная куча которого представляет собой обобщенную кучу $\sigma' \circ Rec(l_0,D_0)$, в множество состояний для описания циклического фрагмента~\ref{alg:add_recursive_state}.
+    \item Забыть состояние, если перешли в уже посещенную \emph{рекурсивную} вершину~\ref{alg:forget_state}.
+    \item Вызвать функцию \textsc{Exec} для построения тела описания рекурсивного состояния, если перешли в новую \emph{рекурсивную} вершину~\ref{alg:start_recursive_state}.
+    \item Добавить состояние в множество рабочих состояний для исследования~\ref{alg:call_join_from_handle}.
+\end{itemize}
+Её результатом является новое множество $W$.
+
+\begin{figure}
+\begin{algorithm2e}[H]
+    \caption{Новая функция \textsc{HandleState}}
+    \label{algorithm:execute_instruction}
+    % \scriptsize
+    \small
+    % \setcounter{AlgoLine}{0}
+    \SetKw{Yield}{yield}
+    \SetKw{Break}{break}
+    \SetKwProg{Procedure}{Function}{}{end}
+    \SetKwProg{Fn}{Function}{}{}
+    \SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
+    \SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
+    \SetKwFor{For}{foreach}{do}{}
+    \SetKw{Continue}{continue}
+    \SetKwFunction{eval}{Eval}
+    \SetAlgoSkip{}
+    \SetKwInOut{Data}{Данные}
+    \SetKwInOut{Input}{Вход}
+    \SetKwInOut{Output}{Выход}
+
+    \Fn{\textsc{HandleState}($W$, $l'$, $pc'$, $\sigma'$, $D$, $l_0$, $D_0$)} {
+        \If{$l' = l_0$}{\label{alg:deal_with_new_state_start}
+            \assign{$\sigma'$}{$\sigma' \circ Rec(l_0,D_0)$}\;
+            \assign{$Body(l_0,D_0)$}{\text{$\textsc{Join}(Body(l_0,D_0), l_0, pc',\sigma',D)$}}\;
+            \Return W\;\label{alg:add_recursive_state}
+        }\lElseIf{$l' \in D$}{\label{alg:forget_state}\Return
+        }\ElseIf{$l' \in RV$}{
+            \assign{$D$}{$D \cup \{l'\}$}\;
+            \assign{$\sigma'$}{$\sigma' \circ Rec(l',D)$}\;\label{alg:enter_recursive_symbol}
+            \If{$Body(l',D) = \emptyset$}{
+                \assign{$Body(l',D)$}{\text{$\textsc{Exec}(l',D)$}\;\label{alg:start_recursive_state}}
+            }
+        }
+
+        \Return \text{$\textsc{Join}(W, l', pc', \sigma', D)$}\label{alg:call_join_from_handle}\;
+    }
+\end{algorithm2e}
+\end{figure}
+
+Как и в разделе Обзор, функция \textsc{Join} пытается найти эквивалентное состояние для объединения из рабочего множества $W$. Поскольку сейчас состояние~--- это четверка, то необходимо учитывать множество посещенных рекурсивных вершин $D$, которое влияет на отношение перехода анализируемой программы.
+Очевидно, что можно сливать только те состояния, у которых равны представленные множества.
+
+\begin{figure}
+\begin{algorithm2e}[H]
+    \caption{Модифицированная функция \textsc{Join}}
+    \label{algorithm:execute_instruction}
+    % \scriptsize
+    \small
+    % \setcounter{AlgoLine}{0}
+    \SetKw{Yield}{yield}
+    \SetKw{Break}{break}
+    \SetKwProg{Procedure}{Function}{}{end}
+    \SetKwProg{Fn}{Function}{}{}
+    \SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
+    \SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
+    \SetKwFor{For}{foreach}{do}{}
+    \SetKw{Continue}{continue}
+    \SetKwFunction{eval}{Eval}
+    \SetAlgoSkip{}
+    \SetKwInOut{Data}{Данные}
+    \SetKwInOut{Input}{Вход}
+    \SetKwInOut{Output}{Выход}
+
+    \Fn{\textsc{Join}($W$, $l$, $pc$, $\sigma$, $D$)}{
+        \If{$\exists (l', pc', \sigma', D') \in W : l = l'$ \mkGreen{$\land D = D'$}}{\label{alg:merge_start}
+            \assign{$W$}{$W \setminus \{(l',pc',\sigma',\mkGreen{D'})\}$}\;
+            \assign{$W$}{$W \cup \{(l,pc \lor pc',\Merge{\pair{pc}{\sigma},\pair{pc'}{\sigma'}},\mkGreen{D})\}$}\;
+        }\lElse{
+            \assign{$W$}{$W \cup \{(l, pc, \sigma, \mkGreen{D})\}$}\label{alg:merge_end}
+        }
+
+        \Return W\;
+    }
+\end{algorithm2e}
+\end{figure}
+
+
