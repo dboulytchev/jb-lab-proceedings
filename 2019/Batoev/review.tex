@@ -2,7 +2,7 @@
 \subsection{Символьное исполнение}
 Символьное исполнение --- это подход исполнения программ, который использует символьные значения вместо конкретных и исполняет множество путей исполнения программы вместо одного, как при стандартном исполнении. Например, ($x$, $y$, $z$, \dots) вместо ($17$, $``cat''$, $true$, \dots). 
 
-\begin{lstlisting}[caption={Программа для иллюстрации символьного исполнения},captionpos=b,label={lst:ex1}]
+\begin{lstlisting}[caption={Программа для иллюстрации символьного исполнения},captionpos=b,label={baldoni_listing}]
 void foobar(int a, int b)
 {
     int x = 1, y = 0;
@@ -14,7 +14,7 @@ void foobar(int a, int b)
     assert(x-y != 0);
 }
 \end{lstlisting}
-На листинге~\ref{lst:ex1} представлен фрагмент кода, взятый из работы~\cite{baldoni2018survey}.
+На листинге~\ref{baldoni_listing} представлен фрагмент кода, взятый из работы~\cite{baldoni2018survey}.
 Цель символьного исполнения --- найти все входы программы, а именно значения переменных $a$ и $b$, для которых не выполнится <<assert>>. Полный перебор не применим, поскольку каждая переменная может принимать $2^{32}$ значений.
 Эту проблему и пытается решить символьное исполнение, заменяя начальные значения переменных $a$ и $b$ на символьные $\alpha$ и $\beta$.
 
@@ -38,21 +38,21 @@ void foobar(int a, int b)
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.7,angle =270]{Batoev/images/sym_ex_tree.jpg}
-\caption{Дерево символьного исполнения функции из листинга~\ref{lst:ex1} работы~\cite{baldoni2018survey}}
+\caption{Дерево символьного исполнения функции из листинга~\ref{baldoni_listing} работы~\cite{baldoni2018survey}}
 \label{exec-tree}
 \end{figure}
 На этом рисунке каждый лист соответствует результату выполнения функции на любом конкретном наборе переменных, удовлетворяющем формуле этого листа $\pi$.
 
 \subsection{Алгоритм символьного исполнения}
-На листинге~\ref{alg-kuznetsov} представлен алгоритм символьного исполнения языка, содержащего четыре инструкции, из работы~\cite{kuznetsov2012efficient}.
+На листинге~\ref{alg_kuznetsov} представлен алгоритм символьного исполнения языка, содержащего четыре инструкции, из работы~\cite{kuznetsov2012efficient}.
 \begin{enumerate}
-    \item Алгоритм оперирует с рабочим множеством состояний $W$. Каждую итерацию цикла (строка 3) из него при помощи функции $pickNext$ извлекается новое состояние для интерпретации.
-    \item Процедура $ExecuteInstruction$ на листинге~\ref{executeIns} обрабатывает конструкции языка и получают множество следующих состояний $S$.
+    \item Алгоритм оперирует с рабочим множеством состояний $W$. Каждую итерацию цикла \smartref{alg_kuznetsov}{pickNext} из него при помощи функции $pickNext$ извлекается новое состояние для интерпретации.
+    \item Процедура $ExecuteInstruction$ на листинге~\ref{execute_instruction} обрабатывает конструкции языка и получают множество следующих состояний $S$.
         \begin{itemize}
             \item Для ``присваивания'' создается новое состояние, у которого метка инструкции следует за $l$, условие пути остается неизменным, а новое отображение $s$ 
             сопоставляет переменной $v$ символьное выражение, равное $e$, вычисленному при помощи текущего отображения $s$.
             \item Конструкция ``ветвления'' проверяет возможности принятия/непринятия перехода по условию. В случае принятия создается новое состояние, у которого метка инструкция --- $l'$, условие пути --- конъюнкция старого условия и выражения $e$, а отображение $s$ остается неизменным. Аналогично, в случае непринятия к множеству $S$ добавляется состояние, у которого метка инструкции --- это следующая инструкция, а условие пути --- конъюнкция текущего условия пути с отрицанием $e$.
-            \item Оператор <<assert>> задает инварианты программы. Строка 11 проверяет нарушение инварианта. Если инвариант не нарушен, то создается новое состояние, у которого номер инструкции --- это следующая инструкция.
+            \item Оператор <<assert>> задает инварианты программы \smartref{execute_instruction}{executeInsOriginalAlgoAssert}. Если инвариант не нарушен, то создается новое состояние, у которого номер инструкции --- это следующая инструкция.
             \item Оператор <<halt>> означает, что текущее состояние приводит к завершению интерпретируемой программы.
         \end{itemize}
     % Присваивание (строка 5) получает новое состояние, у которого естественным образом изменяется отображения и номер
@@ -64,118 +64,86 @@ void foobar(int a, int b)
     \end{itemize}
 \end{enumerate}
 
-\pagebreak
-\addtocounter{algocf}{1}
-\begin{algorithm2e}[]
-    \caption{Адаптированная схема символьного исполнения из работы~\cite{kuznetsov2012efficient}}
-    \label{alg-kuznetsov}
-    \small
-    \setcounter{AlgoLine}{0}
-    \SetKw{Yield}{yield}
-    \SetKw{Break}{break}
-    \SetKwProg{Procedure}{Function}{}{end}
-    \SetKwProg{Fn}{Function}{}{}
-    \SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
-    \SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
-    \SetKwFor{For}{foreach}{do}{}
-    \SetKw{Continue}{continue}
-    \SetKwFunction{eval}{Eval}
-    \SetAlgoSkip{}
-    \SetKwInOut{Data}{Данные}
-    \SetKwInOut{Input}{Вход}
-    \SetKwInOut{Output}{Выход}
+% \pagebreak
+\begin{algorithm}
+    \caption{Адаптированная схема символьного исполнения из работы~\cite{kuznetsov2012efficient}} \label{alg_kuznetsov}
+\begin{algorithmic}[1]
+    \Procedure{\textsc{Exec}}{}
+        \State $W \gets \{(l_0, true, \lambda v.v)\}$
+        \While{$W\neq\emptyset$}
+            \State $(l,pc,s) \gets \textsc{pickNext}(W)$ \label{pickNext}
+            \State \text{\textbf{//} Символьно исполним следующую инструкцию}
+            \State $S \gets \textsc{ExecuteInstruction}(l, pc, s)$
+            \State \text{\textbf{//} Объединим состояния с эквивалентными из множества $W$}
+            \For{$(l', pc', s') \in S$}
+                \State $W \gets \textsc{Join}(W, (l',pc',s'),\sim)$
+            \EndFor
+        \EndWhile
+        \State \text{\texttt{print} ``no errors''}\;
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
-	\Fn{\textsc{Exec}()}{
-    	\BlankLine
-    	\assign{$W$}{$\{(l_0, true, \lambda v.v)\}$}\;
-    	\While{$W\neq\emptyset$}{
-    	    \assign{$(l,pc,s)$}{$pickNext(W)$}; \assign{$S$}{$\emptyset$}\;
-    	    \tcp{Символьно исполним следующую инструкцию}
-    		\assign{$S$}{$\textsc{ExecuteInstruction}(l, pc, s)$}\;
-    		\tcp{Объединим состояния с эквивалентными из множества $W$}
-    		\ForAll{$(l', pc', s') \in S$}{
-    		    \assign{$W$}{$\textsc{Join}(W, (l',pc',s'),\sim)$}\;
-    		  %  \If{$follow(l', pc', s')$}{
-    		  %      \assign{$W$}{$\textsc{Join}(W, (l',pc',s'),\sim)$}\;
-    		  %  }
-    		}
-    	}
-    	\text{\texttt{print} ``no errors''}\;
-    }
-\end{algorithm2e}
-
-\begin{algorithm2e}[H]
-    \caption{Процедура $\textsc{Join}$ добавления нового состояния в рабочее множество}
-    \label{join}
-    \setcounter{AlgoLine}{0}
-    \small
-	\SetKw{Yield}{yield}
-	\SetKw{Break}{break}
-	\SetKwProg{Fn}{Function}{}{}
-	\SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
-	\SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
-	\SetKwFor{For}{foreach}{do}{}
-	\SetKwFunction{eval}{Eval}
-	\SetAlgoSkip{}
-	\SetKwInOut{Data}{Данные}
-	\SetKwInOut{Input}{Вход}
-    \SetKwInOut{Output}{Выход}
+\begin{algorithm}[H]
+    \caption{Процедура $\textsc{Join}$ добавления нового состояния в рабочее множество} \label{join}
+\begin{algorithmic}[1]
 	% \Input{Рабочее множество $W$, номер инструкции $l'$, условие пути $pc'$, отображение переменных в символьные значения $s'$}
 	% \Output{Новое рабочее множество $W$.}
-    \Fn{\textsc{Join}($W$ : states set, $l'$ : Vertex, $s'$ : Mapping)}{
-        \If{$\exists (l', pc'', s'') \in W : (l', pc'', s'') \sim (l', pc', s')$}{
-            \assign{$W$}{$W \setminus \{(l',pc'',s'')\}$}\;
-            \assign{$W$}{$W \cup \{(l',pc' \lor pc'', Merge(pc',pc'',s', s''))\}$}\;
-        }\Else{
-            \assign{$W$}{$W \cup \{(l', pc', s')\}$}\;
-        }
-    	\Return W;
-    }
-\end{algorithm2e}
+    \Procedure{\textsc{Join}}{$W$ : states set, $l'$ : Vertex, $s'$ : Mapping}
+        \If{$\exists (l', pc'', s'') \in W : (l', pc'', s'') \sim (l', pc', s')$}
+            \State $W \gets W \setminus \{(l',pc'',s'')\}$
+            \State $W \gets W \cup \{(l',pc' \lor pc'', Merge(pc',pc'',s', s''))\}$
+        \Else
+            \State $W \gets W \cup \{(l', pc', s')\}$
+        \EndIf
 
-\pagebreak
-\begin{algorithm2e}[H]
-    \caption{Процедура \textsc{ExecuteInstruction} символьного исполнения инструкции языка}
-    \label{executeIns}
-    \setcounter{AlgoLine}{0}
-    \small
-	\SetKw{Yield}{yield}
-	\SetKw{Break}{break}
-	\SetKwProg{Fn}{Function}{}{}
-	\SetKwIF{If}{ElseIf}{Else}{if}{then}{elif}{else}{}
-	\SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{}{}
-	\SetKwFor{For}{foreach}{do}{}
-	\SetKwFunction{eval}{Eval}
-	\SetAlgoSkip{}
-	\SetKwInOut{Data}{Данные}
-	\SetKwInOut{Input}{Вход}
-    \SetKwInOut{Output}{Выход}
+        \State \Return W 
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+% \pagebreak
+\begin{algorithm}[H]
+    \caption{Процедура \textsc{ExecuteInstruction} символьного исполнения инструкции языка} 
+    \label{execute_instruction}
+\begin{algorithmic}[1]
 	% \Input{Номер инструкции $l$, условие пути $pc$, отображение переменных в символьные значения $s$}
 	% \Data{Множество следующих состояний $S$.}
 % 	\Output{Найденные ошибки}
-    \Fn{\textsc{ExecuteInstruction}($l$ : Vertex, $pc$ : pathCondition, $s$ : Mapping)}{
-        \assign{$S$}{$\emptyset$}\;
-    	\Switch{$instr(l)$}{
-    		\uCase{\textsc{\texttt{$v$ := $e$}}\qquad \texttt{// присваивание}}{\assign{$S$}{$\{(succ(l),pc,s[v\mapsto \eval{s, e}])\}$}\;}
-    		\uCase{$if(e)$ goto $l'$ \qquad \texttt{// условный переход}}{
-        		\If{$SAT(s, pc \land e)$}{
-        		    \assign{$S$}{\{($l'$, $pc \land e$, $s$)\}}\;
-        		}
-        		\If{$SAT(s, pc \land \neg e)$}{
-        		    \assign{$S$}{$S\cup\{(succ(l), pc \land \neg e, s$)\}}\;
-        		}
-    		}
-    		\uCase{$assert(e)$ \qquad \texttt{// проверка}}{
-        		\lIf{$SAT(s, pc \land \neg e)$}{abort}
-        		\lElse{\assign{$S$}{$\{(succ(l),pc,s)\}$}}
-    		}
-    		\uCase{halt\qquad \texttt{// завершение программы}}{
-    			\texttt{print $pc$ }\;
-    		}
-    	}
-    	\Return S;
-    }
-\end{algorithm2e}
+    \Procedure{\textsc{ExecuteInstruction}}{$l$ : Vertex, $pc$ : pathCondition, $s$ : Mapping}
+        \State $S \gets \emptyset$
+        \Switch{$instr(l)$}
+            \Case{\textsc{\texttt{$v$ := $e$}}\qquad \texttt{// присваивание}}
+                \State $S \gets \{(succ(l),pc,s[v\mapsto \cseeval{s}{e}])\}$
+            \EndCase
+
+            \Case{$if(e)$ goto $l'$ \qquad \texttt{// условный переход}}
+                \If{$SAT(s, pc \land e)$}
+                    \State $S \gets \{(l', pc \land e, s)\}$
+                \EndIf
+
+                \If{$SAT(s, pc \land \neg e)$}
+                    \State $S \gets S\cup\{(succ(l), pc \land \neg e, s)\}$
+                \EndIf
+            \EndCase
+
+            \Case{$assert(e)$ \qquad \texttt{// проверка}} \label{executeInsOriginalAlgoAssert}
+                \If{$SAT(s, pc \land \neg e)$} 
+                    \State abort
+                \Else
+                    \State $S \gets \{(succ(l),pc,s)\}$
+                \EndIf
+            \EndCase 
+
+            \Case{halt\qquad \texttt{// завершение программы}}
+                \State \texttt{print $pc$ }
+            \EndCase
+        \EndSwitch
+
+        \State \Return S
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 
 \subsection{Композициональность}

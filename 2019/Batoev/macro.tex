@@ -109,6 +109,9 @@
 %%% CSE algorithm
 \newcommand\cseeval[2]{Eval(#1, #2)}
 
+%%% For algorithm references
+\newcommand\smartref[2]{(см.~алг.~стр.~\algref{#1}{#2})}
+
 %%% A Hack for aligning **inside** frac
 \makeatletter
 \newlength{\negph@wd}
@@ -164,7 +167,6 @@
 
 \newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
 
-\renewcommand*{\algorithmcfname}{Листинг}
 \renewcommand{\lstlistingname}{Листинг}% Listing -> Листинг
 
 \lstloadlanguages{C,C++,csh,Java}
