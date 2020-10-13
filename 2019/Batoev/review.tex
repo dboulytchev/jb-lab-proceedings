@@ -35,12 +35,14 @@ void foobar(int a, int b)
 \end{itemize}
 
 Наглядно описать процесс символьного исполнения программы можно с помощью дерева символьного исполнения, пример которого представлен на рисунке~\ref{exec-tree}.
-\begin{figure}[H]
+
+\begin{figure}
 \centering
 \includegraphics[scale=0.7,angle =270]{Batoev/images/sym_ex_tree.jpg}
 \caption{Дерево символьного исполнения функции из листинга~\ref{baldoni_listing} работы~\cite{baldoni2018survey}}
 \label{exec-tree}
 \end{figure}
+
 На этом рисунке каждый лист соответствует результату выполнения функции на любом конкретном наборе переменных, удовлетворяющем формуле этого листа $\pi$.
 
 \subsection{Алгоритм символьного исполнения}
@@ -84,7 +86,7 @@ void foobar(int a, int b)
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[H]
+\begin{algorithm}
     \caption{Процедура $\textsc{Join}$ добавления нового состояния в рабочее множество} \label{join}
 \begin{algorithmic}[1]
 	% \Input{Рабочее множество $W$, номер инструкции $l'$, условие пути $pc'$, отображение переменных в символьные значения $s'$}
@@ -103,7 +105,7 @@ void foobar(int a, int b)
 \end{algorithm}
 
 % \pagebreak
-\begin{algorithm}[H]
+\begin{algorithm}
     \caption{Процедура \textsc{ExecuteInstruction} символьного исполнения инструкции языка} 
     \label{execute_instruction}
 \begin{algorithmic}[1]
@@ -169,6 +171,7 @@ $
 $$ \{ x \ra 5 \} \circ res_f = 10$$
 Аналогично, получаем значение переменной $c$:
 $$ \{ x \ra 10 \} \circ res_f = 10$$
+
 \begin{lstlisting}[language={[Sharp]C}, caption={Программа для иллюстрации композиционального подхода},captionpos=b,label={compositional}]
 int f(int x) {
     if (x % 2 == 0) return x;
