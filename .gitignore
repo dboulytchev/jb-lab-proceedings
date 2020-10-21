@@ -3,8 +3,10 @@
 *.bbl
 *.log
 *.blg
+*.out
 *.toc
 *.pyg.lst
 *.pyg.sty
 *.pyg.vrb
 *.synctex.gz
+
