@@ -1,0 +1,14 @@
+\section*{Conclusion}
+% The ability of partial evaluation to increase performance of GPU-based programs has been shown, particularly for string pattern matching problems. Further work is aimed at making it possible to perform partial evaluation in runtime for heterogeneous systems, and at identifying bottlenecks arising during string pattern matching partial evaluation, namely partial evaluation could diverge, i.e. not terminate, or exponentially increase the size of resulting code, which would hurt performance.
+This work explored the ability of partial evaluation to optimize GPU-programs 
+by embedding static data accesses, leveraging AnyDSL framework, and identified 
+GPU-microarchitecture specific details that affect the success of such an 
+optimization and partial evaluation in general. 
+% The structure and soundness of the partial evaluator being used were considered.
+
+The embedding of data by means of partial evaluation outperformed non-embedded versions when there were access instructions that got completely reduced and achieved the same performance as constant memory accesses, given that no such access reduction occurred.
+
+Further, there were cases when data embedding could possibly outperform constant memory given the equal number of access instructions due to e.g. constant cache misses or absence of instruction parameter size extension. However, such cases are presumably rarely achievable in practice. In a sense, partial evaluation could be a way to automate constant memory management, but partial evaluation of static values of a size comparable to the maximum capacity of constant memory and later JIT compilation is infeasible. Since the performance is compiler specific, which is further device-specific, there is a need to investigate the compiler which is publicly unspecified, and at the moment of writing there is a lack of tools for that. Also, partial evaluation performance is scenario-specific, hence other scenarios should be investigated as well, for example, regular expression matching is a well-known scenario in partial evaluation, though current GPU implementations are not considered practically efficient.
+
+Finally, guidelines for developing a program that is amenable to partial evaluation~\cite{Jones1993} could be extended to explicitly multithreaded programs such as CUDA kernels, or the semantics of the intermediate representation could consider the multithreaded environment. 
+This might be the aim of future work.
