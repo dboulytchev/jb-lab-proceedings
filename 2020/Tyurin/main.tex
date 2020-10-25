@@ -1,0 +1,40 @@
+\title{Practical study of AnyDSL GPGPU program partial evaluator}
+\titlerunning{Practical study of AnyDSL GPGPU program partial evaluator}
+
+\author{Aleksey Tyurin}
+\authorrunning{Aleksey Tyurin}
+
+\tocauthor{Aleksey Tyurin}
+\institute{St Petersburg State University\\
+	\email{aleksey.tyurinspb@gmail.com}}
+
+\graphicspath{{Tyurin/}}
+
+\newtheorem{mytheorem}{Theorem}
+\newtheorem{mydef}{Definition}
+\renewcommand{\abstractname}{Abstract}
+\renewcommand*{\proofname}{Proof}
+\renewcommand*{\figurename}{Figure}
+\renewcommand*{\tablename}{Table}
+\renewcommand*{\refname}{References}
+
+
+\maketitle
+
+\begin{abstract}
+	The optimization of GPGPU programs has steadily received close attention 
+	in the research community since applications ought to be more effective,
+	 less memory consuming, and easier to program.
+	  Partial evaluation in turn is a tool that could automatically bring performance leveraging the static nature of the application inputs.
+	   This work aims to combine partial evaluation and GPGPU programs to make the latter more memory efficient.
+It analyses whether any performance gain could be achieved via
+ data access embedding achieved by partial evaluation and identifies GPU-specific details that affect the effectiveness of partial evaluation.
+\end{abstract}
+
+
+\input{Tyurin/sections/introduction}
+\input{Tyurin/sections/survey}
+\input{Tyurin/sections/setup}
+\input{Tyurin/sections/evaluation}
+\input{Tyurin/sections/conclusion}
+\input{Tyurin/diploma_bib}
