@@ -8,3 +8,17 @@
 *.pyg.sty
 *.pyg.vrb
 *.synctex.gz
+
+2020/_minted-main/
+
+*.fdb_latexmk
+
+*.fls
+
+*.out
+
+*.pdf
+
+*.synctex(busy)
+
+*.pyg
