@@ -1,0 +1,859 @@
+% Intended LaTeX compiler: xelatex
+
+% \documentclass[14pt]{matmex-diploma-custom}
+% \input{Namakonov/preamble_paper}
+\newcommand{\valuecom}[1]{\textcolor{green!60!black}{/\!/ #1}}
+\newcommand{\textdom}[1]{\mathsf{#1}}
+\newcommand{\textcode}[1]{\texorpdfstring{\texttt{#1}}{#1}}
+\newcommand{\kw}[1]{\textbf{\textcode{#1}}}
+\newcommand{\skipc}{\kw{skip}}
+\newcommand{\ite}[3]{\kw{if}\;#1\:\kw{then}\;#2\;\\ \kw{else}\;#3}
+\newcommand{\iteml}[3]{
+  \kw{if} \; #1\\
+  \begin{array}[t]{@{}l@{}l}
+    \kw{then}& \begin{array}[t]{l} #2 \end{array} \\
+    \kw{else}& \begin{array}[t]{l} #3 \end{array} \\
+  \end{array}
+}
+\newcommand{\itne}[2]{\kw{if}\;#1\:\kw{then}\\ \quad\;{#2}}
+\newcommand{\while}[2]{\kw{while}\;#1\;\kw{do}\;#2}
+\newcommand{\ALT}{\;\;|\;\;}
+
+\newcommand{\ie}{\emph{i.e.,} }
+\newcommand{\eg}{\emph{e.g.,} }
+\newcommand{\etal}{\emph{et~al.}}
+\newcommand{\wrt}{w.r.t.~}
+
+
+\newcommand{\set}[1]{\{{#1}\}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\pfn}{\rightharpoonup}
+\newcommand{\st}{\; | \;}
+\newcommand{\N}{{\mathbb{N}}}
+\newcommand{\dom}[1]{\textit{dom}{({#1})}}
+\newcommand{\codom}[1]{\textit{codom}{({#1})}}
+\newcommand{\before}[2]{{#1}_{#2}^\uparrow}
+\newcommand{\after}[2]{{#1}_{#2}^\downarrow}
+%\newcommand{\fv}[1]{fv{[{#1}]}}
+\newcommand{\tup}[1]{{\langle{#1}\rangle}}
+\newcommand{\nin}{\not\in}
+\newcommand{\suq}{\subseteq}
+\newcommand{\sqsuq}{\sqsubseteq}
+\newcommand{\sqsu}{\sqsubset}
+\newcommand{\sqslq}{\sqsupseteq}
+\newcommand{\size}[1]{|{#1}|}
+\newcommand{\true}{\top}
+\newcommand{\maketil}[1]{{#1}\ldots{#1}}
+\newcommand{\til}{\maketil{,}}
+\newcommand{\cuptil}{\maketil{\cup}}
+\newcommand{\uplustil}{\maketil{\uplus}}
+\renewcommand*{\mathellipsis}{\mathinner{{\ldotp}{\ldotp}{\ldotp}}}
+\newcommand{\rst}[1]{|_{#1}}
+\newcommand{\imm}[1]{{#1}{\rst{\text{imm}}}}
+\renewcommand{\succ}[2]{\text{succ}_{#1}(#2)}
+\newcommand{\aite}[3]{(#1?#2,#3)}
+%\newcommand{\defeq}{\mathrel{\stackrel{\mathsf{def}}{=}}}
+\newcommand{\defeq}{\triangleq}
+\newcommand{\powerset}[1]{\mathcal{P}({#1})}
+\newcommand{\finpowerset}[1]{\mathcal{P}_{<\omega}({#1})}
+\renewcommand{\implies}{\Rightarrow}
+
+
+\colorlet{colorPO}{gray!60!black}
+\colorlet{colorRF}{green!60!black}
+\colorlet{colorMO}{orange}
+\colorlet{colorFR}{purple}
+\colorlet{colorECO}{red!80!black}
+\colorlet{colorSYN}{green!40!black}
+\colorlet{colorHB}{blue}
+\colorlet{colorPPO}{magenta}
+\colorlet{colorPB}{olive}
+\colorlet{colorSBRF}{olive}
+\colorlet{colorRMW}{olive!70!black}
+\colorlet{colorRSEQ}{blue}
+\colorlet{colorSC}{violet}
+\colorlet{colorPSC}{violet}
+\colorlet{colorREL}{olive}
+\colorlet{colorCONFLICT}{olive}
+\colorlet{colorRACE}{olive}
+\colorlet{colorWB}{orange!70!black}
+\colorlet{colorPSC}{violet}
+\colorlet{colorSCB}{violet}
+\colorlet{colorDEPS}{violet}
+\colorlet{colorAR}{black}
+
+\tikzset{
+   every path/.style={>=stealth},
+   po/.style={->,color=colorPO,thin,shorten >=-0.5mm,shorten <=-0.5mm},
+   sw/.style={->,color=colorSYN,shorten >=-0.5mm,shorten <=-0.5mm},
+   rf/.style={->,color=colorRF,dashed,,shorten >=-0.5mm,shorten <=-0.5mm},
+   hb/.style={->,color=colorHB,thick,shorten >=-0.5mm,shorten <=-0.5mm},
+   co/.style={->,color=colorMO,dotted,very thick,shorten >=-0.5mm,shorten <=-0.5mm},
+   no/.style={->,dotted,thick,shorten >=-0.5mm,shorten <=-0.5mm},
+   fr/.style={->,color=colorFR,dotted,thick,shorten >=-0.5mm,shorten <=-0.5mm},
+   deps/.style={->,color=colorDEPS,dotted,thick,shorten >=-0.5mm,shorten <=-0.5mm},
+   rmw/.style={->,color=colorRMW,thick,shorten >=-0.5mm,shorten <=-0.5mm},
+   pngexport/.style={
+     external/system call/.add=
+     {}
+     {; convert -density 300 -transparent white "\image.pdf" "\image.png"},
+     % 
+     /pgf/images/external info,
+     /pgf/images/include external/.code={%
+       \includegraphics
+       [width=\pgfexternalwidth,height=\pgfexternalheight]
+       {##1.png}%
+     },
+   }
+ }
+\newcommand{\dpo}[2]{\draw[po] (#1) edge (#2)}
+\newcommand{\dpopo}[2]{\draw[po] (#1) edge node[right] {$\lPO$} (#2)}
+\newcommand{\drmw}[2]{\draw[rmw, bend right=20] (#1) edge node[left] {$\lRMW$} (#2)}
+\newcommand{\dco}[2]{\draw[co] (#1) edge node[right] {$\lCO$} (#2)}
+\newcommand{\dcoext}[4]{\draw[co, #3] (#1) edge node[#4] {$\lCO$} (#2)}
+\newcommand{\drf}[2]{\draw[rf] (#1) edge node[left] {$\lRF$} (#2)}
+\newcommand{\dfr}[3]{\draw[fr, #3] (#1) edge node[left] {$\lFR$}(#2)}
+\newcommand{\dhb}[3]{\draw[hb, #3] (#1) edge node[right] {$\lHB$} (#2)}
+
+
+%% Orders
+\newcommand{\pln}{\mathtt{pln}}
+\newcommand{\rlx}{\mathtt{rlx}}
+\newcommand{\rel}{{\mathtt{rel}}}
+\newcommand{\acq}{{\mathtt{acq}}}
+\newcommand{\acqrel}{{\mathtt{acqrel}}}
+\newcommand{\sco}{{\mathtt{sc}}}
+\newcommand{\sto}{{\mathtt{st}}}
+\newcommand{\full}{{\mathtt{sy}}}
+\newcommand{\ld}{{\mathtt{ld}}}
+\newcommand{\isb}{{\mathtt{isb}}}
+
+% omm modes
+\newcommand{\na}{{\mathtt{na}}}
+\newcommand{\at}{{\mathtt{at}}}
+
+%% Event labels
+\newcommand{\rlab}[3]{{\lR}^{#1}({#2},{#3})}
+\newcommand{\wlab}[3]{{\lW}^{#1}({#2},{#3})}
+\newcommand{\flab}[1]{{\lF}(#1)}
+
+\newcommand{\lR}{{\mathtt{R}}}
+\newcommand{\lW}{{\mathtt{W}}}
+\newcommand{\lF}{{\mathtt{F}}}
+\newcommand{\lE}{{\mathtt{E}}}
+
+\newcommand{\lLAB}{{\mathtt{lab}}}
+\newcommand{\lTID}{{\mathtt{tid}}}
+\newcommand{\lTYP}{{\mathtt{typ}}}
+\newcommand{\lLOC}{{\mathtt{loc}}}
+\newcommand{\lMOD}{{\mathtt{mod}}}
+\newcommand{\lVALR}{{\mathtt{val_r}}}
+\newcommand{\lVALW}{{\mathtt{val_w}}}
+\newcommand{\lELAB}{{\mathtt{elab}}}
+\newcommand{\lAVALS}{{\mathtt{atvals}}}
+
+%% Relations
+
+\newcommand{\lX}{\mathtt{X}}
+\newcommand{\lPO}{{\color{colorPO}\mathtt{po}}}
+\newcommand{\lRF}{{\color{colorRF} \mathtt{rf}}}
+\newcommand{\lRMW}{{\color{colorRMW} \mathtt{rmw}}}
+\newcommand{\lMO}{{\color{colorMO} \mathtt{mo}}}
+\newcommand{\lMOx}{{\color{colorMO} \mathtt{mo}}_x}
+\newcommand{\lMOy}{{\color{colorMO} \mathtt{mo}}_y}
+\newcommand{\lCO}{{\color{colorMO} \mathtt{co}}}
+\newcommand{\lCOx}{{\color{colorMO} \mathtt{co}}_x}
+\newcommand{\lCOy}{{\color{colorMO} \mathtt{co}}_y}
+\newcommand{\lFR}{{\color{colorFR} \mathtt{fr}}}
+\newcommand{\lFRx}{{\color{colorFR} \mathtt{rb}}_x}
+\newcommand{\lFRy}{{\color{colorFR} \mathtt{rb}}_y}
+\newcommand{\lECO}{{\color{colorECO} \mathtt{eco}}}
+\newcommand{\lSBRF}{{\color{colorSBRF} \mathtt{sbrf}}}
+\newcommand{\lRSEQ}{{\color{colorRSEQ}\mathtt{rseq}}}
+\newcommand{\lSW}{{\color{colorSYN}\mathtt{sw}}}
+\newcommand{\lHB}{{\color{colorHB}\mathtt{hb}}}
+\newcommand{\lHBO}{{\color{olive}\mathtt{hbo}}}
+%\newcommand{\lWB}{{\color{colorWB} \mathtt{wb}}}
+\newcommand{\lDOB}{{\mathtt{dob}}}
+\newcommand{\lBOB}{{\mathtt{bob}}}
+\newcommand{\lAOB}{{\mathtt{aob}}}
+\newcommand{\lOBS}{{\mathtt{obs}}}
+\newcommand{\lEORD}{{\mathtt{eord}}}
+\newcommand{\lTORD}{{\mathtt{tord}}}
+\newcommand{\lSC}{{\mathtt{sc}}}
+\newcommand{\lAR}{{\color{colorAR} \mathtt{ar}}}
+
+\newcommand{\lSCB}{{\color{colorSCB} \mathtt{scb}}}
+\newcommand{\lPSC}{{\color{colorPSC} \mathtt{psc}}}
+\newcommand{\lPSCB}{\lPSC_{\rm base}}
+\newcommand{\lPSCF}{\lPSC_\lF}
+\newcommand{\lCONFLICT}{{\color{colorCONFLICT} \mathtt{conflict}}}
+\newcommand{\lRACE}{{\color{colorRACE} \mathtt{race}}}
+\newcommand{\lNARACE}{{\color{colorRACE} \mathtt{na-race}}}
+
+\newcommand{\lmakeW}[1]{\mathtt{w}#1}
+\newcommand{\lWFR}{\lmakeW{\lFR}}
+\newcommand{\lWECO}{\lmakeW{\lECO}}
+\newcommand{\lWSCB}{\lmakeW{\lSCB}}
+\newcommand{\lWPSCB}{\lmakeW{\lPSCB}}
+\newcommand{\lWPSCF}{\lmakeW{\lPSCF}}
+\newcommand{\lWPSC}{\lmakeW{\lPSC}}
+\newcommand{\lWB}{\lmakeW{\lMO}}
+
+\newcommand{\lDEPS}{{{\color{colorDEPS}\mathtt{deps}}}}
+\newcommand{\lCTRL}{{{\color{colorDEPS}\mathtt{ctrl}}}}
+\newcommand{\lCTRLISYNC}{{{\color{colorDEPS}\mathtt{ctrl_{isync}}}}}
+\newcommand{\lDATA}{{{\color{colorDEPS}\mathtt{data}}}}
+\newcommand{\lADDR}{{{\color{colorDEPS}\mathtt{addr}}}}
+\newcommand{\lCASDEP}{{{\color{colorDEPS}\mathtt{casdep}}}}
+
+\newcommand{\lmakeE}[1]{#1\mathtt{e}}
+\newcommand{\lRFE}{\lmakeE{\lRF}}
+\newcommand{\lCOE}{\lmakeE{\lCO}}
+\newcommand{\lFRE}{\lmakeE{\lFR}}
+\newcommand{\lMOE}{\lmakeE{\lMO}}
+\newcommand{\lmakeI}[1]{#1\mathtt{i}}
+\newcommand{\lRFI}{\lmakeI{\lRF}}
+\newcommand{\lCOI}{\lmakeI{\lCO}}
+\newcommand{\lFRI}{\lmakeI{\lFR}}
+
+\newcommand{\Tid}{\mathsf{Tid}}
+\newcommand{\Loc}{\mathsf{Loc}}
+\newcommand{\Val}{\mathsf{Val}}
+\newcommand{\Init}{\mathsf{Init}}
+\newcommand{\Lab}{\mathsf{Lab}}
+\newcommand{\Mod}{\mathsf{Mod}}
+\newcommand{\Modr}{\mathsf{Mod}_{\lR}}
+\newcommand{\Modw}{\mathsf{Mod}_{\lW}}
+\newcommand{\Modf}{\mathsf{Mod}_{\lF}}
+\newcommand{\Modrmw}{\mathsf{Mod}_{\lU}}
+
+
+\newcommand{\stepa}{\leadsto_{\ARM}}
+\newcommand{\stepp}{\promStepgen{}}
+%% \leadsto_{\Promise}}
+\newcommand{\stepptid}{\leadsto_{\Promise \; tid}}
+\newcommand{\lISB}{\mathtt{F^{\isb}}}
+\newcommand{\lDMB}{\mathtt{DMB}}
+\newcommand{\lDMBSY}{\flab{\SY}}
+\newcommand{\lDMBLD}{\flab{\LD}}
+\newcommand{\lDMBST}{\flab{\ST}}
+\newcommand{\SY}{\mathtt{sy}}
+\newcommand{\LD}{\mathtt{ld}}
+\newcommand{\ST}{\mathtt{st}}
+\newcommand{\removeCR}[1]{\mathsf{RemoveCR}({#1})}
+%% \spnewtheorem{defn}{Definition}{\bfseries}{}
+%% \crefname{defn}{Definition}{Definitions}
+\newcommand{\Timestamp}{\mathtt{Time}}
+\newcommand{\TimestampMap}{\mathit{TimeMap}}
+
+\newcommand{\Prog}{\ensuremath{Prog}\xspace}
+\newcommand{\ProgARM}{\ensuremath{Prog_\ARM}\xspace}
+
+\newcounter{mylabelcounter}
+
+\makeatletter
+\newcommand{\labelAxiom}[2]{%
+\hfill{\normalfont\textsc{(#1)}}\refstepcounter{mylabelcounter}
+\immediate\write\@auxout{%
+  %% \string\newlabel{#2}{{1}{\thepage}{{#1}}{mylabelcounter.\number\value{mylabelcounter}}{}}
+  \string\newlabel{#2}{{\unexpanded{\normalfont\textsc{#1}}}{\thepage}{{\unexpanded{\normalfont\textsc{#1}}}}{mylabelcounter.\number\value{mylabelcounter}}{}}
+}%
+}
+\makeatother
+
+
+% example rels
+\newcommand{\exX}{\mathtt{x}}
+\newcommand{\exY}{\mathtt{y}}
+
+\makeatletter
+\providecommand{\@thefnmark}{\the\@fnmark}
+\makeatother
+
+\makeatletter
+\makeatother
+
+\definecolor{StringRed}{rgb}{.637,0.082,0.082}
+\definecolor{CommentGreen}{rgb}{0.0,0.55,0.3}
+\definecolor{KeywordBlue}{rgb}{0.0,0.3,0.55}
+\definecolor{LinkColor}{rgb}{0.55,0.0,0.3}
+\definecolor{CiteColor}{rgb}{0.55,0.0,0.3}
+\definecolor{HighlightColor}{rgb}{0.0,0.0,0.0}
+
+
+\definecolor{grey}{rgb}{0.5,0.5,0.5}
+\definecolor{red}{rgb}{1,0,0}
+\definecolor{darkgreen}{rgb}{0.0,0.7,0.0}
+
+\hypersetup{%
+  linktocpage=true, pdfstartview=FitV,
+  breaklinks=true, pageanchor=true, pdfpagemode=UseOutlines,
+  plainpages=false, bookmarksnumbered, bookmarksopen=true, bookmarksopenlevel=3,
+  hypertexnames=true, pdfhighlight=/O,
+  colorlinks=true,linkcolor=LinkColor,citecolor=CiteColor,
+  urlcolor=LinkColor
+}
+
+
+%\newcommand{\TODO}[1]{\emph{\color{red} \textbf{TODO: #1}}}
+
+\crefformat{section}{#2\S{}#1#3}
+\Crefname{section}{Раздел}{Разделы}
+\Crefformat{section}{Section #2#1#3}
+
+\Crefname{figure}{\text{рис.}}{\text{рис.}}
+\Crefname{table}{\text{таб.}}{\text{таб.}}
+\crefname{corollary}{\text{Corollary}}{\text{corollaries}}
+\Crefname{corollary}{\text{Corollary}}{\text{Corollaries}}
+\crefname{lemma}{\text{Lemma}}{\text{Lemmas}}
+\Crefname{lemma}{\text{Lemma}}{\text{Lemmas}}
+\crefname{theorem}{\text{Theorem}}{\text{Theorems}}
+\Crefname{theorem}{\text{Theorem}}{\text{Theorems}}
+\crefname{proposition}{\text{Prop.}}{\text{Propositions}}
+\Crefname{proposition}{\text{Proposition}}{\text{Propositions}}
+\crefname{definition}{\text{Опр.}}{\text{Опр.}}
+\Crefname{definition}{\text{Опр.}}{\text{Опр.}}
+
+\newcommand{\setof}[1]{\{\, #1 \,\}}
+\newcommand{\setofz}[1]{\{ #1 \}}
+\newcommand{\suchthat}{\;|\;}
+\newcommand{\txtsub}[2]{{#1}_{\text{#2}}}
+
+\newcommand{\relo}{{\texttt{rel}}}
+\newcommand{\acqo}{{\texttt{acq}}}
+\newcommand{\ra}{\texttt{ra}}
+\newcommand{\AVal}{{\textdom{G}}}
+
+\newcommand{\step}{\longrightarrow}
+\newcommand{\astep}[1]{\xrightarrow{#1}}
+\newcommand{\bstep}[1]{\xRightarrow{#1}}
+\newcommand{\cstep}[2]{\xrightarrow[{#1}]{{#2}}}
+\newcommand{\dstep}[2]{\dhxrightarrow[{#1}]{{#2}}}
+\newcommand{\Pfin}{\txtsub{P}{final}}
+\newcommand{\fin}{\text{final}}
+\newcommand{\rulename}[1]{{\textsc{({#1})}}}
+\newcommand{\onestep}[2]{{\textsc{({#1}}{({#2})}\textsc{)}}}
+
+\newcommand{\Einit}{{\texttt{E}_{\texttt{init}}}}
+\newcommand{\SBinit}{{\texttt{SB}_{\texttt{init}}}}
+
+\newcommand{\LOC}{\mathit{loc}}
+
+%% blue, brown, cyan, darkgray, gray, green, lime, magenta, olive, orange, pink, purple, red, teal, violet, yellow.
+
+\newcommand{\lcur}{{\texttt{cur}}}
+\newcommand{\lrel}{{\texttt{rel}}}
+\newcommand{\lacq}{{\texttt{acq}}}
+\newcommand{\srlx}{{\texttt{srlx}}}
+\newcommand{\lacqrel}{{\texttt{acqrel}}}
+\newcommand{\lsco}{{\texttt{sc}}}
+\newcommand{\lscmo}{{\texttt{sf}}}
+\newcommand{\lread}{{\texttt{rd}}}
+\newcommand{\lwrite}{{\texttt{wr}}}
+\newcommand{\lrw}{{\texttt{rlx}}}
+\newcommand{\lur}{{\texttt{pln}}}
+\newcommand{\lall}{\ast}
+\newcommand{\lrdwr}{\setofz{\lread,\lwrite}}
+\newcommand{\lval}{{\texttt{val}}}
+\newcommand{\lfrom}{{\texttt{from}}}
+\newcommand{\lto}{{\texttt{to}}}
+\newcommand{\ltime}{{\texttt{t}}}
+
+\hypersetup{%
+  linktocpage=true, pdfstartview=FitV,
+  breaklinks=true, pageanchor=true, pdfpagemode=UseOutlines,
+  plainpages=false, bookmarksnumbered, bookmarksopen=true, bookmarksopenlevel=3,
+  hypertexnames=true, pdfhighlight=/O,
+}
+
+
+\newcommand{\compile}[1]{{\llparenthesis{#1}\rrparenthesis}}
+
+
+\newcommand{\commentNonempty}[1]{
+  \ifx\\#1\\
+    {}
+  \else
+    \valuecom{#1}
+  \fi
+  }
+\newcommand{\readInst}[4]{#1 \;:=\;[#2]^{#4}; \commentNonempty{#3}}
+\newcommand{\fenceInst}[1]{\mathtt{fence}^{#1};}
+\newcommand{\writeInst}[3]{[#1]^{#3}\;:=\;#2;}
+\newcommand{\casInstSC}[3]{\mathtt{CAS^{\sco, \sco}_{\sco}(#1, #2, #3)};}
+\newcommand{\assignInst}[2]{#1\;:=\;#2;}
+\newcommand{\exchangeInstSC}[2]{\mathtt{exchange^{\sco}(#1, #2)};}
+\newcommand{\term}[1]{\emph{#1}}
+
+
+
+\newcommand{\Wrlx}{\lW^{\rlx}}
+\newcommand{\Rrlx}{\lR^{\rlx}}
+\newcommand{\Wsc}{\lW^{\sco}}
+\newcommand{\Rsc}{\lR^{\sco}}
+\newcommand{\Fa}{\lF^{\acq}}
+\newcommand{\Fr}{\lF^{\rel}}
+\newcommand{\Far}{\lF^{\acqrel}}
+\newcommand{\ar}{\ensuremath{ar}}
+\newcommand{\IMM}{\mathtt{IMM}}
+\newcommand{\OMM}{\mathtt{OCaml}\allowbreak \mathtt{MM}}
+\newcommand{\todo}[1]{\textbf{\Large TODO: \textcolor{red}{#1}}}
+\newcommand{\strongereq}{\sqsupseteq}
+\newcommand{\defin}[1]{\textit{#1}}
+
+% \bibliography{Namakonov/sources}
+
+% \hyphenation{%
+%   не-сог-ла-со-ван-ность
+% }
+
+% \begin{document}
+
+% \filltitle{ru}{
+%     chair              = {Кафедра системного программирования},
+%     title              = {Компиляция модели памяти OCaml в Power},
+%     type               = {master},
+%     position           = {студента},
+%     group              = 18.М08-мкн,
+%     author             = {Намаконов Егор Сергеевич},
+%     supervisor         = {Кознов Д.\,В.},
+%     supervisorPosition = {д.ф.-м.н.},
+%     reviewer           = {Березун Д. А.},
+%     reviewerPosition   = {к.ф.-м.н.},
+%     consultant         = {Подкопаев А.В.},
+%     consultantPosition = {к.ф.-м.н.},
+%     % chairHead          = {Хунта К.\,Х.},
+%     % chairHeadPosition  = {д.\,ф.-м.\,н., профессор},
+%   university         = {Санкт-Петербургский государственный университет},
+%   faculty            = {Математическое обеспечение и администрирование информационных систем},
+%   city               = {Санкт-Петербург},
+%   year               = {2020}
+% }
+% \filltitle{en}{
+%     chair              = {Software Engineering},
+%     title              = {Compilation of OCaml memory model to Power},
+%     author             = {Egor Namakonov},
+%     supervisorPosition = {D. Sc.},
+%     supervisor         = {Dmitri Koznov},
+%     consultant         = {Anton Podkopaev},
+%     consultantPosition = {Ph.D.},
+%     reviewer           = {Daniil Berezun},
+%     reviewerPosition   = {Ph.D.},
+%     faculty            = {Software and Administration of Information Systems},
+%     % chairHeadPosition  = {professor},
+%     % chairHead          = {Christobal Junta},
+% }
+
+% \maketitle
+
+% % \begin{abstract}
+% % \end{abstract}
+% % {\bf Ключевые слова:} слабые модели памяти, корректность компиляции, многопоточность.
+% \newgeometry{a4paper,top=20mm,bottom=20mm,left=30mm,right=15mm,nohead,includeheadfoot} % for some reason it's ignored when placed in cls file
+
+\tableofcontents
+
+
+
+\section{Введение}
+
+Результат исполнения многопоточной программы, как правило, является недетерминированным. Конкретное множество допустимых результатов многопоточной программы определяется \defin{моделью памяти} языка программирования. Наиболее известной является   \defin{модель последовательной согласованности} (\foreignlanguage{english}{sequential consistency}, SC \cite{sc}). Она предполагает, что любой результат исполнения программы может быть получен путём попеременного исполнения инструкций отдельных потоков согласно программному порядку в них. Однако из-за оптимизаций, выполняемых современными компиляторами и процессорами, могут наблюдаться сценарии поведения, невозможные в такой модели. Так, на архитектуре x86 чтение по адресу в памяти может вернуть не самое последнее записанное значение, так как операция записи может быть буферизована. 
+
+Отказ от подобных оптимизаций нежелателен, поэтому современные модели памяти допускают некоторые сценарии поведения, невозможные в модели SC. Такие модели памяти называются \defin{слабыми}. Например, слабыми являются модели памяти языков C++ \cite{cpp}, JavaScript \cite{js-mm} и Java \cite{jmm}, а также архитектур Power \cite{power}, x86 \cite{x86} и ARM \cite{arm}.
+
+%Как правило, слабые модели памяти дают более сильные гарантии на поведение программ, в которых конфликтующие обращения по одному и тому же адресу должным образом синхронизированы. В противном случае такие обращения образуют \defin{гонку по данным}, и в этом случае модель памяти может ослабить гарантии на поведение программы. Так, в модели C++ к гонке по данным приводят конфликтующие неатомарные обращения, и в этом случае поведение всей программы объявляется неопределённым \cite{cpp}.
+%В модели памяти Java для предотвращения гонки используются встроенные в язык средства синхронизации \cite{jmm}; в случае же возникновения гонки по некоторому адресу допускается чтение произвольных значений по нему в будущем \cite{omm}.
+
+%Для обеспечения баланса между производительностью и предсказуемостью поведения программы современные модели памяти предоставляют программисту гарантии DRF (data race freedom, \textit{свобода от гонок}). Они гарантируют, что поведение программы, не содержащей гонок по данным, будет согласовано с моделью SC. Например, свойство DRF предоставляют модели памяти Java и Promising \cite{promising}. 
+
+Модель памяти OCaml \cite{omm} (далее --- $\OMM$) отличается свойством т.н.  \textit{локальной свободы от гонок по данным} (local data race freedom). Именно, гарантируется, что выполнение конфликтующих обращений по выбранному адресу в памяти (т.е. ситуация гонки по данным) не влияет на обращения к другим адресам, а также на последующие обращения по тому же адресу. Благодаря этому даже при возникновении гонки по данным в некоторый момент исполнения следующие участки программы будут исполнены согласно модели SC. 
+
+% Для того, чтобы использовать $\OMM$ на практике, необходимо доказать её реализуемость на распространённых архитектурах процессоров.
+Чтобы гарантировать выполнение этого свойства, при компиляции нужно запретить некоторые оптимизации в зависимости от целевой архитектуры.
+% Этого можно достичь, если в зависимости от типа инструкции при компиляции выбирать подходящие режимы доступа или добавлять барьеры в ассемблерный код.
+Для этого может понадобиться, например, добавить в ассемблерный код инструкции-\defin{барьеры}, которые запрещают нежелательные оптимизации на уровне процессора. 
+Набор таких правил, покрывающий все возможные типы инструкций, называется \defin{схемой компиляции}. Схема компиляции должна быть \defin{корректной} --- при исполнении любой программы, полученной при компиляции согласно этой схеме, должно наблюдаться только сценарии поведения, разрешённые $\OMM$ для исходной программы.
+
+Авторы $\OMM$ разработали схемы компиляции $\OMM$ в модели x86-TSO и ARMv8 \cite{omm} и доказали их корректность. При этом отсутствует схема компиляции в модель архитектуры Power. А между тем данная архитектура часто используется в современном серверном оборудовании \cite{power-servers}. Задача построения такой схемы осложнена тем, что модель Power, в отличие от моделей x86-TSO, ARMv8 и $\OMM$, не обладает т.н. свойством \defin{multicopy atomicity}. Такое свойство означает, что записанные в память значения становятся доступны всем потокам в одном и том же порядке \cite{arm}. Из-за отсутствия этого свойства корректная схема компиляции $\OMM$ в Power должна расставлять барьеры в результирующей программе так, чтобы запретить нежелательные сценарии поведения. 
+
+В рамках данной работы была поставлена задача разработать схему компиляции $\OMM$ в модель Power и доказать её корректность. Для этого было решено использовать промежуточную модель памяти (Intermediate Memory Model, далее — $\IMM$) \cite{imm}, для которой уже доказана корректность компиляции в модель Power. Использование $\IMM$ как промежуточного этапа компиляции позволяет разбить доказательство корректности  на два, которые впоследствии можно использовать в других доказательствах. Таким образом, построение схемы компиляции $\OMM$ в $\IMM$ даёт схемы компиляции $\OMM$ не только в Power, но и другие архитектуры, в которые компилируется $\IMM$ (на данный момент --- x86 и ARM). 
+
+
+\section{Постановка задачи}
+
+Целью данной работы является доказательство корректности компиляции модели памяти OCaml ($\OMM$) в модель памяти Power \cite{power}. 
+
+В работе были поставлены следующие задачи:
+
+\begin{itemize}
+\item построение схемы компиляции $\OMM$ в $\IMM$ (для которой корректность компиляции в Power уже доказана);
+\item доказательство корректности полученной схемы;
+\item формализация доказательства в системе интерактивного доказательства теорем Coq \cite{coq-description}.
+\end{itemize}
+
+\section{Обзор}
+
+В этом разделе приводится пример слабого поведения программы и объясняются его причины. Затем на примерах рассматривается понятие корректности компиляции для моделей памяти. Далее формально описывается декларативный способ задания модели памяти \cite{power}, основанный на понятии графов исполнения. Наконец, формально описываются модели памяти $\OMM$ и $\IMM$, используемые далее в работе.
+
+\subsection{Пример исполнения в слабой модели памяти}
+
+Рассмотрим программу, представленную на \cref{fig:store-buffering}. Здесь и далее используется упрощённый синтаксис программ: $x$ и $y$ обозначают адреса в памяти, $a$ и $b$ — локальные переменные (регистры), $\rlx$ – режим доступа (это понятие будет рассмотрено ниже). Сверху указаны изначальные значения в памяти. В комментариях указаны наблюдаемые при чтении значения. Согласно модели SC, в зависимости от порядка исполнения инструкций в $a$ и $b$ могут быть записаны значения $(1, 1)$, $(1, 0)$ или $(0, 1)$. Однако после компиляции C++-аналога этой программы с помощью компилятора gcc и исполнения на архитектуре x86 в переменные $a$ и $b$ могут быть записаны нули, что не допускается моделью SC. У такого сценария поведения могут быть две причины. Во-первых, gcc может поменять местами обращения по разным адресам во время компиляции. Во-вторых, при исполнении на x86 возможна буферизация записи: в целях оптимизации обращений к памяти запись может быть отложена. 
+
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{l || l}
+    \multicolumn{2}{c}{$x = 0,\ y = 0$} \\
+    \hline
+    $\writeInst{x}{1}{\rlx}$ & $\writeInst{y}{1}{\rlx}$ \\
+    $\readInst{a}{y}{0}{\rlx}$ & $\readInst{b}{x}{0}{\rlx}$ \\
+  \end{tabular}
+  \caption{Пример программы и её исполнения при буферизации записи}
+  \label{fig:store-buffering}
+\end{figure}
+
+% Стоит отметить, что после оптимизации некоторых обращений к памяти поведение программы может перестать соответствовать спецификации.
+Новые сценарии поведения программы, возникающие в результате оптимизаций, могут быть некорректными с точки зрения требований к программе. Поэтому слабая модель памяти должна предоставлять возможность отменить оптимизации для отдельных инструкций. Для этого используются \defin{режимы доступа}, различные по степени строгости.
+% В зависимости от режима доступа инструкции при её компиляции могут быть отменены оптимизации, а также добавлены дополнительные инструкции-\defin{барьеры}, которые запрещают оптимизации на уровне процессора.
+% Компилятор по-разному обрабатывает инструкции с разными режимами доступа; в частности, перед отдельными инструкциями могут быть
+При компиляции инструкций с более строгими режимами компилятор может отменить некоторые оптимизации, а также добавить в результирующую программу инструкции-барьеры. 
+
+Так, в программе на \cref{fig:store-buffering} был использован режим доступа $\rlx$, который не ограничивает оптимизации соответствующих инструкций. Модель памяти C++ гарантирует, что если в этой программе для всех инструкций установить режим доступа $\sco$ вместо $\rlx$, то поведение полученной программы будет согласовано с моделью SC. Это справедливо в силу того, что  такие обращения будут скомпилированы с использованием инструкции MFENCE \cite{cpp-mappings} --- барьера памяти, запрещающего перестановки SC инструкций.
+
+\subsection{Проблема корректности компиляции на примерах} \label{corr-comp-example}
+
+Модели $\OMM$ и $\IMM$ определены декларативно \cite{power}. Это означает, что каждое возможное поведение программы задаётся в виде \defin{графа исполнения}, а семантика программы определяется как множество графов, удовлетворяющих некоторому условию. Пример программы и одного из графов её исполнения приведён на \cref{fig:example-discriminating}.
+
+%Метки $\na$ и $\at$ в программе на \cref{fig:example-discriminating} обозначают \defin{режимы доступа} соответствующих инструкций. Режимы доступа назначаются программистом для отмены оптимизаций отдельных инструкций. Так, запись в режиме $\at$ на архитектуре x86 компилируется\cite{omm} в инструкцию атомарной замены \texttt{xchg}, перед исполнением которой буфер записей очищается, что ограничивает множество возможных поведений программы.
+
+Вершины графа соответствуют событиям --- операциям над разделяемой памятью, которые производятся при выполнении инструкций программы. Так, событие $\lW^{\at}(x, 1)$ соответствует записи по адресу $x$ значения $1$ в режиме $\at$; другими типами событий являются чтение и барьер памяти (обозначаются $\lR$ и $\lF$ соответственно). Кроме того, в графе выделяются инициализирующие события, которые соответствуют инициализирующей записи нулей в память. На \cref{fig:example-discriminating} все они для краткости обозначены множеством $\mathtt{Init}$; далее в графах мы будем опускать эти события, если это не будет важно для рассуждений. Заметим, что содержимое локальных переменных потока не отражается в графе в явном виде, т.к. взаимодействие между потоками производится только через разделяемую память. 
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{tabular}{l || l || l}
+      \multicolumn{3}{c}{$\writeInst{x}{0}{}\ \writeInst{y}{0}{}$} \\
+      \hline
+      $\writeInst{x}{1}{\at}$ & $\readInst{a}{x}{1}{\at}$ & $\readInst{b}{y}{1}{\na}$ \\
+      {}            & $\writeInst{y}{1}{\na}$ & $\readInst{c}{x}{0}{\at}$ \\
+    \end{tabular}
+  \end{minipage}\hfill
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{tikzpicture}[yscale=1,xscale=1]
+      \node (Winit) at (3,1) {$\mathtt{Init}$};
+      
+      \node (T1W1) at (0, -1.5) {$\wlab{\at}{x}{1}$};
+      \dcoext{Winit}{T1W1}{bend right=30}{left};
+      
+      \node (T2R1) at (3,0) {$\rlab{\at}{x}{1}$};
+      \drf{T1W1}{T2R1};
+      \node (T2W1) at (3, -1.5) {$\wlab{\na}{y}{1}$};
+      \dpo{T2R1}{T2W1};
+      \dcoext{Winit}{T2W1}{bend right=70}{left};
+      
+      \node (T3R1) at (6,0) {$\rlab{\na}{y}{1}$};
+      \drf{T2W1}{T3R1};
+      \node (T3R2) at (6,-1.5) {$\rlab{\at}{x}{0}$};
+      \dpo{T3R1}{T3R2}; 
+      \drf{Winit}{T3R2};
+      \dfr{T3R2}{T1W1}{bend left=10};
+    \end{tikzpicture}
+  \end{minipage}
+  \caption{Пример программы и сценария её исполнения, не согласованного в $\OMM$}
+  \label{fig:example-discriminating}
+\end{figure}
+
+Рёбра графа задают бинарные отношения между событиями. В данном графе есть четыре
+различных отношения: рёбра $\lPO$ соответствуют программному порядку инструкций, $\lRF$ --- чтению записанного ранее значения, $\lCO$ --- порядку выполнения записи по одному адресу, $\lFR$ --- чтению до указанного события записи. Отношения $\lPO$ и $\lCO$ являются транзитивными, поэтому для их задания достаточно указывать только непосредственные рёбра. Кроме того, для краткости будем опускать подпись $\lPO$ рядом с соответствующими рёбрами.
+
+\defin{Согласованными} (допустимыми моделью) называются те сценарии исполнения программы, графы которых удовлетворяют некоторому предикату, заданному моделью. В частности, предикат согласованности $\OMM$ требует, чтобы в графе не было циклов, состоящих только из рёбер $\lCO$ и $\lFR$, проходящих между вершинами с меткой $\at$, а также рёбер $\lPO$ и $\lRF$. Это условие формализует свойство multicopy atomicity, описанное выше.
+
+Граф исполнения на \cref{fig:example-discriminating} не является согласованным по $\OMM$. Действительно, этот сценарий исполнения нарушает свойство multicopy atomicity: второй поток читает записанное в $x$ значение $1$ до записи $1$ в $y$, однако третий поток читает старое значение $0$ из $x$ после чтения $1$ из $y$. Соответствующий граф исполнения не удовлетворяет предикату согласованности $\OMM$, так как между вершинами есть цикл, подходящий под описание выше. Таким образом, в $\OMM$ после исполнения программы на \cref{fig:example-discriminating} переменные $a$, $b$ и $c$ не могут содержать значения $1$, $1$ и $0$ соответственно.
+
+Условие корректности компиляции требует, чтобы сценарии поведения, запрещённые для исходной программы в $\OMM$, также были запрещены для скомпилированной программы в $\IMM$. Для декларативных моделей памяти это означает, что из несогласованности графа исполнения в $\OMM$ должна следовать несогласованность соответствующего ему графа исполнения  в $\IMM$. При этом, как будет показано далее, можно рассматривать вопрос согласованности по $\OMM$ только для графа исполнения скомпилированной программы.
+
+На \cref{fig:example-imm-consistent} приведён результат компиляции программы на \cref{fig:example-discriminating} согласно тривиальной схеме компиляции. 
+Такая схема лишь заменяет режимы инструкций на их аналоги в $\IMM$: $\na$ заменяется на $\rlx$, а $\at$ — на $\sco$; дополнительных инструкций не вводится. Соответственно, граф исполнения на \cref{fig:example-imm-consistent} отличается от графа на \cref{fig:example-discriminating} только метками вершин, и в нём сохраняется цикл того же вида. $\IMM$ не гарантирует свойство multicopy atomicity, и потому предикат её согласованности не требует отсутствия таких циклов. Поэтому граф на \cref{fig:example-imm-consistent} согласован, что делает соответствующий ему сценарий поведения разрешается $\IMM$, в отличие от $\OMM$. Поэтому тривиальная схема компиляции не является корректной.
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{tabular}{l || l || l}
+      \multicolumn{3}{c}{$\writeInst{x}{0}{}\ \writeInst{y}{0}{}$} \\
+      \hline
+      $\writeInst{x}{1}{\sco}$ & $\readInst{a}{x}{1}{\sco}$ & $\readInst{b}{y}{1}{\rlx}$ \\
+      {}            & $\writeInst{y}{1}{\rlx}$ & $\readInst{c}{x}{0}{\sco}$ \\
+    \end{tabular}
+  \end{minipage}\hfill
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{tikzpicture}[yscale=1,xscale=1]
+      
+      \node (T1W1) at (0, -1.5) {$\wlab{\sco}{x}{1}$};
+      
+      \node (T2R1) at (3,0) {$\rlab{\sco}{x}{1}$};
+      \drf{T1W1}{T2R1};
+      \node (T2W1) at (3, -1.5) {$\wlab{\rlx}{y}{1}$};
+      \dpo{T2R1}{T2W1};
+      
+      \node (T3R1) at (6,0) {$\rlab{\rlx}{y}{1}$};
+      \drf{T2W1}{T3R1};
+      \node (T3R2) at (6,-1.5) {$\rlab{\sco}{x}{0}$};
+      \dpo{T3R1}{T3R2}; 
+      % \dfr{T3R2}{T1W1}{bend left=20};
+      \draw[fr, bend left=20] (T3R2) edge node[left, yshift=1ex] {$\lFR$}(T1W1);
+    \end{tikzpicture}
+  \end{minipage}
+  \caption{Результат компиляции программы на \cref{fig:example-discriminating} с использованием тривиальной схемы компиляции и согласованный по $\IMM$ граф его исполнения}
+  \label{fig:example-imm-consistent}
+\end{figure}
+
+На \cref{fig:example-imm-inconsistent} приведена программа, полученная в результате компиляции программы на \cref{fig:example-discriminating} согласно схеме компиляции, приведённой в разделе \ref{compilation-scheme}. В результате компиляции в ней появляются инструкции барьеров памяти, запрещающие некоторые оптимизации процессора и компилятора. С этими барьерами граф исполнения перестаёт быть согласованным: из рёбер $\lRF$ между событиями с меткой $\sco$, а также $\lFR$, $\lPO$ и окружённого барьерами $\lRF$ образуется цикл, запрещённый в $\IMM$.
+
+
+\newcommand{\vsIV}{-1.2}
+\newcommand{\hsIV}{2.2}
+
+\newcommand{\inconsistentExample}[1]{
+      \begin{tikzpicture}[yscale=1,xscale=1]
+      
+      \node (T1F1) at (0, 0) {$\flab{\acq}$};
+      \node (T1R1) at (0, \vsIV * 1) {$\rlab{\sco}{x}{0}$};
+      \dpo{T1F1}{T1R1};
+      \node (T1W1) at (0, \vsIV * 2) {$\wlab{\sco}{x}{1}$};
+      \dpo{T1R1}{T1W1};
+      \drmw{T1R1}{T1W1};
+      
+      \node (T2F1) at (\hsIV,0) {$\flab{\acq}$};
+      \node (T2R1) at (\hsIV,\vsIV * 1) {$\rlab{\sco}{x}{1}$};
+      \dpo{T2F1}{T2R1};
+      \drf{T1W1}{T2R1};
+      \node (T2F2) at (\hsIV,\vsIV * 2) {$\flab{\acqrel}$};
+      \dpo{T2R1}{T2F2};
+      \node (T2W1) at (\hsIV,\vsIV * 3) {$\wlab{\rlx}{y}{1}$};
+      \dpo{T2F2}{T2W1};
+      
+      \node (T3R1) at (\hsIV * 2,0) {$\rlab{\rlx}{y}{1}$};
+      \drf{T2W1}{T3R1};
+      \node (T3F1) at (\hsIV * 2,\vsIV * 1) {$\flab{\acq}$};
+      \dpo{T3R1}{T3F1};
+      \node (T3R2) at (\hsIV * 2,\vsIV * 2) {$\rlab{\sco}{x}{0}$};
+      \dpo{T3F1}{T3R2};
+      % \dhb{T2F2}{T3F1}{bend right=5};
+      \dfr{T3R2}{T1W1}{bend left=#1};
+    \end{tikzpicture}
+  }
+
+\begin{figure}[!h]
+%   % foobar
+  % \centering
+  \begin{minipage}{0.45\textwidth}
+    % \centering
+    \begin{tabular}{l || l || l}
+      \multicolumn{3}{c}{$\writeInst{x}{0}{}\ \writeInst{y}{0}{}$} \\
+      \hline
+      $\fenceInst{\acq}$ & $\fenceInst{\acq}$ & $\readInst{b}{y}{1}{\rlx}$ \\
+      $\exchangeInstSC{x}{1}$ & $\readInst{a}{x}{1}{\sco}$ & $\fenceInst{\acq}$\\
+      {} & $\fenceInst{\acqrel}$ & $\readInst{c}{x}{0}{\sco}$\\
+      {} & $\writeInst{y}{1}{\rlx}$ & {} \\
+    \end{tabular}
+    % bar
+  \end{minipage} \hfill
+  \begin{minipage}{0.45\textwidth}
+    % \centering
+    \inconsistentExample{70}
+    % foo
+  \end{minipage}
+
+  % \caption{foobar}
+  % \captionof{figure}{boofar}
+  % \caption{Результат компиляции программы на \cref{fig:example-discriminating} с использованием схемы компиляции из раздела \ref{compilation-scheme} и его граф исполнения, не согласованный в $\IMM$}
+  {\todo{Компиляция падает, если здесь использовать caption} Результат компиляции программы на \cref{fig:example-discriminating} с использованием схемы компиляции из раздела \ref{compilation-scheme} и его граф исполнения, не согласованный в $\IMM$}
+  \label{fig:example-imm-inconsistent}    
+\end{figure}
+
+Таким образом, для доказательства корректности компиляции необходимо доказать
+следующую теорему\footnote{Формальное понятие соответствие графов вводится в разделе \ref{compilation-scheme}.}.
+
+\begin{restatable}{thm}{compiletheorem}
+% \begin{definition}
+  \label{prop:compile-theorem}
+  Пусть $PO=||_{\tau\in \Tid} PO_\tau$ и $PI=||_{\tau\in \Tid} PI_\tau$ --- программы для моделей $\OMM$ и $\IMM$ соответственно, причём для любого $\tau \in \Tid$ подпрограмма $PI_\tau$ получена компиляцией $PO_\tau$ с помощью схемы компиляции из \cref{table:scheme}. Пусть $G_I$ --- согласованный по $\IMM$ граф исполнения $PI$. Тогда существует $G_O$ --- согласованный по $\OMM$ граф исполнения $PO$, соответствующий $G_I$. 
+\end{restatable}
+
+
+Ключевой идеей доказательства является то, что согласованность по $\OMM$ можно рассматривать для обоих графов исполнения. Для доказательства теоремы достаточно показать, что $G_I$ является согласованным по $\OMM$. Из этого следует согласованность $G_O$ по $\OMM$, так как он фактически является подграфом $G_I$ , а условия согласованности по $\OMM$ таковы, что выполняются для подграфов. Условие согласованности по $\OMM$ состоит в иррефлексивности одного отношения и ацикличности другого. Для каждого из этих отношений доказывается включение в такое отношение, для которого соответствующее условие выполняется в согласованном по $\IMM$ графе.
+
+\subsection{Графы исполнения}
+\label{exec-graphs}
+
+В описаниях декларативных моделей памяти мы будем использовать следующие обозначения отношений между вершинами. Для бинарного отношения $R$ обозначения $R^?$, $R^{+}$, $R^{*}$ соответствуют его рефлексивному, транзитивному и транзитивно-рефлексивному замыканиям соответственно. Обратное отношение записывается как $R^{-1}$. Левая композиция отношений $R_1$ и $R_2$ записывается следующим образом:
+
+$R_1;R_2 \defeq \set{x, y | \exists z. (x, z) \in R_1 \land (z, y) \in R_2}$.
+
+Непосредственные рёбра $R$ обозначаются как $\imm R \defeq R \backslash R;R$. Тождественное отношение на множестве $A$ обозначается как $[A]$; в частности, $[A];R;[B] = R \cap (A \times B)$.
+
+В данном разделе описываются графы исполнения наиболее общего вида, без привязки к конкретным моделям памяти или языкам. 
+
+Считаем, что анализируемая программа $P$ состоит из последовательных подпрограмм отдельных потоков $P_\tau$: $P = ||_{\tau\in \Tid} P_\tau$, где $||$ --- оператор параллельной композиции программ, а $\Tid$ --- конечное множество идентификаторов потоков.
+
+% \begin{definition}
+\begin{restatable}{mydefinition}{graph}
+  \emph{Граф исполнения} $G$ задаётся множеством вершин, бинарными отношениями на вершинах, а также функцией, сопоставляющей вершинами \emph{метки}. 
+\end{restatable}
+%\end{definition}
+  
+  Множество вершин, обозначаемое как $G.\lE$, делится на инициализирующие события вида $\mathtt{Init}\ loc$ и неинициализирующие события вида $\mathtt{ThreadEvent}\ \tau\ n$. Их компонентами являются:
+  \begin{itemize}
+  \item $loc \in \Loc$ --- адрес инициализации, где $\Loc$ --- конечное множество адресов;
+  \item $\tau \in \Tid$ --- номер потока;
+  \item $n\in \mathbb{N}$ --- порядковый номер внутри потока.
+  \end{itemize}
+    
+Функция $G.\Lab$ сопоставляет событиям \term{метки} вида $(type, loc, mode, val)$. Их компонентами являются:
+\begin{itemize}
+\item $type \in \{\lR, \lW, \lF\}$ --- тип операции (чтение, запись, барьер);
+\item $loc \in \Loc$ --- адрес памяти (для барьера не определено);
+\item $mode$ --- один из режимов доступа (например, $\rel$), частично упорядоченных отношением ``строже чем'' ($\sqsubset$); конкретное множество режимов и их порядок определяется моделью памяти;
+\item $val\in \Val$ --- прочитанное/записанное значение (в случае барьера не определено), где $\Val$ --- множество значений, которые могут храниться в памяти.
+\end{itemize}
+
+Следует отметить, что инициализирующие события вида $\mathtt{Init}\ loc$ обрабатываются особым образом. Именно,
+
+$G.\Lab(\mathtt{Init}\ loc) = (\lW, loc, mode_{\Init}, val_{\Init})$, где $mode_{\Init}$ --- выбранный режим доступа для инициализирующих событий записей (например, в $\IMM$ --- $\rlx$), а $val_{\Init}$ --- начальное значение в памяти (как правило, 0).
+
+Для множеств событий с определёнными метками вводятся соответствующие обозначения. Например, события с меткой чтения в режиме $\acq$ или более строгим будем обозначать как $G.\lR^{\acq}$ (или просто $\lR^{\acq}$, если граф очевиден из контекста).
+
+Рёбра графа представляют собой следующие отношения между событиями:
+\begin{itemize}
+\item программный порядок (program order): $G.\lPO(x, y)\!\! \iff \!\! (x\in \Init \land y\notin \Init) \lor (x.\tau = y.\tau \land x.n<y.n)$;
+\item порядок согласованности (coherence order): $G.\lCO = \bigcup_{l\in \Loc} \lCO_l$, где $\lCO_l$ --- тотальный порядок на событиях записи по адресу $l$;
+\item наблюдение записанного значения (``читает-из'', reads from):
+
+  $G.\lRF \subseteq \bigcup_{l\in \Loc} G.\lW_l \times G.\lR_l$, где
+
+  $G.\lRF(w, r)\implies G.\Lab(w).val = G.\Lab(r).val$, $codom(G.\lRF) = G.\lR$ и
+
+  $G.\lRF^{-1}$ является функциональным отношением;
+\item чтение до указанной записи: $G.\lFR = G.\lRF^{-1}; G.\lCO$ (from-read, ``читает-\allowbreak до'').
+\end{itemize}  
+
+Различные модели памяти могут иметь в графе исполнения и другие отношения. Например, в модели $\IMM$ также есть отношение $\lRMW \subseteq \bigcup_{l\in \Loc}[G.\lR_l];\imm\lPO;[G.\lW_l]$, соответствующее паре событий чтения и записи в операции read-modify-write. 
+
+Введём понятия сужения графа на поток $i$: $G_\tau.\lE = \{e\in G.\lE\ |\ e.\tau = i\}$, $G_\tau.\Lab = G.\Lab$.
+
+\begin{restatable}{mydefinition}{execution}
+% \begin{definition}
+\term{Графом исполнения программы} $P$ называется такой граф $G$, что его сужение на любой поток $\tau\in \Tid$ является \term{однопоточным графом исполнения} программы $P_\tau$.
+% \end{definition}
+\end{restatable}
+
+Соответствие подпрограммы потока и однопоточного графа исполнения определяется средствами операционной семантики, специфичной для модели памяти \cite{omm}, \cite{imm}. Мы не приводим подробностей здесь, скажем лишь, что такая семантика задаёт соответствие между выполнением инструкций языка и изменением графа исполнения. Так, для $\IMM$ выполнение инструкции $[x]^{\rel}\;:=\;1$ соответствует добавлению в текущий граф вершины с очередным порядковым номером и меткой вида $\lW^\rel(x, 1)$, а также рёбер, отражающих синтаксические зависимости данного события.
+
+\begin{restatable}{mydefinition}{outcome}
+  \label{definition:outcome-def}
+  Граф исполнения определяет \emph{сценарий поведения} программы --- функцию ${f: \Loc \to \Val}$, отображающую адрес в последнее (согласно порядку $\lCO$) записанное по нему значение. 
+\end{restatable}
+
+Декларативная модель памяти задаётся предикатом согласованности, которому должны удовлетворять графы исполнения программ.
+\begin{restatable}{mydefinition}{outcome}
+  Сценарий поведения программы является \emph{согласованным} по модели памяти $M$, если он задан некоторым графом её исполнения, удовлетворяющим предикату согласованности $M$.
+\end{restatable}  
+
+\subsection{Описание используемых моделей памяти}
+% \label{mm-description}
+
+В данном разделе описываются рассматриваемые модели памяти ---  $\OMM$ и $\IMM$, --- а также их предикаты
+согласованности.
+
+\subsubsection{Модель памяти OCaml ($\OMM$)}
+% \label{ocaml-mm}
+
+% По сравнению с другими моделями памяти, предоставляющим DRF гарантии, $\OMM$ отличается более сильным свойством --- Local Data Race Freedom (локальная свобода от гонок). Оно гарантирует, что влияние гонок по данным на поведение программы ограничено по области памяти и по времени.
+% Именно, гарантируется, что исполнение конфликтующих обращений по выбранному адресу в памяти не влияет на обращения к другим адресам, а также на последующие обращения по тому же адресу. 
+% Таким образом, поведение при исполнении всех участков программы, не содержащих гонок по данным, согласовано с моделью SC. Благодаря этому даже при возникновении гонки по данным в некоторый момент исполнения следующие участки программы будут исполнены в соответствии с моделью SC, чего не гарантируется обычными DRF теоремами. 
+
+Модель памяти OCaml ($\OMM$) \cite{omm} задана эквивалентными операционным и декларативным описаниями. Для доказательства корректности компиляции будет использоваться декларативное описание.
+
+$\OMM$ поддерживает два режима доступа: неатомарный $\na$ и атомарный $\at$ (схожи с $\pln$ и $\sco$ в C++). При этом память также разделена на неатомарные и атомарные адреса, и к конкретному адресу можно обратиться только операцией соответствующего режима.
+
+В графе исполнения $\OMM$ есть только операции чтения и записи, барьеры отсутствуют.
+
+Перед рассмотрением предиката согласованности введём ещё несколько обозначений. Для отношения $R$ в графе исполнения будем обозначать $Ri$ рёбра $R$, проходящие между вершинами одного потока, а $Re$ --- между вершинами разных потоков. 
+
+\begin{restatable}{mydefinition}{omm-consistent}
+% \begin{definition}
+  Сценарий исполнения называется \term{согласованным по $\OMM$}, если в соответствующем графе исполнения выполняются следующие аксиомы:
+
+  \begin{enumerate}
+  \item последовательная согласованность по отдельным адресам (SC per location, coherence): отношение $\lHBO ; (\lCO \cup \lFR)$ иррефлексивно, где
+
+    $\lHBO \defeq \lPO \cup [\lE^{\at}] ; (\lRF \cup \lCO) ; [\lE^{\at}]$;
+    
+  \item отсутствие буферизации при чтении (load buffering): отношение $\lPO \cup \lRFE \cup [\lE^{\at}] ; (\lCOE \cup \lFRE) ; [\lE^{\at}]$ ациклично.
+  \end{enumerate}
+% \end{definition}
+\end{restatable}
+
+\subsubsection{Промежуточная модель памяти}
+
+% @misc{coq-description,
+%     author    = "Coq development team",
+%     title     = "The Coq Proof Assistant",
+%     howpublished = {\url{https://coq.inria.fr/}},
+%     langid = {english},
+%     year = {2020},
+% }
+
+% Промежуточная модель памяти ($\IMM$) определена декларативно. Полный предикат согласованности $\IMM$ достаточно сложен, поэтому мы рассмотрим лишь часть модели, которая будет необходима для построения схемы компиляции. Перед этим введём ещё несколько обозначений. $R_{loc}$ будем обозначать рёбра $R$, проходящие между вершинами с метками одного и того же адреса, $R_{\neq loc}$ --- между вершинами с метками разных адресов.
+
+% Синтаксис программ на $\IMM$ напоминает таковой в C++ --- помимо инструкций атомарного чтения и записи есть инструкции барьеров памяти, а также операций read-modify-write. В граф исполнения программы на $\IMM$, помимо отношений, перечисленных в разделе \ref{exec-graphs}, также входит отношение, связывающее события чтения и записи, которые совершаются при операции read-modify-write:
+
+% $G.\lRMW \subseteq ([G.\lR] ;\imm \lPO;[G.\lW])_{loc}$. 
+
+% Для построения схемы компиляции мы пользуемся расширением \cite{imm-sc} $\IMM$, которое дополняет оригинальную модель \cite{imm} $\sco$-операциями. 
+
+% \begin{restatable}{mydefinition}{imm-consistent}
+%   % \begin{definition}
+%   Сценарий исполнения называется \term{согласованным по $\IMM$}, если в соответствующем графе исполнения выполняются следующие аксиомы:
+%   \begin{enumerate}
+%   \item отношение $\lHB ; (\lRF \cup \lCO \cup \lFR)^{+}$ иррефлексивно, при этом справедливо следующее:
+    
+%   $\lHB \defeq (\lPO \cup \lSW)^{+}$
+
+%   $\lSW \defeq \mathtt{\color{blue}release};(\lRFI \cup \lPO^?_{loc};\lRFE);([\lR^{\acq}] \cup \lPO;[\lF^{\acq}])$
+
+%   $\mathtt{\color{blue}release} \defeq ([\lW^{\rel}] \cup [\lF^{\rel}];\lPO);\mathtt{\color{blue}rs}$
+
+%   $\mathtt{\color{blue}rs} \defeq [\lW];\lPO_{loc};[\lW] \cup [\lW];(\lPO^?_{loc};\lRFE;\lRMW)^{*}$;
+% \item операции read-modify-write являются атомарными:
+
+%   $\lRMW \cap (\lFRE ; \lCOE) = \emptyset$;
+%   \item отношение $\lAR$ ациклично, при этом справедливо следующее:
+
+%     $\lAR \supset \lRFE \cup \lBOB$
+
+%     $\lBOB \supset [\lR^{\acq}] ; \lPO \cup \lPO ; [\lF] \cup [\lF] ; \lPO$;
+%   \item отношение $\lPSCB$ ациклично, при этом справедливо следующее:
+
+%     $\lPSCB \defeq ([\lE^\sco] \cup{} [\lF^\sco];\lHB^?);\lSCB;([\lE^\sco] \cup{} \lHB^?;[\lF^\sco])$
+
+%     $\lSCB \defeq \lPO \cup \lPO_{\neq loc} ; \lHB ; \lPO_{\neq loc} \cup \lHB_{loc} \cup \lCO \cup \lFR$.
+
+%   \end{enumerate}
+% % \end{definition}
+% \end{restatable}
+
+
+
+\bibliographystyle{ugost2008ls}
+\bibliography{Namakonov/sources}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

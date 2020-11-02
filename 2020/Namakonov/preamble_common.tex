@@ -1,56 +1,56 @@
-%\usepackage[style=authoryear,backend=biber]{biblatex}
+% %\usepackage[style=authoryear,backend=biber]{biblatex}
 
-%\usepackage{cite}
-\usepackage{booktabs}
-\usepackage{subcaption}
-\usepackage{microtype}
-\usepackage{amsmath}
-\usepackage{amssymb,amsfonts,amsthm}
-\usepackage{stmaryrd}
-\usepackage{multicol}
-\usepackage{algorithm}
-\usepackage[noend]{algpseudocode}
-\usepackage{graphicx}
-\usepackage{tikz}
-\usepackage{thm-restate}
-\usepackage{mathpartir}
-\usepackage{xspace}
+% %\usepackage{cite}
+% \usepackage{booktabs}
+% \usepackage{subcaption}
+% \usepackage{microtype}
+% \usepackage{amsmath}
+% \usepackage{amssymb,amsfonts,amsthm}
+% \usepackage{stmaryrd}
+% \usepackage{multicol}
+% \usepackage{algorithm}
+% \usepackage[noend]{algpseudocode}
+% \usepackage{graphicx}
+% \usepackage{tikz}
+% \usepackage{thm-restate}
+% \usepackage{mathpartir}
+% \usepackage{xspace}
 
-\usepackage{authblk}
-\usepackage{listings}
-%% \usepackage[dvipsnames]{xcolor}
-\usepackage{colortbl}
-\usepackage{hyperref}
-\usepackage[capitalise]{cleveref}
-% \usepackage[utf8]{inputenc}
-% usepackage[russian]{babel}
+% \usepackage{authblk}
+% \usepackage{listings}
+% %% \usepackage[dvipsnames]{xcolor}
+% \usepackage{colortbl}
+% \usepackage{hyperref}
+% \usepackage[capitalise]{cleveref}
+% % \usepackage[utf8]{inputenc}
+% % usepackage[russian]{babel}
 
-% custom
+% % custom
 
-\usepackage[shortlabels]{enumitem}
-\setlist[enumerate, 1]{1)}
+% \usepackage[shortlabels]{enumitem}
+% \setlist[enumerate, 1]{1)}
 
-\usepackage{cmap}
+% \usepackage{cmap}
 
-%% \usepackage{microtype}%if unwanted, comment out or use option "draft"
-\usepackage{thmtools,thm-restate}
-\usepackage{semantic}
-\usepackage{chngcntr}
+% %% \usepackage{microtype}%if unwanted, comment out or use option "draft"
+% \usepackage{thmtools,thm-restate}
+% \usepackage{semantic}
+% \usepackage{chngcntr}
 
-\renewcommand*{\Authsep}{, }
-\renewcommand*{\Authand}{, }
-\renewcommand*{\Authands}{, }
+% \renewcommand*{\Authsep}{, }
+% \renewcommand*{\Authand}{, }
+% \renewcommand*{\Authands}{, }
 
-\newcommand{\valuecom}[1]{\textcolor{green!60!black}{/\!/ #1}}
-\newcommand{\valuefail}[1]{\textcolor{red!60!black}{// #1}}
-\newcolumntype{L}{>{$}l<{$}} % math-mode version of "l" column type
+% \newcommand{\valuefail}[1]{\textcolor{red!60!black}{// #1}}
+% \newcolumntype{L}{>{$}l<{$}} % math-mode version of "l" column type
 
-\declaretheorem[name=Теорема,style=default,numberwithin=section]{thm}
-\declaretheorem[name=Лемма,style=default,numberwithin=section]{lem}
-\declaretheorem[name=Определение,style=default,sibling=thm]{mydefinition}
+% \declaretheorem[name=Теорема,style=default,numberwithin=section]{thm}
+% \declaretheorem[name=Лемма,style=default,numberwithin=section]{lem}
+% \declaretheorem[name=Определение,style=default,sibling=thm]{mydefinition}
 %\declaretheorem[name=Определение,style=definition,numbered=no]{mydefinition}
 
 
+\newcommand{\valuecom}[1]{\textcolor{green!60!black}{/\!/ #1}}
 \newcommand{\textdom}[1]{\mathsf{#1}}
 \newcommand{\textcode}[1]{\texorpdfstring{\texttt{#1}}{#1}}
 \newcommand{\kw}[1]{\textbf{\textcode{#1}}}
@@ -400,20 +400,10 @@
 \newcommand{\rulename}[1]{{\textsc{({#1})}}}
 \newcommand{\onestep}[2]{{\textsc{({#1}}{({#2})}\textsc{)}}}
 
-\newcommand{\ts}[1]{\mbox{\small#1}}
-\newcommand{\rlxmsg}[3]{\tup{#1\mathbin{:}#2\text{\small@}#3}}
-\newcommand{\updmsg}[4]{\tup{#1\mathbin{:}#2\text{\small@}(#3,#4]}}
-\newcommand{\vtup}[2]{#1\text{\small@}#2}
-
 \newcommand{\Einit}{{\texttt{E}_{\texttt{init}}}}
 \newcommand{\SBinit}{{\texttt{SB}_{\texttt{init}}}}
 
 \newcommand{\LOC}{\mathit{loc}}
-
-\newcommand{\lloc}{{\texttt{loc}}}
-\newcommand{\lid}{{\texttt{id}}}
-\newcommand{\ltyp}{{\texttt{typ}}}
-\newcommand{\lupd}{{\texttt{upd}}}
 
 %% blue, brown, cyan, darkgray, gray, green, lime, magenta, olive, orange, pink, purple, red, teal, violet, yellow.
 
