@@ -18,14 +18,14 @@
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.5\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=187, escapechar=|]
-  $::$ $append^o$ x y xy = conde |\label{line:ex1}|
-    ($x$ === [] /\ $xy$ === $y$)
-    ([$h$ $t$ $r$:
-        $x$ === $h$ $\%$ $t$ /\
-        $xy$ === $h$ $\%$ $r$ /\
-        {$append^o$ $t$ $y$ $r$}])
+ $::$ $append^o$ x y xy = conde |\label{line:ex1}|
+   ($x$ === [] /\ $xy$ === $y$)
+   ([$h$ $t$ $r$:
+       $x$ === $h$ $\%$ $t$ /\
+       $xy$ === $h$ $\%$ $r$ /\
+       {$append^o$ $t$ $y$ $r$}])
   \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -38,7 +38,7 @@
 
 \begin{figure}[h!]
   \begin{center}
-    \begin{boxedminipage}{\linewidth}
+    \begin{boxedminipage}{0.78\linewidth}
     % \begin{grammar}
     <program> ::= <def>* <goal>
 
@@ -50,11 +50,11 @@
 
     <fresh> ::= `[' <ident>+ `:' <goal> `]'
 
-    <invoke> ::= `{' <ident> <term>* `}'
+    <invoke> ::= `\{' <ident> <term>* `\}'
 
-    <disj> ::= <conj> (`\\/' <conj>)*
+    <disj> ::= <conj> (`\textbackslash /' <conj>)*
 
-    <conj> ::= <pat> (`/\\' <pat>)*
+    <conj> ::= <pat> (`/\textbackslash' <pat>)*
 
     <pat> ::= <term> `===' <term> | <fin>
 

@@ -16,7 +16,7 @@
 Для решения проблемы нерекурсивных вызовов на конструкторах будем действовать следующим образом.
 \begin{itemize}
     \item Сформируем новое отношение, принимающее на вход все переменные аргументов вызова. Его тело --- тело вызываемого отношения с подставленными в него аргументами.
-    \item Вызов исходного отношения на аргументах-конструкторах заменим на вызов нового отношения на аргументах-переменных. 
+    \item Вызов исходного отношения на аргументах-конструкторах заменим на вызов нового отношения на аргументах-переменных.
 \end{itemize}
 
 Рассмотрим вызов $append^o~(a:as)~ys~z$.
@@ -25,15 +25,15 @@
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.42\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=62, escapechar=|]
-  $append^o1$ $a$ $as$ $y$ $z$ =
-    ($fresh$ [$h$, $t$, $r$] (
-        a $\equiv$ h $\wedge$ |\label{line:appendo13}|
-        as $\equiv$ t $\wedge$ |\label{line:appendo14}|
-        z $\equiv$ h : r $\wedge$ |\label{line:appendo15}|
-        $append^o$ t y r |\label{line:appendo16}|
-    ))
+ $append^o1$ $a$ $as$ $y$ $z$ =
+   ($fresh$ [$h$, $t$, $r$] (
+       a $\equiv$ h $\wedge$ |\label{line:appendo13}|
+       as $\equiv$ t $\wedge$ |\label{line:appendo14}|
+       z $\equiv$ h : r $\wedge$ |\label{line:appendo15}|
+       $append^o$ t y r |\label{line:appendo16}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -59,14 +59,14 @@ $revacc^o$ приведено на рисунке~\ref{lst:revacco}.
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.4\textwidth}
+  \begin{minipage}{0.53\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=69, escapechar=|]
-  $revacc^o$ $xs$ $acc$ $sx$ =
-    ($xs$ $\equiv$ [] $\wedge$ $sx$ $\equiv$ $acc$) $\vee$ |\label{line:revacco2}|
-    ($fresh$ [$h$, $t$] (
-        $xs$ $\equiv$ $h$ : $t$ $\wedge$ |\label{line:revacco4}|
-        $revacc^o$ $t$ $(h~\%~acc)$ $sx$ |\label{line:revacco5}|
-    ))
+ $revacc^o$ $xs$ $acc$ $sx$ =
+   ($xs$ $\equiv$ [] $\wedge$ $sx$ $\equiv$ $acc$) $\vee$ |\label{line:revacco2}|
+   ($fresh$ [$h$, $t$] (
+       $xs$ $\equiv$ $h$ : $t$ $\wedge$ |\label{line:revacco4}|
+       $revacc^o$ $t$ $(h~\%~acc)$ $sx$ |\label{line:revacco5}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -80,14 +80,14 @@ $revacc^o$ приведено на рисунке~\ref{lst:revacco}.
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.45\textwidth}
+  \begin{minipage}{0.65\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=75, escapechar=|]
-  $revacc^o1$ $xs$ $h$ $acc$ $sx$ =
-    ($xs$ $\equiv$ [] $\wedge$ $sx$ $\equiv$ $(h~\%~acc)$) $\vee$ |\label{line:revacco12}|
-    ($fresh$ [$h'$, $t$] (
-        $xs$ $\equiv$ $h'$ : $t$ $\wedge$        |\label{line:revacco14}|
-        $revacc^o$ $t$ $(h'~\%~(h~\%~acc))$ $sx$ |\label{line:revacco15}|
-    ))
+ $revacc^o1$ $xs$ $h$ $acc$ $sx$ =
+   ($xs$ $\equiv$ [] $\wedge$ $sx$ $\equiv$ $(h~\%~acc)$) $\vee$ |\label{line:revacco12}|
+   ($fresh$ [$h'$, $t$] (
+       $xs$ $\equiv$ $h'$ : $t$ $\wedge$        |\label{line:revacco14}|
+       $revacc^o$ $t$ $(h'~\%~(h~\%~acc))$ $sx$ |\label{line:revacco15}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -108,17 +108,17 @@ $revacc^o$ приведено на рисунке~\ref{lst:revacco}.
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.53\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=81, escapechar=|]
-  $revacc^o2$ $xs0$ $acc1$ $sx1$ =
-    ($xs0$ $\equiv$ [] $\wedge$
-    $sx1$ $\equiv$ $<gen:>$ $\wedge$|\label{line:revacco2IOOANN2}|
-    $sx1$ $\equiv$ $acc2$) $\vee$ |\label{line:revacco2IOOANN3}|
-    ($fresh$ [$h$, $t$, $hacc$] (
-        $xs0$ $\equiv$ $h1$ : $t1$ $\wedge$ |\label{line:revacco2IOOANN5}|
-        $hacc2$ $\equiv$ $h1$ : $acc3$ $\wedge$ |\label{line:revacco2IOOANN6}|
-        $revacc^o$ $t1$ $hacc2$ $sx2$ |\label{line:revacco2IOOANN7}|
-    ))
+ $revacc^o2$ $xs0$ $acc1$ $sx1$ =
+   ($xs0$ $\equiv$ [] $\wedge$
+   $sx1$ $\equiv$ $<gen:>$ $\wedge$|\label{line:revacco2IOOANN2}|
+   $sx1$ $\equiv$ $acc2$) $\vee$ |\label{line:revacco2IOOANN3}|
+   ($fresh$ [$h$, $t$, $hacc$] (
+       $xs0$ $\equiv$ $h1$ : $t1$ $\wedge$ |\label{line:revacco2IOOANN5}|
+       $hacc2$ $\equiv$ $h1$ : $acc3$ $\wedge$ |\label{line:revacco2IOOANN6}|
+       $revacc^o$ $t1$ $hacc2$ $sx2$ |\label{line:revacco2IOOANN7}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -147,15 +147,15 @@ $revacc^o$ приведено на рисунке~\ref{lst:revacco}.
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.45\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=90, escapechar=|]
-  $append^o2$ $x$ $z$ =
-    ($x$ $\equiv$ [] $\wedge$ $x$ $\equiv$ $z$) $\vee$ |\label{line:appendo22}|
-    ($fresh$ [$h$, $t$, $r$] (
-        $x$ $\equiv$ $h$ : $t$ $\wedge$ |\label{line:appendo24}|
-        $z$ $\equiv$ $h$ : $r$ $\wedge$ |\label{line:appendo25}|
-        $append^o$ $t$ $x$ $r$          |\label{line:appendo26}|
-    ))
+ $append^o2$ $x$ $z$ =
+   ($x$ $\equiv$ [] $\wedge$ $x$ $\equiv$ $z$) $\vee$ |\label{line:appendo22}|
+   ($fresh$ [$h$, $t$, $r$] (
+       $x$ $\equiv$ $h$ : $t$ $\wedge$ |\label{line:appendo24}|
+       $z$ $\equiv$ $h$ : $r$ $\wedge$ |\label{line:appendo25}|
+       $append^o$ $t$ $x$ $r$          |\label{line:appendo26}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -178,22 +178,22 @@ $revacc^o$ приведено на рисунке~\ref{lst:revacco}.
 \begin{proof}
     Необходимо показать, что любое отношение ненормализофанной формы~\ref{lst:miniKanren} можно привести к отношению нормализованной формы~\ref{fig:normMiniKanren}.
     Для доказательства воспользуемся идеей структурной индукции: разберём способы приведения каждого из конструктов к нормальной форме.
-    
+
     \textit{Унификация}.
     Запрещены унификации двух конструкторов.
     Пусть существует унификация $C~name~[t_0 \dots t_k]~:=:~C~name~[s_0 \dots s_k]$, где $t_i$ и $s_i$ --- термы.
     Ее можно заменить на конъюнкцию унификаций вида $t_0~:=:~s_0~\wedge~\dots~\wedge~t_k~:=:~s_k$.
     Если среди пар унификаций вида $t_i~:=:~s_i$ окажется унификация двух конструкторов, ее так же необходимо заменить на конъюнкцию унификаций.
-    
+
     \textit{Вызов отношения}.
     Запрещены вызовы отношений на аргументах-конструкторах.
     Случаи нерекурсивного и рекурсивного вызовов на аргументах-конструкторах рассмотрены в разделах~\ref{lab:non-rec} и~\ref{lab:rec} соответственно.
     В данных разделах рассказывается, как из вызовов на аргументах-конструкторах получить вызовы на переменных.
-    
+
     \textit{Объявление новых переменных}.
     $fresh$-цель разрешена только на самом верхнем уровне.
     Если уникально переименовать все $fresh$-переменные отношения, то $fresh$-цель можно оставить только на самом верхнем уровне, избежав перекрытия имён.
-    
+
     \textit{Конъюнкция и дизъюнкция}.
     Нормализованное отношение должно быть в ДНФ.
     Приведение булевого выражения в дизъюнктивную нормальную форму --- тривиальная задача.

@@ -12,15 +12,15 @@ $append^o$ --- отношение связывающее три списка, п
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.5\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=8, escapechar=|]
-  $append^o$ $x^0$ $y^0$ $z^1$ =
-    ($x^0$ $\equiv$ [] $\wedge$ $y^0$ $\equiv$ $z^1$) $\vee$ |\label{line:appendoIIOANN2}|
-    ($fresh$ [$h$, $t$, $r$] (
-        $x^0$ $\equiv$ $h^1$ : $t^1$ $\wedge$ |\label{line:appendoIIOANN4}|
-        $z^3$ $\equiv$ $h^1$ : $r^2$ $\wedge$ |\label{line:appendoIIOANN5}|
-        $append^o$ $t^1$ $y^0$ $r^2$          |\label{line:appendoIIOANN6}|
-    ))
+ $append^o$ $x^0$ $y^0$ $z^1$ =
+   ($x^0$ $\equiv$ [] $\wedge$ $y^0$ $\equiv$ $z^1$) $\vee$ |\label{line:appendoIIOANN2}|
+   ($fresh$ [$h$, $t$, $r$] (
+       $x^0$ $\equiv$ $h^1$ : $t^1$ $\wedge$ |\label{line:appendoIIOANN4}|
+       $z^3$ $\equiv$ $h^1$ : $r^2$ $\wedge$ |\label{line:appendoIIOANN5}|
+       $append^o$ $t^1$ $y^0$ $r^2$          |\label{line:appendoIIOANN6}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -28,7 +28,7 @@ $append^o$ --- отношение связывающее три списка, п
   \label{lst:appendoIIOANN}
 \end{figure}
 
-В данном случае переменные $x$ и $y$ являются входными. 
+В данном случае переменные $x$ и $y$ являются входными.
 При начале работы алгоритма, такого отношения и направления нет в стеке вызовов, поэтому они добавляются в стек и рекурсивно запускается аннотирование цели $append^o$.
 Так как $x$ и $y$ --- входные переменные, их аннотации известны и равны $0$.
 
@@ -49,15 +49,15 @@ $append^o$ --- отношение связывающее три списка, п
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.5\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=15, escapechar=|]
-  $append^o$ $x^1$ $y^1$ $z^0$ =
-    ($x^1$ $\equiv$ [] $\wedge$ $y^1$ $\equiv$ $z^0$) $\vee$ |\label{line:appendoOOIANN2}|
-    ($fresh$ [$h$, $t$, $r$] (
-        $x^3$ $\equiv$ $h^1$ : $t^2$ $\wedge$ |\label{line:appendoOOIANN4}|
-        $z^0$ $\equiv$ $h^1$ : $r^1$ $\wedge$ |\label{line:appendoOOIANN5}|
-        $append^o$ $t^2$ $y^2$ $r^1$          |\label{line:appendoOOIANN6}|
-    ))
+ $append^o$ $x^1$ $y^1$ $z^0$ =
+   ($x^1$ $\equiv$ [] $\wedge$ $y^1$ $\equiv$ $z^0$) $\vee$ |\label{line:appendoOOIANN2}|
+   ($fresh$ [$h$, $t$, $r$] (
+       $x^3$ $\equiv$ $h^1$ : $t^2$ $\wedge$ |\label{line:appendoOOIANN4}|
+       $z^0$ $\equiv$ $h^1$ : $r^1$ $\wedge$ |\label{line:appendoOOIANN5}|
+       $append^o$ $t^2$ $y^2$ $r^1$          |\label{line:appendoOOIANN6}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -68,9 +68,9 @@ $append^o$ --- отношение связывающее три списка, п
 Пусть $append^o$ уже в стеке и $z$ проаннотирована.
 В первом дизъюнкте $x$ и $y$ имеют аннотацию~$1$: $y$ унифицируется со входной переменной $z$, а $x$ --- с константой.
 Во втором дизъюнкте на первом шаге становятся известны аннотации $h$ и $r$ (строка~\ref{line:appendoOOIANN5}).
-Аннотация $r$ распространяется на строку~\ref{line:appendoOOIANN6}. 
+Аннотация $r$ распространяется на строку~\ref{line:appendoOOIANN6}.
 Отношение с согласованным направлением есть в стеке, поэтому можно аннотировать $t$ и $y$.
-Далее аннотация $t$ распространяется на строку~\ref{line:appendoOOIANN4}, и на последнем шаге аннотируется $x$. 
+Далее аннотация $t$ распространяется на строку~\ref{line:appendoOOIANN4}, и на последнем шаге аннотируется $x$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -82,15 +82,15 @@ $append^o$ --- отношение связывающее три списка, п
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.35\textwidth}
+  \begin{minipage}{0.5\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=22, escapechar=|]
-  $revers^o$ $x^1$ $y^0$ =
-    ($x^1$ $\equiv$ [] $\wedge$ $y^0$ $\equiv$ []) $\vee$ |\label{line:reversoOIANN2}|
-    ($fresh$ [$h$, $t$, $r$] (
-        $x^5$ $\equiv$ $h^2$ : $t^4$ $\wedge$ |\label{line:reversoOIANN4}|
-        $append^o$ $r^3$ $[h^2]$ $y^0$ |\label{line:reversoOIANN5}|
-        $revers^o$ $t^4$ $r^3$ $\wedge$ |\label{line:reversoOIANN6}|
-    ))
+ $revers^o$ $x^1$ $y^0$ =
+   ($x^1$ $\equiv$ [] $\wedge$ $y^0$ $\equiv$ []) $\vee$ |\label{line:reversoOIANN2}|
+   ($fresh$ [$h$, $t$, $r$] (
+       $x^5$ $\equiv$ $h^2$ : $t^4$ $\wedge$ |\label{line:reversoOIANN4}|
+       $append^o$ $r^3$ $[h^2]$ $y^0$ |\label{line:reversoOIANN5}|
+       $revers^o$ $t^4$ $r^3$ $\wedge$ |\label{line:reversoOIANN6}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}

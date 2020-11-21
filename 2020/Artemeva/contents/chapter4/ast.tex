@@ -20,7 +20,7 @@ $appendoIIO1$, в случае не успешного сопоставлени�
 Если строки~\ref{line:appendoIIOTR10} не будет, то вычисление функции $appendoIIO1$ завершится ошибкой за отсутствием возможности обработать соответствующий вход.
 
 В случае, если в отношении на \miniKanren{} одной входной переменной соответствовало несколько унификаций, для неё появляется возможность выбрать, какая из них станет сопоставлением с образцом.
-Алгоритм выбирает ту из унификаций, которая обеспечит наибольшую вложенность конструкторов. 
+Алгоритм выбирает ту из унификаций, которая обеспечит наибольшую вложенность конструкторов.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -39,15 +39,17 @@ $appendoIIO1$, в случае не успешного сопоставлени�
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.8\textwidth}
+  \begin{minipage}{0.85\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=139, escapechar=|]
-    appendoIOI x0 x1 = appendoIOI0 x0 x1 ++ appendoIOI1 x0 x1
-    appendoIOI0 s0$@$[] s2@s1 = return $\$$ (s1)
-    appendoIOI0 _ _ = []
-    appendoIOI1 s0$@$(s3 : s4) s2$@$(p2 : s5) $|$ s3 == p2 = do
-      (s1) <- appendoIOI s4 s5
-      return $\$$ (s1)
-    appendoIOI1 _ _ = []
+ appendoIOI x0 x1 =
+   appendoIOI0 x0 x1 ++ appendoIOI1 x0 x1
+ appendoIOI0 s0$@$[] s2@s1 = return $\$$ (s1)
+ appendoIOI0 _ _ = []
+ appendoIOI1 s0$@$(s3 : s4) s2$@$(p2 : s5)
+   $|$ s3 == p2 = do
+     (s1) <- appendoIOI s4 s5
+     return $\$$ (s1)
+ appendoIOI1 _ _ = []
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -71,18 +73,18 @@ $appendoIIO1$, в случае не успешного сопоставлени�
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.45\textwidth}
+  \begin{minipage}{0.67\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=146, escapechar=|]
-  $append^oAssign$ $x$ $y$ $z$ =
-    ($x$ $\equiv$ [] $\wedge$                     |\label{line:appendoAssign2}|
-     $y$ $\equiv$ $z$) $\vee$                     |\label{line:appendoAssign3}|
-    ($fresh$ [$h$, $t$, $r$, $p$, $ps$, $c$, $cs$] (
-        $x$ $\equiv$ $h$ : $t$ $\wedge$           |\label{line:appendoAssign5}|
-        $z$ $\equiv$ $h$ : $r$ $\wedge$           |\label{line:appendoAssign6}|
-        $z$ $\equiv$ $p$ : ($p$ : $ps$) $\wedge$ |\label{line:appendoAssign7}|
-        $z$ $\equiv$ $c$ : ($c$ : $cs$) $\wedge$ |\label{line:appendoAssign8}|
-        $append^oAssign$ $t$ $y$ $r$              |\label{line:appendoAssign9}|
-    ))
+ $append^oAssign$ $x$ $y$ $z$ =
+   ($x$ $\equiv$ [] $\wedge$ |\label{line:appendoAssign2}|
+    $y$ $\equiv$ $z$) $\vee$ |\label{line:appendoAssign3}|
+   ($fresh$ [$h$, $t$, $r$, $p$, $ps$, $c$, $cs$] (
+       $x$ $\equiv$ $h$ : $t$ $\wedge$ |\label{line:appendoAssign5}|
+       $z$ $\equiv$ $h$ : $r$ $\wedge$ |\label{line:appendoAssign6}|
+       $z$ $\equiv$ $p$ : ($p$ : $ps$) $\wedge$ |\label{line:appendoAssign7}|
+       $z$ $\equiv$ $c$ : ($c$ : $cs$) $\wedge$ |\label{line:appendoAssign8}|
+       $append^oAssign$ $t$ $y$ $r$ |\label{line:appendoAssign9}|
+   ))
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -94,19 +96,21 @@ $appendoIIO1$, в случае не успешного сопоставлени�
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.7\textwidth}
+  \begin{minipage}{\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=156, escapechar=|]
- appendoAssignOOI x0 = appendoAssignOOI0 x0 ++ appendoAssignOOI1 x0
+ appendoAssignOOI x0 =
+   appendoAssignOOI0 x0 ++ appendoAssignOOI1 x0
  appendoAssignOOI0 s2$@$s1 = do
    let s0 = []
    return $\$$ (s0, s1)
  appendoAssignOOI0 _ = []
- appendoAssignOOI1 s2$@$(s8 : (p2 : s9)) $|$ s8 == p2 = do
-   let (s3 : s5) = s2
-   let (s6 : (c4 : s7)) = s2                 |\label{line:appendoAssignOOITR8}|
-   (s4, s1) <- appendoAssignOOI s5
-   let s0 = (s3 : s4)
-   if (s6 == c4) then return $\$$ (s0, s1) else [] |\label{line:appendoAssignOOITR11}|
+ appendoAssignOOI1 s2$@$(s8 : (p2 : s9))
+   $|$ s8 == p2 = do
+     let (s3 : s5) = s2
+     let (s6 : (c4 : s7)) = s2 |\label{line:appendoAssignOOITR8}|
+     (s4, s1) <- appendoAssignOOI s5
+     let s0 = (s3 : s4)
+     if (s6 == c4) then return $\$$ (s0, s1) else [] |\label{line:appendoAssignOOITR11}|
  appendoAssignOOI1 _ = []
     \end{lstlisting}
   \end{minipage}
@@ -134,9 +138,9 @@ $appendoIIO1$, в случае не успешного сопоставлени�
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.4\textwidth}
+  \begin{minipage}{0.5\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=168, escapechar=|]
-    data Peano = O $|$ S Peano
+ data Peano = O $|$ S Peano
     \end{lstlisting}
   \end{minipage}
   \end{center}
@@ -154,26 +158,27 @@ $appendoIIO1$, в случае не успешного сопоставлени�
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{0.75\textwidth}
+  \begin{minipage}{0.9\textwidth}
   \begin{lstlisting}[language=Haskell, frame=single, numbers=left,numberstyle=\small, firstnumber=169, escapechar=|]
-    data Atom = Var String
-              $|$ Ctor String [Atom]
-              $|$ Tuple [String]
-    
-    data Expr = Term Atom
-              $|$ Call String [Atom]
-    
-    data Assign = Assign Atom Expr
-    
-    newtype Guard = Guard [Atom]
-    
-    data Pat = Pat (Maybe String) Atom
-    
-    data Line = Line [Pat] [Guard] [Assign] [Guard] Expr
-    
-    data F = F String [Line]
-    
-    newtype FuncProgram = FuncProgram [F]
+ data Atom = Var String
+           $|$ Ctor String [Atom]
+           $|$ Tuple [String]
+
+ data Expr = Term Atom
+           $|$ Call String [Atom]
+
+ data Assign = Assign Atom Expr
+
+ newtype Guard = Guard [Atom]
+
+ data Pat = Pat (Maybe String) Atom
+
+ data Line =
+   Line [Pat] [Guard] [Assign] [Guard] Expr
+
+ data F = F String [Line]
+
+ newtype FuncProgram = FuncProgram [F]
     \end{lstlisting}
   \end{minipage}
   \end{center}
