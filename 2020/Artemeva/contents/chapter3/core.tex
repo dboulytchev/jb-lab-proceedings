@@ -4,11 +4,11 @@
 Ниже описывается базовый алгоритм аннотирования нормализованной программы на \miniKanren{}, псевдокод которого представлен на рисунке~\ref{alg:annotate}.
 Вспомогательные функции $annotateDisj$, $annotateUnification$ и $annotateInvoke$ приведены на рисунках~\ref{alg:annotateDisj},~\ref{alg:annotateUnification} и~\ref{alg:annotateInvoke} соответственно.
 
-\begin{figure}[h!]
-  \begin{center}
-  \begin{minipage}{1.1\textwidth}
-\begin{algorithm}[H]
-  zdes algorithm
+% \begin{figure}[h!]
+%   \begin{center}
+%   \begin{minipage}{1.1\textwidth}
+% \begin{algorithm}[H]
+%   zdes algorithm
   % \KwIn{($goal$,~$scope$) --- нормализованная программа на \miniKanren{} (цель и список отношений); $inVars$ --- список входных переменных}
   % \KwOut{$goal$ --- проаннотированная цель;~$stack$ --- стек вызовов}
   % $stack \gets []$\;
@@ -24,12 +24,41 @@
   %   $(disj,~stack) \gets annotateDisj(disj,~stack)$
   % }
   % \Return {$(goal,~stack)$}
+% \end{algorithm}
+%   \end{minipage}
+%   \end{center}
+%   \caption{Алгоритм $annotate$ для аннотирования нормализованной программы на \miniKanren{}}
+%   \label{alg:annotate}
+% \end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+  \begin{minipage}{\textwidth}
+\begin{algorithm}[H]
+  \begin{algorithmic}[1]
+    \Function{annotate}{$(goal, scope), inVars$}
+      \State $stack \gets []$
+      \For{$var \ \fromkw \ goal$}
+        \If{$var \in inVars$}
+          \State $var \gets (var, 0)$
+        \Else
+          \State $var \gets (var, Undef)$
+        \EndIf
+      \EndFor
+      \For {$disj \ \fromkw \ goal$}
+        \State $disj \gets moveUnifsBeforeInvokes(disj)$
+        \State $(disj, state) \gets annotateDisj(disj, stack)$
+      \EndFor
+      \State \returnkw $(goal, stack)$
+    \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
-  \caption{Алгоритм $annotate$ для аннотирования нормализованной программы на \miniKanren{}}
+  \caption{Функция аннотирования нормализованной программы на \miniKanren{}}
   \label{alg:annotate}
 \end{figure}
+
 
 Алгоритм аннотирования $annotate$ получает на вход нормализованную программу на \miniKanren{} (цель и список определений), а также список входных переменных.
 По окончанию его работы будут получены проаннотированная цель и ассоциативный массив, содержащий проаннотированные определения, требующихся для вычисления цели.
@@ -50,34 +79,37 @@
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{1.1\textwidth}
+  \begin{minipage}{\textwidth}
 \begin{algorithm}[H]
+  \begin{algorithmic}[1]
   % \KwIn{$disj$ --- дизъюнкт; $stack$ --- стек вызовов}
   % \KwOut{$disj$ --- проаннотированный дизъюнкт; $stack$ --- стек вызовов}
-  % \While {$not(isFixedPointReached(disj,~stack))$} {
-  %   \For {$conj~\KwFrom~disj$} {
-  %     \Switch{$conj$} {
-  %       \Case{$unif \gets isUnification(conj)$}{
-  %         $(conj,~stack) \gets annotateUnification(unif)$
-  %       }
-  %       \Case{$invoke \gets isInvoke(conj)$}{
-  %         $(conj,~stack) \gets annotateInvoke(invoke,~stack,~scope)$
-  %       }
-  %     }
-  %     \For {$(conjVar,~conjAnn)~\KwFrom~conj$} {
-  %       \For {$(disjVar,~disjAnn)~\KwFrom~disj$} {
-  %         \If {$disjAnn = Undef~\KwAnd~disjVar = conjVar$} {
-  %           $disjAnn \gets conjAnn$
-  %         }
-  %       }
-  %     }
-  %   }
-  % }
-  % \Return {$(disj,~stack)$}
+  \Function{annotateDisj}{$disj, stack$}
+    \While {$not(isFixedPointReached(disj, stack))$}
+        \For {$conj \ \fromkw \ disj$}
+          \Switch{$conj$}
+            \Case{$unifs \gets isUnification(conj)$}
+              \State $(conj, stack) \gets annotateUnification(unif)$
+            \EndCase
+            \Case{$invoke \gets isInvoke(conj)$}
+              \State $(conj,stack) \gets annotateInvoke(invoke,stack,scope)$
+            \EndCase
+          \EndSwitch
+          \For {$(conjVar, conjAnn) \ \fromkw \ conj$}
+            \For {$(disjVar, disjAnn) \ \fromkw \ disj$}
+              \If {$disjAnn = Undef \ \andkw \ disjVar = conjVar $}
+                \State $disjAnn \gets conjAnn$
+              \EndIf
+            \EndFor
+          \EndFor
+        \EndFor
+    \EndWhile
+  \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
-  \caption{Алгоритм $annotateDisj$ для аннотирования дизъюнкта}
+  \caption{Функция аннотирования дизъюнкта}
   \label{alg:annotateDisj}
 \end{figure}
 
@@ -107,32 +139,34 @@
     \item Остальные случаи симметричны.
 \end{itemize}
 
+
 \begin{figure}[h!]
   \begin{center}
   \begin{minipage}{1\textwidth}
 \begin{algorithm}[H]
-  % \KwIn{$unif$ --- унификация}
-  % \KwOut{$unif$ --- унификация}
-  % $(left,~right) \gets unif$\;
-  % \Switch{$(left,~right)$} {
-  %   \Case{$((var,~ann) \gets isUndefVariable(left),~\_)$} {
-  %     $ann \gets getMaxAnnotation(right) + 1$
-  %   }
-  %   \Case{$((var,~ann) \gets isVariable(left),~\_)$} {
-  %     $right \gets replaceUndefWith(ann + 1,~right)$
-  %   }
-  %   \Other{
-  %     $//~symmetric~cases$\;
-  %     $\dots$
-  %   }
-  % }
-  % \Return {$unif$}
+  \begin{algorithmic}
+      \Function{annotateUnification}{$unif$}
+        \State $(left,right) \gets unif$
+        \Switch{$(left, right)$}
+          \Case{$((var, ann) \gets isUndefVariable(left), \_)$}
+            \State $ann \gets getMaxAnnotation(right) + 1$
+          \EndCase
+          \Case{$((var, ann) \gets isVariable(left), \_)$}
+            \State $right \gets replaceUndefWith(ann + 1,~right)$
+          \EndCase
+          \Otherwise
+            \State $\dots$ \Comment{symmetric cases}
+          \EndOtherwise
+        \EndSwitch
+      \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
-  \caption{Алгоритм $annotateUnification$ для аннотирования унификации}
+  \caption{Аннотирование унификации}
   \label{alg:annotateUnification}
 \end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -149,31 +183,33 @@
   \begin{center}
   \begin{minipage}{1\textwidth}
 \begin{algorithm}[H]
-  % \KwIn{$invoke$ --- вызов отношения; $stack$ --- стек вызовов; $scope$ --- список определений}
-  % \KwOut{$invoke$ --- вызов отношения; $stack$ --- стек вызовов}
-  % $(name,~terms) \gets invoke$\;
-  % $invokeDirection \gets makeInvokeDirection(terms)$\;
-  % $stackKey \gets (name,~invokeDirection)$\;
-  % \If {$NameDirectionAreNotInStack(stackKey,~stack)$} {
-  %   $inVars \gets []$\;
-  %   \For {$(var,~ann) \gets invokeDirection$} {
-  %     \If {$ann~=~0$} {
-  %       $inVars \gets var~:~inVars$
-  %     }
-  %   }
-  %   $body \gets getBodyByName(name,~scope)$\;
-  %   $stack \gets insert(stack,~stackKey,~null)$\;
-  %   $body \gets annotation(body,~inVars)$\;
-  %   $program \gets (body,~scope)$\;
-  %   $(body,~stack) \gets annotate(program,~inVars)$\;
-  %   $stack \gets insert(stack,~stackKey,~body)$
-  % }
-  % $terms \gets replaceUndefWith(getMaxAnnotation(terms) + 1,~terms)$\;
-  % \Return {$(invoke,~stack)$}
+  \begin{algorithmic}
+    \Function{annotateInvoke}{$invoke, stack, scope$}
+      \State $(name, terms) \gets invoke$
+      \State $invokeDirection \gets makeInvokeDirection(terms)$
+      \State $stackKey \gets (name, invokeDirection)$
+      \If {$NameDirectionAreNotInStack(stackKey, stack)$}
+        \State $inVars \gets []$
+        \For{$(var, ann) \gets invokeDirection$}
+          \If{$ann = 0$}
+            \State $inVars \gets var : inVars$
+          \EndIf
+        \EndFor
+        \State $body \gets getBodyByName(name, scope)$
+        \State $stack \gets insert(stack, stackKey, null)$
+        \State $body \gets annotation(body, inVars)$
+        \State $program \gets (body, scope)$
+        \State $(body, stack) \gets annotate(program, inVars)$
+        \State $stack \gets insert(stack, stackKey, body)$
+      \EndIf
+      \State $terms \gets$ \\ \hspace{2em} $replaceUndefWith(getMaxAnnotation(terms) + 1,~terms)$
+      \Return {$(invoke, stack)$} \EndReturn
+    \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
-  \caption{Алгоритм $annotateInvoke$ для аннотирования вызова отношения}
+  \caption{Аннотирование вызова отношения}
   \label{alg:annotateInvoke}
 \end{figure}
 

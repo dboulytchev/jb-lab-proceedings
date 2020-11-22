@@ -109,18 +109,20 @@
   \begin{center}
   \begin{minipage}{1\textwidth}
 \begin{algorithm}[H]
-  % \KwIn{$disj$ --- дизъюнкт; $stack$ --- стек вызовов}
-  % \KwOut{$disj$ --- проаннотированный дизъюнкт; $stack$ --- стек вызовов}
-  % $backUpStack \gets stack$\;
-  % \For {$disj~\KwFrom~makeInvokesPermutations(disj)$} {
-  %   $(disj,~stack) \gets annotateDisj(disj,~stack)$\;
-  %   \eIf {$isSuccessfulAnnotation(stack)$} {
-  %     \Return {$(disj,~stack)$}
-  %   } {
-  %     $stack \gets backUpStack$
-  %   }
-  %   \Return {($disj,~backUpStack$)}
-  % }
+  \begin{algorithmic}
+    \Function{annotateDisjWithSomeInvokes}{$disj, stack$}
+      \State $backUpStack \gets stack$
+      \For{$disj \ \fromkw \ makeInvokesPermutations(disj)$}
+        \State $(disj, stack) \gets annotateDisj(disj, stack)$
+        \If {$isSuccessfulAnnotation(stack)$}
+          \Return {$(disj, stack)$} \EndReturn
+        \Else
+          \State $stack \gets backUpStack$
+        \EndIf
+        \Return {($disj, backUpStack$)} \EndReturn
+      \EndFor
+    \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
@@ -148,34 +150,36 @@ $x$, и $z$ являются выходными ($fresh$-переменными)
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{1.1\textwidth}
+  \begin{minipage}{\textwidth}
 \begin{algorithm}[H]
-  % \KwIn{$stack$ --- стек вызовов}
-  % \KwOut{$stack$ --- стек вызовов с добавленной генерацией}
-  % \For {$(nameDirection,~goal)~\KwFrom~stack$} {
-  %   \For {$unif~\KwFrom~goal$} {
-  %     \If {$containsUndefAnnotations(unif)$} {
-  %       $(left,~right) \gets unif$\;
-  %       $subst \gets isSubsetOf(left,~right)$\;
-  %       $termWithVarsForGeneration \gets null$\;
-  %       \eIf {$isNull(subst)$} {
-  %         $termWithVarsForGeneration \gets right$
-  %       } {
-  %         $termWithVarsForGeneration \gets left$
-  %       }
-  %       \For {$(var,~ann)~\KwFrom~termWithVarsForGeneration$} {
-  %         \If {$ann~=~Undef$} {
-  %           $unif \gets (unif~\wedge~(V~var~:=:~C~gen~[])))$
-  %         }
-  %       }
-  %       \KwBreak
-  %     }
-  %   }
-  % }
+  \begin{algorithmic}
+    \Function{addGeneration}{$stack$}
+      \For {$(nameDirection, goal) \ \fromkw \ stack$}
+        \For {$unif \ \fromkw \ goal$}
+          \If {$containsUndefAnnotations(unif)$}
+            \State $(left, right) \gets unif$
+            \State $subst \gets isSubsetOf(left, right)$
+            \State $termWithVarsForGeneration \gets null$
+            \If {$isNull(subst)$}
+              \State $termWithVarsForGeneration \gets right$
+            \Else
+              \State $termWithVarsForGeneration \gets left$
+            \EndIf
+          \EndIf
+          \For {$(var, ann) \ \fromkw \ termWithVarsForGeneration$}
+            \If {$ann = Undef$}
+              \State  $unif \gets (unif \wedge (V \ var :=: C \ gen \ [])))$
+            \EndIf
+          \EndFor
+          \State \textbf{break}
+        \EndFor
+      \EndFor
+    \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
-  \caption{Алгоритм $addGeneration$ для добавления генерации зависимых друг от друга $fresh$-переменных}
+  \caption{Добавление генерации зависимых друг от друга $fresh$-переменных}
   \label{alg:addGeneration}
 \end{figure}
 
@@ -193,31 +197,33 @@ $x$, и $z$ являются выходными ($fresh$-переменными)
 
 \begin{figure}[h!]
   \begin{center}
-  \begin{minipage}{1.1\textwidth}
+  \begin{minipage}{\textwidth}
 \begin{algorithm}[H]
-  % \KwIn{($left,~right$) --- два терма: левая и правая часть унификации}
-  % \KwOut{$subst$ --- список пар переменная-терм, являющийся подстановкой подтермов второго терма вместо переменных первого терма (возвращает $null$, если подстановки не существует)}
-  % $subst \gets []$\;
-  % \Switch{$(left,~right)$} {
-  %   \Case{$((var,~\_) \gets isVariable(left),~\_)$} {
-  %     $term \gets getTermByVar(subst,~var)$\;
-  %     \eIf {$isNull(term)$} {
-  %       \If {$term~\neq~right$} {
-  %         \Return {$null$}
-  %       }
-  %     } {
-  %       $subst \gets insert(subst,~var,~right)$\;
-  %     }
-  %     \Return {$subst$}
-  %   }
-  %   \Other{
-  %     \Return {$null$}
-  %   }
-  % }
+  \begin{algorithmic}
+    \Function{isSubsetOf}{$left, right$}
+      \State $subst \gets []$
+      \Switch{$(left, right)$}
+        \Case{$((var, \_) \gets isVariable(left), \_)$}
+          \State $term \gets getTermByVar(subst, var)$
+          \If {$isNull(term)$}
+            \If {$term \neq right$}
+              \Return {$null$} \EndReturn
+            \EndIf
+          \Else
+            \State $subst \gets insert(subst, var, right)$
+          \EndIf
+          \Return {$subst$} \EndReturn
+        \EndCase
+        \Otherwise
+          \Return {$null$} \EndReturn
+        \EndOtherwise
+      \EndSwitch
+    \EndFunction
+  \end{algorithmic}
 \end{algorithm}
   \end{minipage}
   \end{center}
-  \caption{Алгоритм $isSubsetOf$ для определения того, является ли первый входной терм частным случаем второго}
+  \caption{Определение, является ли первый аргумент частным случаем второго}
   \label{alg:isSubsetOf}
 \end{figure}
 

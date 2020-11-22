@@ -37,23 +37,25 @@
 \newcommand{\github}{\textsc{GitHub}}
 \lstset{mathescape=true}
 
+\newcommand{\fromkw}{\textbf{\textit{from}}}
+\newcommand{\andkw}{\textbf{\textit{and}}}
+\newcommand{\returnkw}{\textbf{return}}
+\algrenewcommand\algorithmicindent{1.em}
 
 \graphicspath{{Artemeva/}}
 
-% \SetKwInput{KwIn}{Вход}
-% \SetKwInput{KwOut}{Результат}
-% \SetKw{KwFrom}{from}
-% \SetKw{KwAnd}{and}
-% \SetKw{KwBreak}{break}
-% \SetAlgorithmName{Алгоритм}{алгоритм}{Список алгоритмов}
+\algnewcommand\algorithmicotherwise{\textbf{otherwise}}
+\algrenewcommand\algorithmicreturn{\textbf{return}}
 
+\algdef{SE}[RETURN]{Return}{EndReturn}[1]{\algorithmicreturn\ #1}{\algorithmicend| \algorithmicreturn}
+
+\algdef{SE}[OTHERWISE]{Otherwise}{EndOtherwise}[0]{\algorithmicotherwise\ \algorithmicdo}{\algorithmicend \algoorithmicotherwise}
+\algtext*{EndOtherwise}%
+\algtext*{EndReturn}%
+\algtext*{EndSwitch}%
+\algtext*{EndCase}%
 
 % \newtheorem{theorem}{Утверждение}
-
-
-%\input{contents/head}
-
-\maketitle
 
 \input{Artemeva/contents/intro}
 
@@ -65,6 +67,273 @@
 
 \input{Artemeva/contents/outro}
 
-\bibliographystyle{ugost2008ls}
-\bibliography{Artemeva/contents/bibfile}
+\begin{thebibliography}{10}
+  \def\selectlanguageifdefined#1{
+  \expandafter\ifx\csname date#1\endcsname\relax
+  \else\selectlanguage{#1}\fi}
+  \providecommand*{\href}[2]{{\small #2}}
+  \providecommand*{\url}[1]{{\small #1}}
+  \providecommand*{\BibUrl}[1]{\url{#1}}
+  \providecommand{\BibAnnote}[1]{}
+  \providecommand*{\BibEmph}[1]{#1}
+  \ProvideTextCommandDefault{\cyrdash}{\iflanguage{russian}{\hbox
+    to.8em{--\hss--}}{\textemdash}}
+  \providecommand*{\BibDash}{\ifdim\lastskip>0pt\unskip\nobreak\hskip.2em plus
+    0.1em\fi
+  \cyrdash\hskip.2em plus 0.1em\ignorespaces}
+  \renewcommand{\newblock}{\ignorespaces}
+
+  \bibitem{kiselyov2005bit}
+  \selectlanguageifdefined{english}
+  Backtracking, Interleaving, and Terminating Monad Transformers: (Functional
+    Pearl)~/ Oleg~Kiselyov, Chung-chieh~Shan, Daniel~P.~Friedman, Amr~Sabry~//
+    \BibEmph{SIGPLAN Not.} \BibDash
+  \newblock 2005. \BibDash Sep. \BibDash
+  \newblock Vol.~40. \BibDash
+  \newblock P.~192–203.
+
+  \bibitem{Bellia1986TRB}
+  \selectlanguageifdefined{english}
+  \BibEmph{Bellia~Marco, Levi~Giorgio}. The relation between logic and functional
+    languages: a survey~// \BibEmph{The Journal of Logic Programming}. \BibDash
+  \newblock 1986. \BibDash
+  \newblock Vol.~3, no.~3. \BibDash
+  \newblock P.~217 -- 236.
+
+  \bibitem{Brassel2008FFL}
+  \selectlanguageifdefined{english}
+  \BibEmph{Brassel~Bernd, Fischer~Sebastian}. From Functional Logic Programs to
+    Purely Functional Programs Preserving Laziness. \BibDash
+  \newblock Vol.~5836. \BibDash
+  \newblock 2008. \BibDash 09. \BibDash
+  \newblock P.~25--42.
+
+  \bibitem{Byrd2009RPM}
+  \selectlanguageifdefined{english}
+  \BibEmph{Byrd~William}. Relational Programming in miniKanren: Techniques,
+    Applications, and Implementations. \BibDash
+  \newblock 2009. \BibDash 09.
+
+  \bibitem{Friedman2005TRS}
+  \selectlanguageifdefined{english}
+  \BibEmph{Friedman~Daniel~P., Byrd~William~E., Kiselyov~Oleg}. The Reasoned
+    Schemer. \BibDash
+  \newblock The MIT Press, 2005.
+
+  \bibitem{Hanus2012SSF}
+  \selectlanguageifdefined{english}
+  \BibEmph{Hanus~M., Peem{\"o}ller~B., Reck~F.} Search Strategies for Functional
+    Logic Programming~// Proc. of the 5th Working Conference on Programming
+    Languages (ATPS'12). \BibDash
+  \newblock Springer LNI 199, 2012. \BibDash
+  \newblock P.~61--74.
+
+  \bibitem{Hanus2016CIF}
+  \selectlanguageifdefined{english}
+  \BibEmph{Hanus~Michael~(ed.)}. Curry: An Integrated Functional Logic Language.
+    \BibDash
+  \newblock 2016. \BibDash
+  \newblock Access mode:
+    \BibUrl{https://web.cecs.pdx.edu/~antoy/Courses/TPFLP/report.pdf}.
+
+  \bibitem{hemann2013ukanren}
+  \selectlanguageifdefined{english}
+  \BibEmph{Hemann~Jason, Friedman~Daniel~P.} uKanren: A Minimal Functional Core
+    for Relational Programming. \BibDash
+  \newblock 2013.
+
+  \bibitem{jones1993partial}
+  \selectlanguageifdefined{english}
+  \BibEmph{Jones~Neil~D, Gomard~Carsten~K, Sestoft~Peter}. Partial evaluation and
+    automatic program generation. \BibDash
+  \newblock Peter Sestoft, 1993.
+
+  \bibitem{Jones2003HHH}
+  \selectlanguageifdefined{english}
+  \BibEmph{Jones~S. Peyton~(ed.)}. Haskell 98 Language and Libraries --- The
+    Revised Report. \BibDash
+  \newblock 2003. \BibDash
+  \newblock Access mode: \BibUrl{https://www.haskell.org/onlinereport/}.
+
+  \bibitem{Bernd2011FCL}
+  \selectlanguageifdefined{english}
+  KiCS2: A New Compiler from Curry to Haskell~/ Bernd~Bra{\ss}el, Michael~Hanus,
+    Bj{\"o}rn~Peem{\"o}ller, Fabian~Reck~// Functional and Constraint Logic
+    Programming. \BibDash
+  \newblock Springer Berlin Heidelberg, 2011. \BibDash
+  \newblock P.~1--18.
+
+  \bibitem{Kosarev2018TER}
+  \selectlanguageifdefined{english}
+  \BibEmph{Kosarev~Dmitrii, Boulytchev~Dmitri}. Typed Embedding of a Relational
+    Language in OCaml~// \BibEmph{Electronic Proceedings in Theoretical Computer
+    Science}. \BibDash
+  \newblock 2018. \BibDash 12. \BibDash
+  \newblock Vol. 285. \BibDash
+  \newblock P.~1--22.
+
+  \bibitem{Lin1997ASC}
+  \selectlanguageifdefined{english}
+  \BibEmph{Lin~Fangzhen}. Applications of the Situation Calculus To Formalizing
+    Control and Strategic Information: The Prolog Cut Operator~//
+    \BibEmph{Artificial Intelligence}. \BibDash
+  \newblock 1997. \BibDash 11. \BibDash
+  \newblock Vol. 103.
+
+  \bibitem{Lipovaca2011LYAH}
+  \selectlanguageifdefined{english}
+  \BibEmph{Lipovaca~Miran}. Learn You a Haskell for Great Good! A Beginner’s
+    Guide. \BibDash
+  \newblock No Starch Press, 2011.
+
+  \bibitem{lozov2019relational}
+  \selectlanguageifdefined{english}
+  \BibEmph{Lozov~Petr, Verbitskaia~Ekaterina, Boulytchev~Dmitry}. Relational
+    Interpreters for Search Problems~// Relational Programming Workshop. \BibDash
+  \newblock 2019. \BibDash
+  \newblock P.~43.
+
+  \bibitem{MacLennan1981IRP}
+  \selectlanguageifdefined{english}
+  \BibEmph{MacLennan~Bruce~J.} Introduction to relational programming. \BibDash
+  \newblock 1981.
+
+  \bibitem{Malpas1987prolog}
+  \selectlanguageifdefined{english}
+  \BibEmph{Malpas~J.} Prolog: A Relational Language and Its Applications.
+    Prentice-Hall international editions. \BibDash
+  \newblock Prentice-Hall, 1987.
+
+  \bibitem{Marchiori1995the}
+  \selectlanguageifdefined{english}
+  \BibEmph{Marchiori~Massimo}. The functional side of logic programming~//
+    \BibEmph{FPCA}. \BibDash
+  \newblock 1995. \BibDash
+  \newblock P.~55--65.
+
+  \bibitem{Matsushita1997FCO}
+  \selectlanguageifdefined{english}
+  \BibEmph{Matsushita~Tatsuru, Runciman~Colin}. Functional Counterparts of some
+    Logic Programming Techniques. \BibDash
+  \newblock 1997.
+
+  \bibitem{Nadathur1988OLP}
+  \selectlanguageifdefined{english}
+  \BibEmph{Nadathur~Gopalan, Miller~Dale}. An Overview of Lambda-Prolog. \BibDash
+  \newblock 1988. \BibDash 06. \BibDash
+  \newblock P.~810--827.
+
+  \bibitem{Nerode1998LFA}
+  \selectlanguageifdefined{english}
+  \BibEmph{Nerode~Anil, A.~Shore~Richard}. Logic for Applications~// \BibEmph{J.
+    of Logic, Lang. and Inf.} \BibDash
+  \newblock 1998. \BibDash Apr. \BibDash
+  \newblock Vol.~7. \BibDash
+  \newblock P.~228–229.
+
+  \bibitem{rozplokhas2019certified}
+  \selectlanguageifdefined{english}
+  \BibEmph{Rozplokhas~Dmitry, Vyatkin~Andrey, Boulytchev~Dmitry}. Certified
+    Semantics for miniKanren~// miniKanren and Relational Programming Workshop.
+    \BibDash
+  \newblock 2019. \BibDash
+  \newblock P.~80.
+
+  \bibitem{Wielemaker2012TPL}
+  \selectlanguageifdefined{english}
+  SWI-Prolog~/ Jan~Wielemaker, Tom~Schrijvers, Markus~Triska, Torbjörn~Lager~//
+    \BibEmph{Theory and Practice of Logic Programming}. \BibDash
+  \newblock 2012. \BibDash
+  \newblock Vol.~12, no. 1-2. \BibDash
+  \newblock P.~67–96.
+
+  \bibitem{SOMOGYI199617}
+  \selectlanguageifdefined{english}
+  \BibEmph{Somogyi~Zoltan, Henderson~Fergus, Conway~Thomas}. The execution
+    algorithm of mercury, an efficient purely declarative logic programming
+    language~// \BibEmph{The Journal of Logic Programming}. \BibDash
+  \newblock 1996. \BibDash
+  \newblock Vol.~29. \BibDash
+  \newblock P.~17 -- 64.
+
+  \bibitem{leuschel2004prolog}
+  \selectlanguageifdefined{english}
+  \href{http://dx.doi.org/10.1007/978-3-540-25951-0_11}{Specialising Interpreters
+    Using Offline Partial Deduction}~/ Michael~Leuschel, Stephen-John~Craig,
+    Maurice~Bruynooghe, Wim~Vanhoof. \BibDash
+  \newblock Vol.~3049. \BibDash
+  \newblock 2004. \BibDash 01. \BibDash
+  \newblock P.~340--375.
+
+  \bibitem{Swift2012XSB}
+  \selectlanguageifdefined{english}
+  \BibEmph{Swift~Terrance, Warren~David~S.} XSB: Extending Prolog with tabled
+    logic programming~// \BibEmph{Theory and Practice of Logic Programming}.
+    \BibDash
+  \newblock 2012. \BibDash Jan. \BibDash
+  \newblock Vol.~12. \BibDash
+  \newblock P.~157--187.
+
+  \bibitem{Thiemann1997AUF}
+  \selectlanguageifdefined{english}
+  \BibEmph{Thiemann~Peter}. A Unified Framework for Binding-Time Analysis~//
+    TAPSOFT. \BibDash
+  \newblock 1997.
+
+  \bibitem{byrd2017unified}
+  \selectlanguageifdefined{english}
+  A Unified Approach to Solving Seven Programming Problems (Functional Pearl)~/
+    William~E.~Byrd, Usamichael~Ballantyne, Usagregory~Rosenblatt,
+    Matthew~Might~// Relational Programming Workshop. \BibDash
+  \newblock 2017.
+
+  \bibitem{vanhoof2004binding}
+  \selectlanguageifdefined{english}
+  \BibEmph{Vanhoof~Wim, Bruynooghe~Maurice, Leuschel~Michael}. Binding-time
+    analysis for Mercury~// Program Development in Computational Logic. \BibDash
+  \newblock Springer, 2004. \BibDash
+  \newblock P.~189--232.
+
+  \bibitem{Varju2012UCL}
+  \selectlanguageifdefined{english}
+  \BibEmph{Varju~Zoltan, Littauer~Richard, Erins~Peteris}. Using Clojure in
+    Linguistic Computing. \BibDash
+  \newblock 2012. \BibDash 02.
+
+  \bibitem{Wadler1985HRF}
+  \selectlanguageifdefined{english}
+  \BibEmph{Wadler~Philip}. How to Replace Failure by a List of Successes~// Proc.
+    of a Conference on Functional Programming Languages and Computer
+    Architecture. \BibDash
+  \newblock Springer-Verlag, 1985. \BibDash
+  \newblock P.~113–128.
+
+  \bibitem{Near2008TAP}
+  \selectlanguageifdefined{english}
+  alphaleanTAP: A Declarative Theorem Prover for First-Order Classical Logic~/
+    Joseph~Near, , William~E.~Byrd, Daniel~Friedman. \BibDash
+  \newblock 2008. \BibDash Dec. \BibDash
+  \newblock P.~238--252.
+
+  \bibitem{Schreye1994TLP}
+  \selectlanguageifdefined{english}
+  \BibEmph{de~Schreye~Danny, Decorte~Stefaan}. Termination of logic programs: the
+    never-ending story~// \BibEmph{The Journal of Logic Programming}. \BibDash
+  \newblock 1994. \BibDash
+  \newblock Vol. 19-20. \BibDash
+  \newblock P.~199 -- 260.
+
+  \bibitem{Hudak2007history}
+  \selectlanguageifdefined{english}
+  A history of Haskell: Being lazy with class~/ Paul~Hudak, John~Hughes,
+    Simon~Peyton~Jones, Philip~Wadler~// In Proceedings of the 3rd ACM SIGPLAN
+    Conference on History of Programming Languages (HOPL-III. \BibDash
+  \newblock ACM Press, 2007. \BibDash
+  \newblock P.~1--55.
+
+  \end{thebibliography}
+
+
+% \bibliographystyle{ugost2008ls}
+% \bibliography{Artemeva/contents/bibfile}
 
