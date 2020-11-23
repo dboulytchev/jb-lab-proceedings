@@ -3,6 +3,7 @@
 *.bbl
 *.log
 *.blg
+*.out
 *.toc
 *.pyg.lst
 *.pyg.sty

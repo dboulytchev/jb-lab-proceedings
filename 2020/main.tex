@@ -48,7 +48,7 @@
 \usepackage{empheq}
 \usepackage{enumitem}
 \usepackage{thm-restate}
-\usepackage{cleveref}
+\usepackage[capitalise, english, russian]{cleveref}
 
 \DeclareMathAlphabet{\mathcal}{OT1}{pzc}{m}{it}
 
@@ -152,11 +152,23 @@
 \thispagestyle{plain}
 }
 
+% Кастомные леммы и теоремы для удобства перевода на русский
+% сделано по аналогии с вариантом 2019 года, только тут это в
+% главном файле, а там было у Ю.Сусаниной в её тексте
+\newtheorem{defn}{Определение}%[section]
+\newtheorem{lm}{Лемма}
+\newtheorem{thrm}{Теорема}
+\setcounter{lm}{0}
+\setcounter{thrm}{0}
+
+
 \include{Terekhov/main}
-% \include{Mishin/main}
+%\include{Mishin/main}
 \include{Tyurin/main}
 \include{Namakonov/main}
+\include{Balashov/main}
+\include{Bashkirov/main}
 \include{Artemeva/main}
-\include{Kuklina/src/main}
+\include{Kuklina/src/main
 
 \end{document}
