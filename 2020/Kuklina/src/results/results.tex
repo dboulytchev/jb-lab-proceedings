@@ -50,8 +50,8 @@
        Специализация происходила на запрос \lstinline{sort} со свободными переменными.
 %     Запросы:
 %     \begin{itemize}
-%     \item оптимизация сортировки: \rel{sort}(xs, ys);
-%     \item генерация отсортированных последовательностей: \rel{sort}(xs, xs).
+%     \item оптимизация сортировки: \relo{sort}(xs, ys);
+%     \item генерация отсортированных последовательностей: \relo{sort}(xs, xs).
 %     \end{itemize}
  \item Отношение, проверяющее принадлежность пути графу \\
        \lstinline{isPath(path, graph, result)}.
@@ -61,7 +61,7 @@
        \item поиск пути заданного размера в случайном графе: \\
        \lstinline{isPath(path, graph, True)$\land$length(path, N)};
        \item поиск фиксированного количества путей, принадлежащих данному графу.
-       %\\ $\text{isPath}^o_s$(p, g)$\land$\rel{length}(p, N).
+       %\\ $\text{isPath}^o_s$(p, g)$\land$\relo{length}(p, N).
        \end{itemize}
 
 	   В приложении А на рисунке~\ref{fig:graphGen} представлен код, который
@@ -88,7 +88,7 @@
 % 	\item
      Отношение использовалось для генерация выражений, соответствующих заданной спецификации типа и выржения.
      Специализируется выражение:\\
- 	 %\rel{infer}(type, expr) $\land$ type $\equiv$ TYPE\_SPEC $\land$ expr $\equiv$ EXPR\_SPEC.
+ 	 %\relo{infer}(type, expr) $\land$ type $\equiv$ TYPE\_SPEC $\land$ expr $\equiv$ EXPR\_SPEC.
  	 \lstinline{infer(typ, expr)$\land$typ $\equiv$ TYPE_SPEC$\land$expr $\equiv$ EXPR_SPEC}
  %  \end{itemize}
 % \item Интерпретатор простого подмножества Scheme.
