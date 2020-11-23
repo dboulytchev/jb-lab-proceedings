@@ -1,0 +1,97 @@
+
+\title{Применение метода суперкомпиляции для специализации реляционных программ}
+\titlerunning{Суперкомпиляция реляционных программ}
+
+\author{Куклина Мария}
+\authorrunning{Куклина М.}
+
+\tocauthor{Куклина М.}
+\institute{Национальный исследовательский университет ИТМО\\
+	\email{kuklina.md@gmail.com}}
+
+\maketitle
+
+
+
+% \documentclass[14pt, a4paper] {extarticle}
+
+
+
+% % Обязательно переносить слова, чтобы соблюсти поля документа. Для
+% % соблюдения полей можно пренебречь правилами для тех слов и
+% % словосочетаний, о которых не знают словаря переносов (ruhyphen или
+% % ruenhyph). Оно почему-то работает. Взято с:
+% %
+% %   http://www.latex-community.org/forum/viewtopic.php?p=70342#p70342
+% %
+% \tolerance 1414
+% \hbadness 1414
+% \emergencystretch 1.5em
+% \hfuzz 0.3pt
+% \widowpenalty=10000
+% \vfuzz \hfuzz
+% \raggedbottom
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinelanguage{MyLang}
+{
+  morekeywords={data},
+  keywordstyle=\bfseries\color{black}
+}
+
+%\lstset{language=Haskell}
+\lstset {
+mathescape,
+extendedchars=\true,
+basicstyle=\ttfamily,
+numberstyle=\ttfamily,
+numbers=left,
+stepnumber=1,
+frame=single,
+morekeywords={data, do, type, if, then, else, class, where, return}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\larrow}{\leftarrow}
+\newcommand{\rarrow}{\rightarrow}
+
+\newcommand{\embed}{\unlhd}
+\newcommand{\instance}{\preccurlyeq}
+\newcommand{\strictinst}{\prec}
+% \newcommand{\variant}{\leftrightarrow}
+\newcommand{\variant}{\approx}
+\newcommand{\genup}{\lessdot}
+
+\newcommand{\ukanren}{$\mu$Kanren }
+\newcommand{\forcpd}{конъюнктивной частичной дедукции }
+\newcommand{\cpd}{конъюнктивная частичная дедукция }
+\newcommand{\Cpd}{Конъюнктивная частичная дедукция }
+
+\newcommand{\origin}[1]{(англ. {\it #1})}
+
+\newcommand{\rel}[1]{$\text{#1}^o$}
+
+\newcommand{\todo}[1]{{\bf\color{red}TODO: #1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{Kuklina/}}
+
+% \addbibresource{main.bib}
+
+% \begin{document}
+\setcounter{figure}{0}
+\setcounter{page}{4}
+\input{Kuklina/src/intro.tex}
+\input{Kuklina/src/review/review.tex}
+\input{Kuklina/src/env/env.tex}
+\input{Kuklina/src/sc/sc.tex}
+\input{Kuklina/src/results/results.tex}
+\input{Kuklina/src/concl.tex}
+
+\renewcommand{\refname}{Список использованных источников}
+% \printbibliography
+
+\renewcommand{\refname}{Приложение A}
+\input{Kuklina/src/results/appendix.tex}
+
+% \end{document}
