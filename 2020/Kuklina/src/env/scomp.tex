@@ -2,7 +2,7 @@
 
 \begin{figure}[h!]
 \center
-\includegraphics[scale=0.76]{Kuklina/src/review/scompflow.pdf}
+\includegraphics[width=\textwidth]{Kuklina/src/review/scompflow.pdf}
 \caption{Общая схема суперкомпилятора.}
 \label{fig:scompScheme}
 \end{figure}
@@ -108,30 +108,25 @@
 \end{itemize}
 Пример обобщения представлен на рисунке~\ref{fig:pgraphGenExample}
 \begin{figure}[h!]
-\center
-\begin{tikzpicture}[->,node distance=2.5cm, sibling distance=5cm]
-  \tikzstyle{conf}=[rectangle,draw, rounded corners=.8ex]
-  \node[conf] (root) {$a \times b$};
-  \node[conf] (childLeft)[below left of = root] {Zero};
-  \node[conf, very thick] (childRight)[below right of = root] {$(a_1 \times b) + b$};
-  \node[conf, text width = 2.5cm, thick, dashed] (childGen)[below of = childRight] {$v_1 + v_2$, $v_1 := b$, $v_2 := a_1 \times b$};
-  \node[conf] (childGenLeft)[below left of = childGen] {$v_1 + v_2$};
-  \node[conf] (childGenRight)[below right of = childGen] {$a_1 \times b$};
+  \centering
+  \begin{tikzpicture}[->,node distance=2cm, sibling distance=5cm]
+    \tikzstyle{conf}=[rectangle,draw, rounded corners=.8ex]
+    \node[conf] (root) {$a \times b$};
+    \node[conf] (childLeft)[below left of = root] {Zero};
+    \node[conf, very thick] (childRight)[below right of = root] {$(a_1 \times b) + b$};
+    \node[conf, text width = 2.5cm, thick, dashed] (childGen)[below of = childRight] {$v_1 + v_2$, $v_1 := b$, $v_2 := a_1 \times b$};
+    \node[conf] (childGenLeft)[below left of = childGen] {$v_1 + v_2$};
+    \node[conf] (childGenRight)[below right of = childGen] {$a_1 \times b$};
 
-  \path (root) edge node[above left,pos=1] {$\{a \mapsto \text{Zero}\}$} (childLeft)
-        (root) edge node[above right,pos=1]{$\{a \mapsto \text{Succ}(a_1)\}$}(childRight)
-        (childRight) edge (childGen)
-        (childGen) edge (childGenLeft)
-        (childGen) edge (childGenRight)
-        % (childGenRight) edge[bend right=90, dashed] (root)
-  ;
+    \path (root) edge node[above left,pos=1] {$\{a \mapsto \text{Zero}\}$} (childLeft)
+          (root) edge node[above right,pos=1]{$\{a \mapsto \text{Succ}(a_1)\}$}(childRight)
+          (childRight) edge (childGen)
+          (childGen) edge (childGenLeft)
+          (childGen) edge (childGenRight)
+    ;
 
- \draw[->, dashed] (childGenRight) to[out=20,in=10,looseness=1.9] (root);
-
-\end{tikzpicture}
-
-% \includegraphics[scale=0.3]{./review/scgenex_temp.png}
-
+    \draw[->, dashed] (childGenRight) to[out=50,in=10,looseness=1.9] (root);
+  \end{tikzpicture}
 \caption{Пример обобщения.}
 \label{fig:pgraphGenExample}
 \end{figure}

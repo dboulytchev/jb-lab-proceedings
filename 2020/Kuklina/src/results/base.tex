@@ -43,15 +43,15 @@ append y4 y5 y6 =
 \begin{figure}[h!]
 \center
 \begin{minipage}[h]{\textwidth}
-  \begin{tikzpicture}[->,node distance=3cm, sibling distance=5cm, level distance=2cm]
+  \begin{tikzpicture}[->,node distance=1.2cm, sibling distance=5cm, level distance=2cm]
     \tikzstyle{conf}=[rectangle,draw, rounded corners=.8ex,align=center]
-    \node[conf] (root)   at (0, 0)     {{\it Unfolding} \\ \lstinline{doubleAppend(a, b, c, abc)}};
-    \node[conf] (appapp) at (0, -2)    {{\it Unfolding} \\ \lstinline{app(a, b, $\text{v}_0$)$\land$app($\text{v}_0$, c, abc)}};
-    \node[conf] (app1)   at (-1.2, -5) {{\it Unfolding} \\ \lstinline{app($\text{v}_1$, c, $\text{v}_2$)} \\ $\{$ a $\mapsto$ [], b $\mapsto$ $\text{v}_0$, \\ $\text{v}_0 \mapsto \_ : \text{v}_1$, \\ $\ \ $ abc $\mapsto \_ : \text{v}_2$ $\}$};
-    \node[conf] (app2)   at (3.6, -4.6) {{\it Renaming} \\ \lstinline{app($\text{v}_5$, b, $\text{v}_6$)$\land$app($\text{v}_6$, c, $\text{v}_7$)} \\ $\{$ a $\mapsto \text{h} : \text{v}_5$  $\text{v}_0 \mapsto \text{h} : \text{v}_6 $  abc $\mapsto \text{h} : \text{v}_7$  $\}$};
-    \node[conf] (appS)   at (-4,-5)    {{\it Success} \\ $\{$ a $\mapsto$ [], \\ \ \ b $\mapsto$ [],\\ \ \ $\text{v}_0 \mapsto$ [], \\ \ \ c $\mapsto$ abc $\}$};
-    \node[conf] (app11)  at (2,  -8)  {{\it Renaming} \\ \lstinline{app($\text{v}_3$, c, $\text{v}_4$)} \\ $\{\text{v}_1 \mapsto \_ : \text{v}_3 $ \\ $\ \ \ \ \text{v}_2 \mapsto \_ : \text{v}_4 $  $\}$};
-    \node[conf] (app1S)  at (-2, -7.7) {{\it Success} \\ $\{ \text{v}_1 \mapsto [],$ \\ $\ \ c \ \mapsto \text{v}_2 \}$};
+    \node[conf] (root) {{\it Unfolding} \\ \lstinline{doubleAppend(a, b, c, abc)}};
+    \node[conf, below=of root] (appapp) {{\it Unfolding} \\ \lstinline{app(a, b, $\text{v}_0$)$\land$app($\text{v}_0$, c, abc)}};
+    \node[conf, below=of appapp] (app1) {{\it Unfolding} \\ \lstinline{app($\text{v}_1$, c, $\text{v}_2$)} \\ $\{$ a $\mapsto$ [], b $\mapsto$ $\text{v}_0$, \\ $\text{v}_0 \mapsto \_ : \text{v}_1$, \\ $\ \ $ abc $\mapsto \_ : \text{v}_2$ $\}$};
+    \node[conf, right=of app1] (app2) {{\it Renaming} \\ \lstinline{app($\text{v}_5$, b, $\text{v}_6$)$\land$}\\\lstinline{app($\text{v}_6$, c, $\text{v}_7$)} \\ $\{$ a $\mapsto \text{h} : \text{v}_5$ \\ $\text{v}_0 \mapsto \text{h} : \text{v}_6 $ \\ abc $\mapsto \text{h} : \text{v}_7$  $\}$};
+    \node[conf, left=of app1] (appS) {{\it Success} \\ $\{$ a $\mapsto$ [], \\ \ \ b $\mapsto$ [],\\ \ \ $\text{v}_0 \mapsto$ [], \\ \ \ c $\mapsto$ abc $\}$};
+    \node[conf, below right=of app1, anchor=north] (app11) {{\it Renaming} \\ \lstinline{app($\text{v}_3$, c, $\text{v}_4$)} \\ $\{\text{v}_1 \mapsto \_ : \text{v}_3 $ \\ $\ \ \ \ \text{v}_2 \mapsto \_ : \text{v}_4 $  $\}$};
+    \node[conf, below left=of app1, anchor=north] (app1S) {{\it Success} \\ $\{ \text{v}_1 \mapsto [],$ \\ $\ \ c \ \mapsto \text{v}_2 \}$};
     \draw[-latex] (root) -- (appapp);
     \draw[-latex] (appapp) -- (appS.north);
     \draw[-latex] (appapp) -- (app1);

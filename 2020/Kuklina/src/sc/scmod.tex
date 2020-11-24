@@ -239,7 +239,7 @@ type TreeZipper = (Node, List Parent)
 
 \begin{figure}[h!]
 \center
-\begin{tikzpicture}[->,node distance=2cm, sibling distance=5cm]
+\begin{tikzpicture}[->,node distance=1.5cm, sibling distance=5cm]
 
 \tikzstyle{conf}=[rectangle,draw, rounded corners=.8ex]
 \node[conf] (root) {\relo{reverse}($a$, $a$)} ;
@@ -250,7 +250,7 @@ type TreeZipper = (Node, List Parent)
       (gen) edge (node)
       (node) edge (rest);
 \end{tikzpicture}
-\caption{Демонстрация потери информации при обобщении вверх.}
+\caption{Потеря информации при обобщении вверх.}
 \label{fig:genup}
 \end{figure}
 
