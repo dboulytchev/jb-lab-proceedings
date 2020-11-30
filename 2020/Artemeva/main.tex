@@ -1,0 +1,78 @@
+\title{Разработка транслятора из реляционного языка программирования в функциональный}
+\titlerunning{Транслятора реляционного языка в функциональный}
+
+\author{Артемьева Ирина}
+\authorrunning{Артемьева И.}
+
+\tocauthor{Артемьева И.}
+\institute{Национальный исследовательский университет ИТМО\\
+	\email{irina-pluralia@rambler.ru}}
+
+\maketitle
+
+\lstdefinestyle{mycode}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  xleftmargin=\parindent,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{gray!40!black},
+  stringstyle=\color{red},
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tiny\color{gray},
+}
+\lstset{escapechar=@,style=mycode}
+
+\newcommand{\miniKanren}{\textsc{miniKanren}}
+\newcommand{\microKanren}{\textsc{microKanren}}
+\newcommand{\mercury}{\textsc{Mercury}}
+\newcommand{\haskell}{\textsc{Haskell}}
+\newcommand{\prolog}{\textsc{Prolog}}
+\newcommand{\scheme}{\textsc{Scheme}}
+\newcommand{\logen}{\textsc{LOGEN}}
+\newcommand{\ocanren}{\textsc{OCanren}}
+\newcommand{\curry}{\textsc{Curry}}
+\newcommand{\github}{\textsc{GitHub}}
+\lstset{mathescape=true}
+
+\newcommand{\fromkw}{\textbf{\textit{from}}}
+\newcommand{\andkw}{\textbf{\textit{and}}}
+\newcommand{\returnkw}{\textbf{return}}
+\algrenewcommand\algorithmicindent{1.em}
+
+\graphicspath{{Artemeva/}}
+
+\algnewcommand\algorithmicotherwise{\textbf{otherwise}}
+\algrenewcommand\algorithmicreturn{\textbf{return}}
+
+\algdef{SE}[RETURN]{Return}{EndReturn}[1]{\algorithmicreturn\ #1}{\algorithmicend| \algorithmicreturn}
+
+\algdef{SE}[OTHERWISE]{Otherwise}{EndOtherwise}[0]{\algorithmicotherwise\ \algorithmicdo}{\algorithmicend \algoorithmicotherwise}
+\algtext*{EndOtherwise}%
+\algtext*{EndReturn}%
+\algtext*{EndSwitch}%
+\algtext*{EndCase}%
+
+% \newtheorem{theorem}{Утверждение}
+
+\begin{abstract}
+Представляя собой математические отношения, программы на реляционном языке программирования могут выполняться в различных направлениях.
+Часто программы в некоторых направлениях работают очень медленно.
+В данной работе предложен метод трансляции отношения с учетом направления в функциональный язык, призванный улучшать производительность программ.
+Также описан анализ времени связывания, решающий основную проблему при трансляции: определение порядка вычисления выражений программы в заданном направлении.
+
+\end{abstract}
+{\bf Ключевые слова: реляционное программирование, анализ времени связывания, трансляция, статический анализ}
+
+\input{Artemeva/contents/intro}
+
+\input{Artemeva/contents/chapter1/main}
+\input{Artemeva/contents/chapter2/main}
+\input{Artemeva/contents/chapter3/main}
+\input{Artemeva/contents/chapter4/main}
+\input{Artemeva/contents/chapter5/main}
+
+\input{Artemeva/contents/outro}
+\input{Artemeva/contents/biblio.tex}

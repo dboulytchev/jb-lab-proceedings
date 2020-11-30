@@ -83,6 +83,15 @@
 %Terekhov
 \usepackage{adjustbox}
 
+%Artemeva
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{boxedminipage}
+
+% Kuklina
+\usepackage{longtable}
+\usetikzlibrary{positioning}
 
 \newcommand{\cd}[1]{\texttt{#1}}
 \let\emptyset\varnothing
@@ -134,8 +143,8 @@
 \thispagestyle{plain}
 }
 
-% Кастомные леммы и теоремы для удобства перевода на русский 
-% сделано по аналогии с вариантом 2019 года, только тут это в 
+% Кастомные леммы и теоремы для удобства перевода на русский
+% сделано по аналогии с вариантом 2019 года, только тут это в
 % главном файле, а там было у Ю.Сусаниной в её тексте
 \newtheorem{defn}{Определение}%[section]
 \newtheorem{lm}{Лемма}
@@ -145,9 +154,12 @@
 
 
 \include{Terekhov/main}
-\include{Mishin/main}  
+\include{Mishin/main}
 \include{Tyurin/main}
 \include{Namakonov/main}
+% % \include{Balashov/main}
 \include{Bashkirov/main}
+\include{Artemeva/main}
+\include{Kuklina/src/main}
 
 \end{document}
