@@ -127,7 +127,7 @@
 
 Вершины графа соответствуют событиям --- операциям над разделяемой памятью, которые производятся при выполнении инструкций программы. Так, событие $\lW^{\at}(x, 1)$ соответствует записи по адресу $x$ значения $1$ в режиме $\at$; другими типами событий являются чтение и барьер памяти (обозначаются $\lR$ и $\lF$ соответственно). Кроме того, в графе выделяются инициализирующие события, которые соответствуют инициализирующей записи нулей в память. На \cref{fig:example-discriminating} все они для краткости обозначены множеством $\mathtt{Init}$; далее в графах мы будем опускать эти события, если это не будет важно для рассуждений. Заметим, что содержимое локальных переменных потока не отражается в графе в явном виде, т.к. взаимодействие между потоками производится только через разделяемую память. 
 
-\newcommand{\discrOffset}{2}
+\newcommand{\discrOffset}{1.5}
 \begin{figure}[h]
   \centering
   \begin{minipage}{0.45\textwidth}
@@ -151,14 +151,14 @@
       \drf{T1W1}{T2R1};
       \node (T2W1) at (0, -1.5) {$\wlab{\na}{y}{1}$};
       \dpo{T2R1}{T2W1};
-      \dcoext{Winit}{T2W1}{bend right=60}{left};
+      \dcoext{Winit}{T2W1}{bend right=45}{left};
       
       \node (T3R1) at (\discrOffset,0) {$\rlab{\na}{y}{1}$};
       \drf{T2W1}{T3R1};
       \node (T3R2) at (\discrOffset,-1.5) {$\rlab{\at}{x}{0}$};
       \dpo{T3R1}{T3R2}; 
       \drf{Winit}{T3R2};
-      \dfr{T3R2}{T1W1}{bend left=10};
+      \dfr{T3R2}{T1W1}{bend left=20};
     \end{tikzpicture}
   \end{minipage}
   \caption{Пример программы и сценария её исполнения, не согласованного в $\OMM$}
@@ -177,7 +177,7 @@
 На \cref{fig:example-imm-consistent} приведён результат компиляции программы на \cref{fig:example-discriminating} согласно тривиальной схеме компиляции. 
 Такая схема лишь заменяет режимы инструкций на их аналоги в $\IMM$: $\na$ заменяется на $\rlx$, а $\at$ — на $\sco$; дополнительных инструкций не вводится. Соответственно, граф исполнения на \cref{fig:example-imm-consistent} отличается от графа на \cref{fig:example-discriminating} только метками вершин, и в нём сохраняется цикл того же вида. $\IMM$ не гарантирует свойство multicopy atomicity, и потому предикат её согласованности не требует отсутствия таких циклов. Поэтому граф на \cref{fig:example-imm-consistent} согласован, что делает соответствующий ему сценарий поведения разрешается $\IMM$, в отличие от $\OMM$. Поэтому тривиальная схема компиляции не является корректной.
 
-\newcommand{\consOffset}{1.8}
+\newcommand{\consOffset}{1.3}
 \begin{figure}[h]
   \centering
   \begin{minipage}{0.5\textwidth}
@@ -205,7 +205,7 @@
       \node (T3R2) at (\consOffset,-1.5) {$\rlab{\sco}{x}{0}$};
       \dpo{T3R1}{T3R2}; 
       % \dfr{T3R2}{T1W1}{bend left=20};
-      \draw[fr, bend left=20] (T3R2) edge node[left, yshift=1ex] {$\lFR$}(T1W1);
+      \draw[fr, bend left=30] (T3R2) edge node[left, yshift=1ex] {$\lFR$}(T1W1);
     \end{tikzpicture}
   \end{minipage}
   \caption{Результат компиляции программы на \cref{fig:example-discriminating} с использованием тривиальной схемы компиляции и согласованный по $\IMM$ граф его исполнения}
@@ -216,7 +216,7 @@
 
 
 \newcommand{\vsIV}{-1.2}
-\newcommand{\hsIV}{1.2}
+\newcommand{\hsIV}{2}
 
 \newcommand{\inconsistentExample}[1]{
       \begin{tikzpicture}[yscale=1,xscale=1]
@@ -248,11 +248,9 @@
     \end{tikzpicture}
   }
 
-\begin{figure}[!h]
-%   % foobar
-  % \centering
-  \begin{minipage}{0.6\textwidth}
-    % \centering
+  \begin{figure}[!h]
+    \centering
+  % \begin{minipage}{0.6\textwidth}
     \begin{tabular}{l || l || l}
       \multicolumn{3}{c}{$\writeInst{x}{0}{}\ \writeInst{y}{0}{}$} \\
       \hline
@@ -261,13 +259,10 @@
       {} & $\fenceInst{\acqrel}$ & $\readInst{c}{x}{0}{\sco}$\\
       {} & $\writeInst{y}{1}{\rlx}$ & {} \\
     \end{tabular}
-    % bar
-  \end{minipage} \hfill
-  \begin{minipage}{0.3\textwidth}
-    % \centering
-    \inconsistentExample{50}
-    % foo
-  \end{minipage}
+  % \end{minipage} \hfill
+  % \begin{minipage}{0.3\textwidth}
+    \inconsistentExample{20}
+  % \end{minipage}
   \caption{Результат компиляции программы на \cref{fig:example-discriminating} с использованием схемы компиляции из раздела \ref{compilation-scheme} и его граф исполнения, не согласованный в $\IMM$}
   \label{fig:example-imm-inconsistent}    
 \end{figure}
@@ -446,7 +441,7 @@ $G.\lRMW \subseteq ([G.\lR] ;\imm \lPO;[G.\lW])_{loc}$.
   \centering
   \begin{minipage}{0.9\textwidth}
     \centering
-    \inconsistentExample{30}
+    \inconsistentExample{20}
   \end{minipage}
   \caption{Ребро $\lRF e$ между вершинами с режимом $\rlx$ должно быть окружено барьерами}
   \label{fig:example-imm-inconsistent-copy}
@@ -459,7 +454,7 @@ $G.\lRMW \subseteq ([G.\lR] ;\imm \lPO;[G.\lW])_{loc}$.
 
 Использование барьеров позволяет обеспечить гарантируемое $\OMM$ свойство multicopy atomicity для атомарных адресов. Это означает отсутствие в графе исполнения скомпилированной программы циклов, состоящих из рёбер $\lFR$, проходящих между вершинами с меткой $\sco$, а также рёбер $\lPO$ и $\lRF$. $\IMM$ в общем случае допускает такие циклы. Поскольку отношение $\lAR$ в $\IMM$ не учитывает рёбра $\lFR$, то с целью запрета подобного сценария поведения цикл вида $[\lW^\at];(\lPO; \lRF)^{+};\lPO;[\lR^\at];\lFR$ необходимо представить как $\lHB^{+};\lFR$. Для этого каждое ребро $\lRF$ между неатомарными вершинами необходимо окружить барьерами. Кроме того, так как после подобного ребра может идти $\lRF$ между атомарными вершинами, перед $\lW^\at$ необходимо также расположить $\acq$-барьер. Наконец, $\acq$-барьер необходимо расположить и перед ребром $\lFR$, т.е. перед событием атомарного чтения. \cref{fig:fences-hb} показывает последовательность рёбер $\lRF$ между вершинами различных типов, иллюстрирующую необходимость расположения барьеров. 
 
-\newcommand{\offsetfive}{2.5}
+\newcommand{\offsetfive}{2.0}
 \begin{figure}[h]
   \centering
   \begin{tikzpicture}[yscale=1,xscale=1]
@@ -472,35 +467,34 @@ $G.\lRMW \subseteq ([G.\lR] ;\imm \lPO;[G.\lW])_{loc}$.
     \node (T22) at (1 * \offsetfive, -1.5) {$\flab{\acq}$};
     \node (T23) at (1 * \offsetfive, -3) {$\wlab{\sco}{z}{1}$};
     \dpo{T21}{T22}; \dpo{T22}{T23};
-    \drf{T13}{T21};
-    \dhb{T12}{T22}{bend right=20};
+    \drfext{T13}{T21}{}{left, yshift=2ex, xshift=2ex};
+    \dhbext{T12}{T22}{bend right=20}{yshift=-1ex};
     
     \node (T31) at (2 * \offsetfive, 0) {$\rlab{\sco}{z}{1}$};
     \node (T32) at (2 * \offsetfive, -1.5) {$\flab{\acqrel}$};
     \node (T33) at (2 * \offsetfive, -3) {$\wlab{\rlx}{u}{1}$};
     \dpo{T31}{T32}; \dpo{T32}{T33};
-    \drf{T23}{T31};
-    \dhb{T23}{T31}{bend right=10};
+    \drfext{T23}{T31}{}{left, yshift=2ex, xshift=2ex};
+    \dhbext{T23}{T31}{bend right=5}{yshift=-3ex};
     
     \node (T41) at (3 * \offsetfive, 0) {$\rlab{\rlx}{u}{1}$};
     \node (T42) at (3 * \offsetfive, -1.5) {$\flab{\acqrel}$};
     \node (T43) at (3 * \offsetfive, -3) {$\wlab{\rlx}{v}{1}$};
     \dpo{T41}{T42}; \dpo{T42}{T43};
-    \drf{T33}{T41};
-    \dhb{T32}{T42}{bend right=20};
+    \drfext{T33}{T41}{}{left, yshift=2ex, xshift=2ex};
+    \dhbext{T32}{T42}{bend right=20}{yshift=-1ex};
     
     \node (T51) at (4 * \offsetfive, 0) {$\rlab{\rlx}{v}{1}$};
     \node (T52) at (4 * \offsetfive, -1.5) {$\flab{\acq}$};
     \node (T53) at (4 * \offsetfive, -3) {$\rlab{\sco}{x}{1}$};
     \dpo{T51}{T52}; \dpo{T52}{T53};
-    \drf{T43}{T51};
-    \dhb{T42}{T52}{bend right=20};
-    \dfr{T53}{T11}{bend right=35};
+    \drfext{T43}{T51}{}{left, yshift=2ex, xshift=2ex};
+    \dhbext{T42}{T52}{bend right=20}{yshift=-1ex};
+    \dfrext{T53}{T11}{bend right=40}{right, xshift=-1ex, yshift=1ex};
   \end{tikzpicture}
   \caption{Вставка барьеров позволяет провести рёбра $\lHB$ вдоль рёбер $\lRF$ и запретить указанный сценарий поведения}
   \label{fig:fences-hb}
 \end{figure}
-
 
 Компиляция инструкций атомарной записи в инструкции $\mathtt{exchange}$ позволяет, согласно требованиям $\OMM$, связать отношением $\lHB$ события атомарной записи, упорядоченные по $\lCO$. Вставка барьеров в этом случае не поможет, т.к. с помощью них можно провести $\lHB$ лишь вдоль рёбер $\lRF$. Однако такое ребро можно ввести искусственно, добавив перед событием записи событие чтения, которое наблюдает $\lCO$-предыдущую запись. Такое условие обеспечивается инструкцией $\mathtt{exchange}$. Она порождает в графе пару вершин, связанных отношением $\lRMW$, что иллюстрируется на \cref{fig:rmw-hb}.
 
@@ -780,11 +774,11 @@ $\lPSCB \defeq ([\lE^\sco] \cup [\lF^\sco];\lHB^?);\lSCB;([\lE^\sco] \cup{} \lHB
 
   \newcommand{\CA}{\mathtt{C}}
 
-  $(\lPO ; ([\Far] ; \lPO ; [\lE^{\rlx}] ; \lRFE \cup [\Fa] ; \lPO ; [\lE^{\sco}] ; \lRFE) ; (\lRMW ; \lRFE)^{*})^{+} =$
+  \noindent $(\lPO ; ([\Far] ; \lPO ; [\lE^{\rlx}] ; \lRFE \cup [\Fa] ; \lPO ; [\lE^{\sco}] ; \lRFE) ; (\lRMW ; \lRFE)^{*})^{+}=$
 
-  $(\lPO ; [\Fa] ;([\Far] ; \lPO ; [\lE^{\rlx}] \cup [\Fa] ; \lPO ; [\lE^{\sco}]) ; (\lRFE ; \lRMW)^{*}; \lRFE)^{+} = $
+  \noindent $(\lPO ; [\Fa] ;([\Far] ; \lPO ; [\lE^{\rlx}] \cup [\Fa] ; \lPO ; [\lE^{\sco}]) ; (\lRFE ; \lRMW)^{*}; \lRFE)^{+}$
 
-  $(\lPO ; [\Fa]; \CA; \lRFE)^{+}$, где 
+  \noindent $=(\lPO ; [\Fa]; \CA; \lRFE)^{+}$, где 
 
   $\CA=\CA_1 \cup \CA_2 = [\Far] ; \lPO ; [\lE^{\rlx}] ; (\lRFE ; \lRMW)^{*} \cup [\Fa] ; \lPO ; [\lE^{\sco}] ; (\lRFE ; \lRMW)^{*}$.
 
@@ -801,11 +795,11 @@ $\lPSCB \defeq ([\lE^\sco] \cup [\lF^\sco];\lHB^?);\lSCB;([\lE^\sco] \cup{} \lHB
 
   \canceloffset Заметим, что выполнено следующее утверждение:
 
-  $(\CA; \lRFE; \lPO ; [\Fa])^{*} = $
+  \noindent $(\CA; \lRFE; \lPO ; [\Fa])^{*} = $
 
-  $\left(([\Far] ; \lPO ; [\lE^{\rlx}] \cup [\Fa] ; \lPO ; [\lE^{\sco}]) ; (\lRFE ; \lRMW)^{*}; \lRFE; \lPO ; [\Fa] \right)^{*} $
+  \noindent $\left(([\Far] ; \lPO ; [\lE^{\rlx}] \cup [\Fa] ; \lPO ; [\lE^{\sco}]) ; (\lRFE ; \lRMW)^{*}; \lRFE; \lPO ; [\Fa] \right)^{*} $
 
-  $\subseteq \lHB^?.$
+  \noindent $\subseteq \lHB^?.$
   
   
   \canceloffset Это справедливо, поскольку $\lHB$ задано так: 
@@ -832,15 +826,17 @@ $\lPSCB \defeq ([\lE^\sco] \cup [\lF^\sco];\lHB^?);\lSCB;([\lE^\sco] \cup{} \lHB
   $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \CA_1; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]\subseteq  ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}$.
 Заметим, что по лемме \ref{sb-sc-sync}   в последнем ребре $\lPO$ найдётся $\acq$-барьер, с помощью которого можно будет построить ребро $\lHB$:
 
-    $\CA_1; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}] = [\Far] ; \lPO ; [\lE^{\rlx}] ; (\lRFE ; \lRMW)^{*}; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]$
+\noindent $\CA_1; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}] =$
 
-    $= [\Far] ; \lPO ; [\lE^{\rlx}] ; (\lRFE ; \lRMW)^{*}; \lRFE; [\lE^{\rlx}]; \lPO; [\Fa]; \lPO ; [(\lW \cup \lR)^{\sco}]$
+\noindent $[\Far] ; \lPO ; [\lE^{\rlx}] ; (\lRFE ; \lRMW)^{*}; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]=$
 
-    $\subseteq \lHB; \lPO_{\neq loc}; [\lE^{\sco}]$.  Тогда $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \CA_1; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]$
+\noindent $[\Far] ; \lPO ; [\lE^{\rlx}] ; (\lRFE ; \lRMW)^{*}; \lRFE; [\lE^{\rlx}]; \lPO; [\Fa]; \lPO ; [(\lW \cup \lR)^{\sco}]$
 
-    $\subseteq [\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \lHB; \lPO_{\neq loc}; [\lE^{\sco}]$
+\noindent $\subseteq \lHB; \lPO_{\neq loc}; [\lE^{\sco}]$.  Тогда $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \CA_1; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]$
 
-    $\subseteq [\lE^{\sco}] ; \lSCB ; [\lE^{\sco}]$.
+\noindent $\subseteq [\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \lHB; \lPO_{\neq loc}; [\lE^{\sco}]$
+
+\noindent $\subseteq [\lE^{\sco}] ; \lSCB ; [\lE^{\sco}]$.
 
     \vspace{1em}
     
@@ -848,15 +844,19 @@ $\lPSCB \defeq ([\lE^\sco] \cup [\lF^\sco];\lHB^?);\lSCB;([\lE^\sco] \cup{} \lHB
 
     $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \CA_2; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]\subseteq  ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}$. Заметим, что последовательность пар рёбер $\lRFE ; \lRMW$ входит в $\lSCB$: 
 
-    $\CA_2=[\Fa] ; \lPO ; [\lE^{\sco}] ; (\lRFE ; \lRMW)^{*} \subseteq \lPO_{\neq loc}; [\lE^{\sco}] ; ([\lE^{\sco}] ; \lRFE; [\lE^{\sco}];  \lRMW; [\lE^{\sco}])^{*}; [\lE^{\sco}]$
+    $\CA_2=[\Fa] ; \lPO ; [\lE^{\sco}] ; (\lRFE ; \lRMW)^{*} $
 
-    $\subseteq \lPO_{\neq loc}; [\lE^{\sco}] ; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}; [\lE^{\sco}]$. В этом случае имеем:
+    $\subseteq \lPO_{\neq loc}; [\lE^{\sco}] ; ([\lE^{\sco}] ; \lRFE; [\lE^{\sco}];  \lRMW; [\lE^{\sco}])^{*}; [\lE^{\sco}]$
 
-    $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \CA_2; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]$
+    $\subseteq \lPO_{\neq loc}; [\lE^{\sco}] ; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}; [\lE^{\sco}]$.
 
-    $\subseteq [\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \lPO_{\neq loc}; [\lE^{\sco}] ; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}; [\lE^{\sco}]; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]$
+    В этом случае имеем:
 
-    $\subseteq ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}]) ; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^2$. \qedhere  
+    \noindent $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \CA_2; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]\subseteq$
+
+    \noindent $[\lE^{\sco}]; \lPO_{\neq loc} ; \lHB^?; \lPO_{\neq loc}; [\lE^{\sco}] ; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}; [\lE^{\sco}]; \lRFE; \lPO ; [(\lW \cup \lR)^{\sco}]$
+
+    \noindent $\subseteq ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}]) ; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^{*}; ([\lE^{\sco}] ; \lSCB ; [\lE^{\sco}])^2$. \qedhere  
   
 \end{proof}
 
