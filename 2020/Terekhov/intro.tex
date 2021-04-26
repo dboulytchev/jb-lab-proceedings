@@ -57,7 +57,7 @@
 \begin{figure}[h]
 \centering
     \includegraphics[width=0.7\linewidth]{Terekhov/pictures/graph_bd_1.png}
-    \caption{Пример социального графа}
+    \caption{Пример социального графа.}
     \label{fig:graph_bd_1}
 \end{figure}
 
@@ -73,7 +73,7 @@ MATCH (p:Person)-[:HasFriend]->()-[:WorkIn]->(to)
 WHERE p.name = "John"
 RETURN to.name
 \end{lstlisting}
-\caption{Пример конечного запроса на языке Cypher}
+\caption{Пример конечного запроса на языке Cypher.}
 \label{code:cypher_query}
 \end{figure}
 
@@ -84,7 +84,7 @@ RETURN to.name
 MATCH (v)-[:A | :B *]->(to)
 RETURN to.name
 \end{lstlisting}
-\caption{Пример регулярного запроса на языке Cypher}
+\caption{Пример регулярного запроса на языке Cypher.}
 \label{code:cypher_query_2}
 \end{figure}
 
@@ -123,7 +123,7 @@ RETURN to.name
 %  Это позволяет для его реализации использовать многопоточные матричные библиотеки, с помощью которых можно добиться очень высокой производительности. Поэтому на текущий момент алгоритм Рустама Азимова показывает наилучшее время работы на практике.
 
 \begin{algorithm}
-\caption{Матричный алгоритм Рустама Азимова}
+\caption{Матричный алгоритм Рустама Азимова.}
 
 \begin{algorithmic}[1]
 \Function{contextFreePathQuerying}{$D$, $G$}
@@ -190,7 +190,7 @@ PathReference &= "\sim",~SymbolicName; \\
 Label         &= ":",~LabelName
 \end{split}
 \end{align*}
-\caption{Расширение конкретного синтаксиса Cypher}
+\caption{Расширение конкретного синтаксиса Cypher.}
 \label{fig:cypher_syntax}
 \end{figure}
 
@@ -208,7 +208,7 @@ PATH PATTERN S = ()-/ [:L ~S :R] | [~S ~S] | () /-()
 MATCH (v)-/ ~S /-(to)
 RETURN v, to
 \end{lstlisting}
-\caption{Пример запроса в расширенном синтаксисе Cypher}
+\caption{Пример запроса в расширенном синтаксисе Cypher.}
 \label{code:cypher_query_3}
 \end{figure}
 
@@ -235,7 +235,7 @@ RETURN v, to
 \begin{figure}[H]
 \centering
     \includegraphics[width=1.0\linewidth]{Terekhov/pictures/execution_plan_3.png}
-    \caption{Расширение построения плана выполнения запроса}
+    \caption{Расширение построения плана выполнения запроса.}
     \label{fig:execution_plan}
 \end{figure}
 
@@ -261,7 +261,7 @@ direction \in ~&\{inbound,~outbound,~bidirectional\}\\
 range \in     ~&\{*, \varnothing\}
 \end{split}
 \end{align*}
-\caption{Промежуточное представление PathExpr}
+\caption{Промежуточное представление PathExpr.}
 \label{fig:intermidiate_repr}
 \end{figure}
 
@@ -270,11 +270,10 @@ range \in     ~&\{*, \varnothing\}
 \begin{adjustbox}{max width=\textwidth}
 \input{Terekhov/tables/inter_examples.tex}
 \end{adjustbox}
-\caption{Примеры промежуточного представления запросов}
+\caption{Примеры промежуточного представления запросов.}
 \label{tab:inter_examples}
 \end{table}
 
-\newpage
 \subsection{Трансляция в матричные выражения}
 Как было упомянуто ранее, RedisGraph представляет графы в виде разреженных матриц. А именно, каждый граф $G$ задаётся следующей тройкой
 
@@ -308,7 +307,7 @@ AlgExpr= ~ &Add(AlgExpr, AlgExpr)~|\\
            &MatrixRef(ref)
 \end{split}
 \end{align*}
-\caption{Алгебраическое выражение над матрицами}
+\caption{Алгебраическое выражение над матрицами.}
 \label{fig:alg-expr}
 \end{figure}
 
@@ -339,7 +338,7 @@ AlgExpr= ~ &Add(AlgExpr, AlgExpr)~|\\
 \begin{adjustbox}{max width=\textwidth}
 \input{Terekhov/tables/combinators-vs-redisgraph}
 \end{adjustbox}
-\caption{Сравнение Meerkat и полученного решения}
+\caption{Сравнение Meerkat и полученного решения.}
 \label{tab:combinators-vs-redisgraph}
 \end{table}
 
@@ -352,7 +351,7 @@ MATCH (v)-/ ~S /->(to)
 RETURN COUNT(*)
 \end{lstlisting}
 \end{adjustbox}
-\caption{Запрос Query\_1 для анализа RDF на Cypher}
+\caption{Запрос Query\_1 для анализа RDF на Cypher.}
 \label{code:sub_clas_of_1}
 \end{figure}
 
@@ -364,7 +363,7 @@ MATCH (v)-/ ~S /->(to)
 RETURN COUNT(*)
 \end{lstlisting}
 \end{adjustbox}
-\caption{Запрос Query\_2 для анализа RDF на Cypher}
+\caption{Запрос Query\_2 для анализа RDF на Cypher.}
 \label{code:sub_clas_of_2}
 \end{figure}
 
@@ -385,7 +384,7 @@ RETURN COUNT(*)
 \begin{adjustbox}{max width=\textwidth}
 \input{Terekhov/tables/redisgraph_vs_redisgraph}
 \end{adjustbox}
-\caption{Сравнение матричного алгоритма и полученного решения}
+\caption{Сравнение матричного алгоритма и полученного решения.}
 \label{tab:combinators_vs_redisgraph}
 \end{table}
 
@@ -407,7 +406,7 @@ MATCH (v)-/ ~S /->(to)
 RETURN COUNT(*)
 \end{lstlisting}
 \end{adjustbox}
-\caption{Запрос Query для анализа \textit{geospices} на Cypher }
+\caption{Запрос Query для анализа \textit{geospices} на Cypher.}
 \label{code:broaderTransitive}
 \end{figure}
 
@@ -415,7 +414,7 @@ RETURN COUNT(*)
 \begin{adjustbox}{max width=\textwidth}
 \input{Terekhov/tables/neo4j-vs-redisgraph}
 \end{adjustbox}
-\caption{Сравнение с замером Йохема Куйперса}
+\caption{Сравнение с замером Йохема Куйперса.}
 \label{tab:neo4j-vs-redisgraph}
 \end{table}
 

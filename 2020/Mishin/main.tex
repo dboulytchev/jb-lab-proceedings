@@ -564,7 +564,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \begin{figure}
   \centering
   \includegraphics[height=0.72\columnwidth,angle=90]{Mishin/figures/Library.png}
-  \caption{Диаграмма классов UML части библиотеки, относящейся к различным задачам, основанным на  {semi-local} задачах; часть деталей и классов опущена}\label{fig:libraryProblem}
+  \caption{Диаграмма классов UML части библиотеки, относящейся к различным задачам, основанным на  {semi-local} задачах; часть деталей и классов опущена.}\label{fig:libraryProblem}
 \end{figure}
 
 \emph{ExplicitSemiLocalSA} хранит матрицу $H_{a,b}$ в явном виде.
@@ -611,7 +611,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 
 \begin{figure}
     \includegraphics[width=\columnwidth]{Mishin/figures/semiLocalApplication.png}
-    \caption{Диаграмма классов UML части библиотеки, относящейся к {semi-local} задачам; часть деталей и классов опущена}\label{fig:libraryApplication}
+    \caption{Диаграмма классов UML части библиотеки, относящейся к {semi-local} задачам; часть деталей и классов опущена.}\label{fig:libraryApplication}
 \end{figure}
 
 
@@ -654,7 +654,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 
 \begin{figure}[H]
     \includegraphics[width=\columnwidth]{Mishin/figures/arhitecture.png}
-    \caption{Диаграмма компонентов системы}\label{fig:application}
+    \caption{Диаграмма компонентов системы.}\label{fig:application}
 \end{figure}
 
 
@@ -679,7 +679,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\columnwidth]{Mishin/figures/startApp.png}
-    \caption{Интерфейс пользователя перед запуском анализатора для случая поиска групп повторов}\label{fig:startApp}
+    \caption{Интерфейс пользователя перед запуском анализатора для случая поиска групп повторов.}\label{fig:startApp}
 \end{figure}
 
 \subsection{Клиентская часть}\label{clinet}
@@ -698,7 +698,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.7\columnwidth]{Mishin/figures/outputGroup.png}
-    \caption{Визуализация групп повторов}\label{fig:groupViz}
+    \caption{Визуализация групп повторов.}\label{fig:groupViz}
 \end{figure}
 
 
@@ -750,7 +750,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 В данном разделе описана улучшенная версия алгоритма из~\cite{luciv2019interactive}. Псевдокод алгоритма представлен ниже (алгоритм~\ref{alg:patternMathing1}).
 
 \begin{algorithm}[t!]
-\caption{Нечеткий поиск по шаблону с использованием {semi-local}}\label{alg:patternMathing1}
+\caption{Нечеткий поиск по шаблону с использованием {semi-local}.}\label{alg:patternMathing1}
 Вход: шаблона поиска $p$, текст $t$, пороговое значение похожести $k$\\
 Выход: множество непересекающихся повторов шаблона $p$\\
 Комментарии:
@@ -854,7 +854,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 Данный алгоритм рассматривается как альтернатива алгоритму~\ref{alg:patternMathing1}.
 
 \begin{algorithm}[b!]
-\caption{Нечеткий поиск по шаблону с использованием Min-inclusive ThresholdAMatch}\label{alg:patternMathing2}
+\caption{Нечеткий поиск по шаблону с использованием Min-inclusive ThresholdAMatch.}\label{alg:patternMathing2}
 Вход: шаблона поиска $p$, текст $t$, пороговое значение похожести $h$\\
 Выход: множество непересекающихся повторов шаблона $p$\\
 Псевдокод:
@@ -945,7 +945,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \end{itemize}
 
 \begin{algorithm}[t!]
-\caption{Алгоритм поиска групп повторов для JavaDoc-комментариев}\label{alg:groupDuplicate}
+\caption{Алгоритм поиска групп повторов для JavaDoc-комментариев.}\label{alg:groupDuplicate}
 Вход: набор комментариев $t_{i}$, функция $g$, которая измеряет похожесть между двумя комментариями, функция $s$, которая согласно выбранному предикату $\gamma$ строит группы, пороговое значение похожести $h$\\
 Выход: группы непересекающихся повторов\\
 Псевдокод:
@@ -1002,7 +1002,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 
 % иерархичпская кластеризация
 \begin{algorithm}[t!]
-\caption{Алгоритм выделения групп на основе иерархической кластеризации}\label{alg:cluster1}
+\caption{Алгоритм выделения групп на основе иерархической кластеризации.}\label{alg:cluster1}
 Вход: граф $G$ с матрицей расстояний, функция  $f$, которая считает дистанцию между вершинами, пороговое значение похожести $h_{clique}$, при котором вершины образуют очередной уровень в иерархии, $h_{group}$~--- пороговое значение похожести\\
 Выход: иерархические группы повторов \\
 Псевдокод:
@@ -1033,7 +1033,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 
 % mcl clustering
 \begin{algorithm}[t!]
-\caption{Алгоритм выделения групп на основе марковских моделей}\label{alg:clusterMcl}
+\caption{Алгоритм выделения групп на основе марковских моделей.}\label{alg:clusterMcl}
 Вход: граф $G$ с матрицей расстояний\\
 Выход: группы повторов с структурой группы в виде дерева\\
 Псевдокод:
@@ -1095,13 +1095,13 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \begin{figure}[t!]
 \centering
     \includegraphics[width=0.8\columnwidth]{Mishin/figures/semiLocalvsPrefixLCS.png}
-    \caption{Результат запусков различных версий подсчета \emph{lcs} }\label{fig:speedLCS}
+    \caption{Результат запусков различных версий подсчета \emph{lcs}.}\label{fig:speedLCS}
 \end{figure}
 
 \begin{figure}[t!]
 \centering
     \includegraphics[width=0.8\columnwidth]{Mishin/figures/semilocalReducignVssemiLocalRecursive.png}
-    \caption{Результат запусков алгоритма на основе распутывания кос и рекурсивного умножения кос для решения задачи {semi-local LCS} }\label{fig:speedLCS2}
+    \caption{Результат запусков алгоритма на основе распутывания кос и рекурсивного умножения кос для решения задачи {semi-local LCS}.}\label{fig:speedLCS2}
 \end{figure}
 
 На Рис.~\ref{fig:speedLCS2} представлено сравнение двух реализаций подсчета {semi-local LCS}: через распутывание кос ({reducing}) и  умножение кос ({recursive}).
@@ -1112,7 +1112,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \begin{figure}[t!]
 \centering
     \includegraphics[width=0.8\columnwidth]{Mishin/figures/vDependenceImplicitSemiLocalSARecursie.png}
-    \caption{Линейная зависимость параметра рекурсивного алгоритма {semi-local SA} на основе умножения липких кос }\label{fig:vParam}
+    \caption{Линейная зависимость параметра рекурсивного алгоритма {semi-local SA} на основе умножения липких кос.}\label{fig:vParam}
 \end{figure}
 
 На Рис.~\ref{fig:speedWindow3} представлены результаты запусков двух версий алгоритмов для решения задачи \emph{Window-Substring}: через предподсчет кос (\emph{implicit 350}) и наивный (\emph{naive 350})\footnote{Наивный алгоритм заключается в вычислении {semi-local LCS} для каждого окна $(m \times n \times w)$, где $w$~--- размер окна, $m,n$~--- размеры строк.
@@ -1124,7 +1124,7 @@ P_{a,b}  = P_{a^{'},b} \odot P_{a^{''},b}, a  := a^{'}a^{''}
 \begin{figure}[t!]
 \centering
     \includegraphics[width=0.8\columnwidth]{Mishin/figures/windowNaiveImpl.png}
-    \caption{Независимость от размера окна }\label{fig:speedWindow3}
+    \caption{Независимость от размера окна.}\label{fig:speedWindow3}
 \end{figure}
 
 %  \linebreak[2]
