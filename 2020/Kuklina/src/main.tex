@@ -1,0 +1,75 @@
+
+\title{Применение метода суперкомпиляции для специализации реляционных программ}
+\titlerunning{Суперкомпиляция реляционных программ}
+
+\author{Куклина Мария}
+\authorrunning{Куклина М.}
+
+\tocauthor{Куклина М.}
+\institute{Национальный исследовательский университет ИТМО\\
+	\email{kuklina.md@gmail.com}}
+
+\maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinelanguage{MyLang}
+{
+  morekeywords={data},
+  keywordstyle=\bfseries\color{black}
+}
+
+%\lstset{language=Haskell}
+\lstset {
+mathescape,
+extendedchars=\true,
+basicstyle=\ttfamily,
+numberstyle=\ttfamily,
+numbers=left,
+stepnumber=1,
+frame=single,
+morekeywords={data, do, type, if, then, else, class, where, return}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\larrow}{\leftarrow}
+\newcommand{\rarrow}{\rightarrow}
+
+\newcommand{\embed}{\unlhd}
+\newcommand{\instance}{\preccurlyeq}
+\newcommand{\strictinst}{\prec}
+% \newcommand{\variant}{\leftrightarrow}
+\newcommand{\variant}{\approx}
+\newcommand{\genup}{\lessdot}
+
+\newcommand{\ukanren}{$\mu$Kanren }
+\newcommand{\forcpd}{конъюнктивной частичной дедукции }
+\newcommand{\cpd}{конъюнктивная частичная дедукция }
+\newcommand{\Cpd}{Конъюнктивная частичная дедукция }
+
+\newcommand{\origin}[1]{(англ. {\it #1})}
+
+\newcommand{\relo}[1]{$\text{#1}^o$}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{Kuklina/}}
+
+\begin{abstract}
+Реляционное программирование позволяет запускать единожды написанное отношение в различных направлениях.
+Часто наиболее естественный способ записи отношения не является эффективным в некоторых направлениях.
+Для решения этой проблемы естественно использовать такие техники автоматического улучшения программ как специализация и суперкомпиляция.
+В данной работе предложен суперкомпилятор для реляционного языка программирования miniKanren, а также несколько его вариантов.
+Также проведено экспериментальное исследование, сравнивающее эти суперкомпиляторы.
+\end{abstract}
+{\bf Ключевые слова: реляционное программирование, специализация, суперкомпиляция}
+
+
+\input{Kuklina/src/intro.tex}
+\input{Kuklina/src/review/review.tex}
+\input{Kuklina/src/env/env.tex}
+\input{Kuklina/src/sc/sc.tex}
+\input{Kuklina/src/results/results.tex}
+\input{Kuklina/src/concl.tex}
+\input{Kuklina/src/results/appendix.tex}
+\input{Kuklina/src/biblio.tex}
